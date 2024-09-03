@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+    --primary: #183EA0;
+    --gris: #FAFBFF;
+}
+
+.button-side.active{
+    background-color: white;
+    color: var(--primary);
+}
+
+.button-side{
+    position: relative;
+}
+.button-side::after{
+    content: url(./assets/arrow.svg);
+    position: absolute;
+    right: 15px;
+}
+
+.buttontab.active{
+    color: #183EA0;
+    background-color: #ffffff;
+}
+
+.buttonedit::after{
+    content: url(./assets/Edit.png);
+    position: absolute;
+    right: -5px;
+    bottom: 4px;
+}
+
+.searchinput::after{
+    content: url(./assets/search.png);
+    position: absolute;
+    left: 7px;
+    bottom: -2px;
+
+}
+
+.pagination{
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    justify-content: end;
+    font-weight:bold;
+    color: var(--primary);
+}
+.pagebut{
+    background-color: var(--gris);
+    padding: 0px 8px;
+    border-radius: 6px;
+
+}
+.pagebut:hover{
+    background-color: var(--primary);
+    color: #ffffff;
+}
+.prevbut{
+    background-color: var(--gris);
+    padding: 0px 9px;
+    font-weight: 900;
+    border-radius: 6px;
+
+    
+}
+.prevbut:hover{
+    background-color: var(--primary);
+    color: #ffffff;
+}
+.nextbut{
+    background-color: var(--gris);
+    padding: 0px 9px;
+    font-weight: 900;
+    border-radius: 6px;
+    
+}
+.nextbut:hover{
+    background-color: var(--primary);
+    color: #ffffff;
+}
+
+.activelink{
+    background-color: var(--primary);
+    color: #ffffff;
+}
+.activelink:hover{
+    background-color: var(--gris);
+    color: var(--primary);
+}
