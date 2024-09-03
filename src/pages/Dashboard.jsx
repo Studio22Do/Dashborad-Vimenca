@@ -9,7 +9,7 @@ import Sucursales from "../components/Sucursales";
 
 
 function Dashboard() {
-    const [activeButton, setActiveButton] = useState(0);
+    const [activeButton, setActiveButton] = useState(2);
     const handleButtonClick = (index) => {
         setActiveButton(index);
     };

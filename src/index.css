@@ -4,7 +4,9 @@
 
 :root{
     --primary: #183EA0;
+    --secondary: #e3e9f8;
     --gris: #FAFBFF;
+    --gris2:rgb(212, 0, 0)F;
 }
 
 .button-side.active{
@@ -90,4 +92,11 @@
 .activelink:hover{
     background-color: var(--gris);
     color: var(--primary);
+}
+
+.de::before{
+    content: "De:";
+    position: absolute;
+    left: -10px;
+    z-index: 2;
 }

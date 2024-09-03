@@ -3,7 +3,7 @@ import Block from "../Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
 
-function Oficinas() {
+function Oficinas({setActiveButton}) {
     const [items, setItems] = useState([
         {
             id: 1,
@@ -174,7 +174,7 @@ function Oficinas() {
         setItemOffset(0); // Reiniciar el offset al buscar
     }, [searchTerm, items]);
 
-    
+
 
     const endOffset = itemOffset + itemsPerPage;
     const currentItems = filteredItems.slice(itemOffset, endOffset);
@@ -210,6 +210,7 @@ function Oficinas() {
                         nombre={item.nombre}
                         address={item.direccion}
                         id={item.id}
+                        
                     />
                 ))
             ) : (
