@@ -1,40 +1,43 @@
-import { React, useState } from "react";
+import React from "react";
 import Oficinas from "./Estafetas/Oficinas";
 import Noticias from "./Estafetas/Noticias";
-import Edit from "./Estafetas/Edit";
-
+import FormCard from "./Estafetas/FormCard";
+import { useEstafetasContext } from "../providers/EstafetasProviders";
 
 function Estafetas() {
-    const [activeButton, setActiveButton] = useState(0);
+    const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
     const handleButtonClick = (index) => {
-        setActiveButton(index);
+        setActiveEstafeta(index);
     };
+
     return (
-        <div>
-            
-            <div className="flex ">
-                <button
-                    className={`w-80  px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
-                        activeButton === 0 ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick(0)}
-                >
-                    Oficinas
-                </button>
-                <button
-                    className={`w-80  px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
-                        activeButton === 1 ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick(1)}
-                >
-                    Noticias
-                </button>
-            </div>
+        <div className="">
+            {activeEstafeta !== 2 && (
+                <div className="flex ">
+                    <button
+                        className={`w-80 px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
+                            activeEstafeta === 0 ? "active" : ""
+                        }`}
+                        onClick={() => handleButtonClick(0)}
+                    >
+                        Oficinas
+                    </button>
+
+                    <button
+                        className={`w-80 px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
+                            activeEstafeta === 1 ? "active" : ""
+                        }`}
+                        onClick={() => handleButtonClick(1)}
+                    >
+                        Noticias
+                    </button>
+                </div>
+            )}
 
             <div>
-                {activeButton === 0 && <Oficinas />}
-                {activeButton === 1 && <Noticias />}
-                {activeButton === 2 && <Edit />}
+                {activeEstafeta === 0 && <Oficinas />}
+                {activeEstafeta === 1 && <Noticias />}
+                {activeEstafeta === 2 && <FormCard />}
             </div>
         </div>
     );

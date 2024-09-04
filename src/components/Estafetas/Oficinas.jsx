@@ -2,8 +2,9 @@ import { React, useState, useEffect } from "react";
 import Block from "../Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
+import { useEstafetasContext } from "../../providers/EstafetasProviders";
 
-function Oficinas({setActiveButton}) {
+function Oficinas({ setActiveButton }) {
     const [items, setItems] = useState([
         {
             id: 1,
@@ -152,6 +153,7 @@ function Oficinas({setActiveButton}) {
             direccion: "Calle Consultoría 2727, Ciudad AD",
         },
     ]);
+    const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredItems, setFilteredItems] = useState(items);
@@ -169,12 +171,10 @@ function Oficinas({setActiveButton}) {
             });
 
             const results = fuse.search(searchTerm);
-            setFilteredItems(results.map(result => result.item));
+            setFilteredItems(results.map((result) => result.item));
         }
         setItemOffset(0); // Reiniciar el offset al buscar
     }, [searchTerm, items]);
-
-
 
     const endOffset = itemOffset + itemsPerPage;
     const currentItems = filteredItems.slice(itemOffset, endOffset);
@@ -192,14 +192,17 @@ function Oficinas({setActiveButton}) {
                 <h2 className="text-xl font-bold text-[--primary]">
                     Todas las Estafetas
                 </h2>
-                <div className="searchinput relative">
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Buscar"
-                        className="border rounded-lg py-1 bg-[--gris] pl-9"
-                    />
+                <div className="flex gap-4">
+                    <button className="py2 px-5 text-[--primary] font-semibold border border-[--primary] rounded-lg" onClick={()=> setActiveEstafeta(2)}>Crear Nuevo</button>
+                    <div className="searchinput relative">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Buscar"
+                            className="border rounded-lg py-1 bg-[--gris] pl-9"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -210,7 +213,6 @@ function Oficinas({setActiveButton}) {
                         nombre={item.nombre}
                         address={item.direccion}
                         id={item.id}
-                        
                     />
                 ))
             ) : (

@@ -2,101 +2,120 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
-    --primary: #183EA0;
+:root {
+    --primary: #183ea0;
     --secondary: #e3e9f8;
-    --gris: #FAFBFF;
-    --gris2:rgb(212, 0, 0)F;
+    --gris: #fafbff;
+    --gris2: rgb(212, 0, 0) F;
 }
 
-.button-side.active{
+.button-side.active {
     background-color: white;
     color: var(--primary);
 }
 
-.button-side{
+.button-side {
     position: relative;
 }
-.button-side::after{
+.button-side::after {
     content: url(./assets/arrow.svg);
     position: absolute;
     right: 15px;
 }
 
-.buttontab.active{
-    color: #183EA0;
+.buttontab.active {
+    color: #183ea0;
     background-color: #ffffff;
 }
 
-.buttonedit::after{
+.buttonedit::after {
     content: url(./assets/Edit.png);
     position: absolute;
     right: -5px;
     bottom: 4px;
 }
 
-.searchinput::after{
+.searchinput::after {
     content: url(./assets/search.png);
     position: absolute;
     left: 7px;
     bottom: -2px;
-
 }
 
-.pagination{
+.pagination {
     display: flex;
     gap: 10px;
     padding: 20px;
     justify-content: end;
-    font-weight:bold;
+    font-weight: bold;
     color: var(--primary);
 }
-.pagebut{
+.pagebut {
     background-color: var(--gris);
     padding: 0px 8px;
     border-radius: 6px;
-
 }
-.pagebut:hover{
+.pagebut:hover {
     background-color: var(--primary);
     color: #ffffff;
 }
-.prevbut{
+.prevbut {
     background-color: var(--gris);
     padding: 0px 9px;
     font-weight: 900;
     border-radius: 6px;
-
-    
 }
-.prevbut:hover{
+.prevbut:hover {
     background-color: var(--primary);
     color: #ffffff;
 }
-.nextbut{
+.nextbut {
     background-color: var(--gris);
     padding: 0px 9px;
     font-weight: 900;
     border-radius: 6px;
-    
 }
-.nextbut:hover{
+.nextbut:hover {
     background-color: var(--primary);
     color: #ffffff;
 }
 
-.activelink{
+.activelink {
     background-color: var(--primary);
     color: #ffffff;
 }
-.activelink:hover{
+.activelink:hover {
     background-color: var(--gris);
     color: var(--primary);
 }
 
-.de::before{
-    content: "De:";
-    position: absolute;
-    left: -10px;
-    z-index: 2;
+/* toggle button */
+.toggleContainer {
+    width: 60px;
+    height: 35px;
+    border-radius: 30px;
+    outline: none;
+    border: none;
+    background: #ddd;
+    padding: 0 3px;
+    cursor: pointer;
+    transition: all 0.3s ease-in;
+}
+
+.toggleKnob {
+    width: 30px;
+    height: 30px;
+    background: #ffffff;
+    display: block;
+    border-radius: 50%;
+    line-height: 35px;
+    transition: all 0.1s ease-in;
+}
+
+.toggleKnob.isActive {
+    transform: translateX(24px);
+}
+
+.toggleContainer.isActive {
+    background: #76EE59;
 }

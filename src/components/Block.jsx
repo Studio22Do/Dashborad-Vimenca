@@ -11,7 +11,7 @@ function Block({ nombre, address, id }) {
             </div>
             <div className="flex gap-9 px-9">
                 <ButtonEdit id={id} />
-                <ButtonDelete id={id}/>
+                <ButtonDelete id={id} />
             </div>
         </div>
     );
