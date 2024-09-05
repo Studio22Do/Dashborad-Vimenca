@@ -39,7 +39,7 @@
     content: url(./assets/search.png);
     position: absolute;
     left: 7px;
-    bottom: -2px;
+    bottom: 2px;
 }
 
 .pagination {
