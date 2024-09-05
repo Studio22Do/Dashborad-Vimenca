@@ -2,8 +2,10 @@ import React, { useState, useContext } from "react";
 
 const EstafetasContext = React.createContext();
 const ItemsEstafetasContext = React.createContext();
+const OnEditEstafetaContext = React.createContext();
 
 function useEstafetasContext() {
+    console.log("se ejecuto la funcion ")
     return useContext(EstafetasContext);
 }
 
@@ -11,13 +13,20 @@ function useItemsEstafetasContext() {
     return useContext(ItemsEstafetasContext);
 }
 
+function useEditEstafeta() {
+    const context = useContext(OnEditEstafetaContext);
+    if (context === undefined) {
+        throw new Error('useEditEstafeta must be used within a OnEditEstafetaProvider');
+    }
+    return context;
+}
+
 function EstafetasProviders({ children }) {
     const [activeEstafeta, setActiveEstafeta] = useState(0);
-
     const [ItemsEstafetas, setItemsEstafetas] = useState([
         {
             id: 1,
-            nombre: "Oficina Central",
+            nombre: "ficina Central",
             direccion: "Avenida Principal 123, Ciudad A",
         },
         {
@@ -162,22 +171,17 @@ function EstafetasProviders({ children }) {
             direccion: "Calle Consultoría 2727, Ciudad AD",
         },
     ]);
+    const [editEstafeta, setEditEstafeta] = useState(null); // Estado para la estafeta en edición
 
     return (
-        <EstafetasContext.Provider
-            value={{ activeEstafeta, setActiveEstafeta }}
-        >
-            <ItemsEstafetasContext.Provider
-                value={{ ItemsEstafetas, setItemsEstafetas }}
-            >
-                {children}
+        <EstafetasContext.Provider value={{ activeEstafeta, setActiveEstafeta }}>
+            <ItemsEstafetasContext.Provider value={{ ItemsEstafetas, setItemsEstafetas }}>
+                <OnEditEstafetaContext.Provider value={{ editEstafeta, setEditEstafeta }}>
+                    {children}
+                </OnEditEstafetaContext.Provider>
             </ItemsEstafetasContext.Provider>
         </EstafetasContext.Provider>
     );
 }
 
-export {
-    EstafetasProviders,
-    useEstafetasContext,
-    useItemsEstafetasContext,
-};
+export { EstafetasProviders, useEstafetasContext, useItemsEstafetasContext, useEditEstafeta };
