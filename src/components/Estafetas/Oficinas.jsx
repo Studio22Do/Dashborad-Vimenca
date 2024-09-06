@@ -20,7 +20,11 @@ function Oficinas() {
             const fuse = new Fuse(ItemsEstafetas, { // Usar ItemsEstafetas
                 keys: ["nombre", "direccion"],
                 includeScore: true,
-                threshold: 0.3,
+                //includeMatches: true,
+                //minMatchCharLength: 6,
+                //location: 9,
+                ignoreLocation: true,
+                threshold: 0.9,
             });
 
             const results = fuse.search(searchTerm);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Clock from "../../assets/Clock.png";
 import Loc from "../../assets/location.png";
 import Phone from "../../assets/phone.png";
@@ -7,17 +7,85 @@ import Iconvimenpaq from "../../assets/iconvimenpaq.png";
 import Iconpagatodo from "../../assets/iconpagatodo.png";
 import Iconbancox from "../../assets/iconbancox.png";
 import ToggleButton from "../Botones/ToggleButton";
-import { useEstafetasContext } from "../../providers/EstafetasProviders";
+import { useEstafetasContext, useItemsEstafetasContext } from "../../providers/EstafetasProviders";
 
 function FormCard() {
-    const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
+    const { setActiveEstafeta } = useEstafetasContext();
+    const { addEstafeta } = useItemsEstafetasContext();
+
+    const [nombre, setNombre] = useState("");
+    const [direccion, setDireccion] = useState("");
+    const [provincia, setProvincia] = useState("");
+    const [latitud, setLatitud] = useState("");
+    const [longitud, setLongitud] = useState("");
+    const [lunesViernesDesde, setLunesViernesDesde] = useState("");
+    const [lunesViernesHasta, setLunesViernesHasta] = useState("");
+    const [sabadoDesde, setSabadoDesde] = useState("");
+    const [sabadoHasta, setSabadoHasta] = useState("");
+    const [domingoDesde, setDomingoDesde] = useState("");
+    const [domingoHasta, setDomingoHasta] = useState("");
+    const [telefono, setTelefono] = useState("");
+    const [agenteCambio, setAgenteCambio] = useState(false);
+    const [vimenpaq, setVimenpaq] = useState(false);
+    const [pagaTodo, setPagaTodo] = useState(false);
+    const [bancoVimenca, setBancoVimenca] = useState(false);
+    const [tipoOficina, setTipoOficina] = useState("");
+
+    const convertTo12HourFormat = (time) => {
+        let [hours, minutes] = time.split(':');
+        const period = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${hours}:${minutes}${period}`;
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const newEstafeta = {
+            id: Date.now(), // Generar un ID único
+            nombre,
+            direccion,
+            Provincia: provincia,
+            Latitud: latitud,
+            Longitud: longitud,
+            "Lunes - Viernes": `${convertTo12HourFormat(lunesViernesDesde)} - ${convertTo12HourFormat(lunesViernesHasta)}`,
+            Sábado: `${convertTo12HourFormat(sabadoDesde)} - ${convertTo12HourFormat(sabadoHasta)}`,
+            Domingo: `${convertTo12HourFormat(domingoDesde)} - ${convertTo12HourFormat(domingoHasta)}`,
+            Teléfono: telefono,
+            "Agente de Cambio": agenteCambio ? "SI" : "NO",
+            Vimenpaq: vimenpaq ? "SI" : "NO",
+            PagaTodo: pagaTodo ? "SI" : "NO",
+            "Banco Vimenca": bancoVimenca ? "SI" : "NO",
+            "Tipo de Oficina": tipoOficina,
+        };
+        console.log("newEstafeta: ", newEstafeta);
+        addEstafeta(newEstafeta);
+        setActiveEstafeta(0); // Volver a la vista principal
+    };
+
     return (
         <div className="flex justify-center">
-            <div className=" border p-16 rounded-2xl">
+            <div className="border p-16 rounded-2xl">
                 <h2 className="font-bold text-xl text-[--primary] text-center border-b mb-2">
-                    Informacion de la estafeta
+                    CREAR NUEVA OFICINA
                 </h2>
-                <div>
+                <form onSubmit={handleSubmit}>
+                    <div className="flex gap-2 items-end mb-4 p-1 w-full">
+                        <div className="w-7"></div>
+                        <div className="w-full">
+                            <h3 className="font-semibold">Nombre de la oficina</h3>
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500 w-full">
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        id=""
+                                        type="text"
+                                        value={nombre}
+                                        onChange={(e) => setNombre(e.target.value)}
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex gap-2 items-end mb-4 p-1">
                         <img
                             src={Clock}
@@ -34,6 +102,8 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="time"
+                                        value={lunesViernesDesde}
+                                        onChange={(e) => setLunesViernesDesde(e.target.value)}
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
@@ -42,6 +112,8 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="time"
+                                        value={lunesViernesHasta}
+                                        onChange={(e) => setLunesViernesHasta(e.target.value)}
                                     />
                                 </label>
                             </div>
@@ -59,6 +131,8 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="time"
+                                        value={sabadoDesde}
+                                        onChange={(e) => setSabadoDesde(e.target.value)}
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
@@ -67,6 +141,8 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="time"
+                                        value={sabadoHasta}
+                                        onChange={(e) => setSabadoHasta(e.target.value)}
                                     />
                                 </label>
                             </div>
@@ -84,6 +160,8 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="time"
+                                        value={domingoDesde}
+                                        onChange={(e) => setDomingoDesde(e.target.value)}
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
@@ -92,6 +170,8 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="time"
+                                        value={domingoHasta}
+                                        onChange={(e) => setDomingoHasta(e.target.value)}
                                     />
                                 </label>
                             </div>
@@ -112,6 +192,8 @@ function FormCard() {
                                         className="de text-black relative flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         id=""
                                         type="text"
+                                        value={direccion}
+                                        onChange={(e) => setDireccion(e.target.value)}
                                     />
                                 </label>
                             </div>
@@ -133,6 +215,8 @@ function FormCard() {
                                         id=""
                                         type="tel"
                                         placeholder="809-000-0000"
+                                        value={telefono}
+                                        onChange={(e) => setTelefono(e.target.value)}
                                     />
                                 </label>
                             </div>
@@ -142,19 +226,35 @@ function FormCard() {
                     <div className="flex flex-col gap-3 py-7 justify-center w-full ">
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
-                            <ToggleButton icon={"vimenca"} />
+                            <ToggleButton
+                                icon={"Agente de Cambio"}
+                                initialState={agenteCambio}
+                                onChange={(newState) => setAgenteCambio(newState === "SI")}
+                            />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenpaq} alt="" className="w-11" />
-                            <ToggleButton icon={"vimenpaq"} />
+                            <ToggleButton
+                                icon={"Vimenpaq"}
+                                initialState={vimenpaq}
+                                onChange={(newState) => setVimenpaq(newState === "SI")}
+                            />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconbancox} alt="" className="w-11" />
-                            <ToggleButton icon={"bancovimenca"} />
+                            <ToggleButton
+                                icon={"Banco Vimenca"}
+                                initialState={bancoVimenca}
+                                onChange={(newState) => setBancoVimenca(newState === "SI")}
+                            />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconpagatodo} alt="" className="w-11" />
-                            <ToggleButton icon={"pagatodo"} />
+                            <ToggleButton
+                                icon={"PagaTodo"}
+                                initialState={pagaTodo}
+                                onChange={(newState) => setPagaTodo(newState === "SI")}
+                            />
                         </div>
                     </div>
 
@@ -165,11 +265,14 @@ function FormCard() {
                         >
                             Atras
                         </button>
-                        <button className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]">
+                        <button
+                            type="submit"
+                            className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
+                        >
                             Guardar
                         </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     );
