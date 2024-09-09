@@ -7,17 +7,22 @@ import Iconvimenpaq from "../../assets/iconvimenpaq.png";
 import Iconpagatodo from "../../assets/iconpagatodo.png";
 import Iconbancox from "../../assets/iconbancox.png";
 import ToggleButton from "../Botones/ToggleButton";
+import Popup from "reactjs-popup";
 import {
     useEditEstafeta,
     useItemsEstafetasContext,
     useEstafetasContext,
 } from "../../providers/EstafetasProviders";
+import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
 function EditCard({ onSave }) {
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
     const { ItemsEstafetas, updateEstafeta } = useItemsEstafetasContext();
     const { setActiveEstafeta } = useEstafetasContext();
+    const { user, password } = useUserContext(); // Obtén el usuario y la contraseña
     const [ItemActual, setItemActual] = useState(null);
+    const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+    const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
 
     useEffect(() => {
         if (editEstafeta) {
@@ -72,9 +77,9 @@ function EditCard({ onSave }) {
     };
 
     const convertTo12HourFormat = (time) => {
-        let [hours, minutes] = time.split(':');
+        let [hours, minutes] = time.split(":");
         hours = parseInt(hours, 10);
-        const modifier = hours >= 12 ? 'PM' : 'AM';
+        const modifier = hours >= 12 ? "PM" : "AM";
         hours = hours % 12 || 12;
         return `${hours}:${minutes}${modifier}`;
     };
@@ -117,28 +122,47 @@ function EditCard({ onSave }) {
         }
     }, [ItemActual]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const updatedOficina = {
-            ...ItemActual,
-            nombre,
-            direccion,
-            Provincia: provincia,
-            Latitud: latitud,
-            Longitud: longitud,
-            "Lunes - Viernes": `${convertTo12HourFormat(lunesViernesDesde)} - ${convertTo12HourFormat(lunesViernesHasta)}`,
-            Sábado: `${convertTo12HourFormat(sabadoDesde)} - ${convertTo12HourFormat(sabadoHasta)}`,
-            Domingo: `${convertTo12HourFormat(domingoDesde)} - ${convertTo12HourFormat(domingoHasta)}`,
-            Teléfono: telefono,
-            "Agente de Cambio": agenteCambio ? "SI" : "NO",
-            Vimenpaq: vimenpaq ? "SI" : "NO",
-            PagaTodo: pagaTodo ? "SI" : "NO",
-            "Banco Vimenca": bancoVimenca ? "SI" : "NO",
-            "Tipo de Oficina": tipoOficina,
-        };
-        updateEstafeta(updatedOficina);
-        setActiveEstafeta(0);
-        onSave(updatedOficina);
+    const handleSaveClick = () => {
+        setShowConfirmPopup(true); // Muestra el popup de confirmación
+    };
+
+    const handleConfirmSave = () => {
+        if (inputPassword === password) {
+            // Compara la contraseña ingresada con la almacenada
+            setShowConfirmPopup(false);
+            const updatedOficina = {
+                ...ItemActual,
+                nombre, // Asegúrate de que este campo sea correcto
+                direccion,
+                Provincia: provincia,
+                Latitud: latitud,
+                Longitud: longitud,
+                "Lunes - Viernes": `${convertTo12HourFormat(
+                    lunesViernesDesde
+                )} - ${convertTo12HourFormat(lunesViernesHasta)}`,
+                Sábado: `${convertTo12HourFormat(
+                    sabadoDesde
+                )} - ${convertTo12HourFormat(sabadoHasta)}`,
+                Domingo: `${convertTo12HourFormat(
+                    domingoDesde
+                )} - ${convertTo12HourFormat(domingoHasta)}`,
+                Teléfono: telefono,
+                "Agente de Cambio": agenteCambio ? "SI" : "NO",
+                Vimenpaq: vimenpaq ? "SI" : "NO",
+                PagaTodo: pagaTodo ? "SI" : "NO",
+                "Banco Vimenca": bancoVimenca ? "SI" : "NO",
+                "Tipo de Oficina": tipoOficina,
+            };
+            updateEstafeta(updatedOficina);
+            setActiveEstafeta(0);
+            onSave(updatedOficina);
+        } else {
+            alert("Contraseña incorrecta"); // Mensaje de error
+        }
+    };
+
+    const handleCancelSave = () => {
+        setShowConfirmPopup(false);
     };
 
     const handleBack = () => {
@@ -155,6 +179,7 @@ function EditCard({ onSave }) {
                 <h2 className="font-bold text-xl text-[--primary] text-center border-b mb-2">
                     EDITAR OFICINA
                 </h2>
+
                 <h3 className="text-center text-gray-500 mb-4">{nombre}</h3>
                 <div>
                     <div className="flex gap-2 items-end mb-4 p-1 w-full">
@@ -167,9 +192,11 @@ function EditCard({ onSave }) {
                                 <label className="text-sm text-gray-500 w-full">
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="text"
                                         value={nombre}
+                                        name="nombreEstafeta"
+                                        id="nombreEstafeta"
+                                        autoComplete="off"
                                         onChange={(e) =>
                                             setNombre(e.target.value)
                                         }
@@ -181,7 +208,6 @@ function EditCard({ onSave }) {
                     <div className="flex gap-2 items-end mb-4 p-1">
                         <img
                             src={Clock}
-                            alt=""
                             style={{ backgroundSize: "cover" }}
                             title="Horario"
                         />
@@ -192,7 +218,6 @@ function EditCard({ onSave }) {
                                     Desde:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="time"
                                         value={lunesViernesDesde}
                                         onChange={(e) =>
@@ -204,7 +229,6 @@ function EditCard({ onSave }) {
                                     Hasta:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="time"
                                         value={lunesViernesHasta}
                                         onChange={(e) =>
@@ -224,7 +248,6 @@ function EditCard({ onSave }) {
                                     Desde:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="time"
                                         value={sabadoDesde}
                                         onChange={(e) =>
@@ -236,7 +259,6 @@ function EditCard({ onSave }) {
                                     Hasta:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="time"
                                         value={sabadoHasta}
                                         onChange={(e) =>
@@ -256,7 +278,6 @@ function EditCard({ onSave }) {
                                     Desde:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="time"
                                         value={domingoDesde}
                                         onChange={(e) =>
@@ -268,7 +289,6 @@ function EditCard({ onSave }) {
                                     Hasta:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="time"
                                         value={domingoHasta}
                                         onChange={(e) =>
@@ -282,7 +302,6 @@ function EditCard({ onSave }) {
                     <div className="flex items-center gap-3 p-1">
                         <img
                             src={Loc}
-                            alt=""
                             style={{ backgroundSize: "cover" }}
                             title="Direccion"
                         />
@@ -291,7 +310,6 @@ function EditCard({ onSave }) {
                                 <label className="text-sm w-full">
                                     <textarea
                                         className="de text-black relative flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="text"
                                         value={direccion}
                                         onChange={(e) =>
@@ -314,7 +332,6 @@ function EditCard({ onSave }) {
                                 <label className="text-sm w-full">
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        id=""
                                         type="tel"
                                         placeholder="809-000-0000"
                                         value={telefono}
@@ -369,11 +386,51 @@ function EditCard({ onSave }) {
                         </button>
                         <button
                             className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
-                            onClick={handleSubmit}
+                            onClick={handleSaveClick}
                         >
                             Guardar
                         </button>
                     </div>
+                    <Popup
+                        open={showConfirmPopup}
+                        onClose={handleCancelSave}
+                        modal
+                    >
+                        <div className="bg-white py-8 px-12 rounded-lg shadow-lg">
+                            <h2 className="font-bold text-xl text-center mb-4 text-[--primary]">
+                                Are you sure you want to continue?
+                            </h2>
+                            <label htmlFor="editCardPassword">
+                                Write your password
+                                <input
+                                    type="password"
+                                    id="editCardPassword" // Cambia el id a uno único
+                                    name="editCardPassword" // Agrega un nombre único
+                                    value={inputPassword}
+                                    onChange={(e) =>
+                                        setInputPassword(e.target.value)
+                                    } // Actualiza el estado
+                                    className="border rounded-md p-2 w-full"
+                                    placeholder="Your Password"
+                                    autoComplete="new-password" // Cambia a "new-password"
+                                />
+                            </label>
+                            <div className="flex justify-center gap-4 mt-4">
+                                <button
+                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
+                                    onClick={handleCancelSave}
+                                >
+                                    No, cancel
+                                </button>
+                                <button
+                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
+                                    onClick={handleConfirmSave}
+                                >
+                                    Yes, confirm
+                                </button>
+                            </div>
+                        </div>
+                    </Popup>
                 </div>
             </div>
         </div>
