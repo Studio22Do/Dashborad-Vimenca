@@ -12,6 +12,10 @@ function Estafetas() {
         setActiveEstafeta(index);
     };
 
+    const handleBack = () => {
+        setActiveEstafeta(0); // Regresa a la vista de Oficinas
+    };
+
     return (
         
             <div className="">
@@ -35,6 +39,9 @@ function Estafetas() {
                             Noticias
                         </button>
                     </div>
+                )}
+                {activeEstafeta === 3 && (
+                    <button onClick={handleBack} className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] ">Atras</button>
                 )}
 
                 <div>

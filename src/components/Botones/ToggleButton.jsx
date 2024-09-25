@@ -15,11 +15,10 @@ function ToggleButton({ icon, initialState, onChange }) {
 
     const handleClick = () => {
         setIsOn((prevState) => {
-            const newState = !prevState;
-            const newStateString = newState ? "SI" : "NO"; // Convertir a "SI" o "NO"
-            console.log(`estado en el boton ${icon} es: ${newStateString}`); // Muestra el estado actualizado
+            const newState = !prevState; // Cambiar el estado a su opuesto
+            console.log(`estado en el boton ${icon} es: ${newState}`); // Muestra el estado actualizado
             if (onChange) {
-                onChange(newStateString);
+                onChange(newState); // Pasar el nuevo estado booleano
             }
             return newState;
         });

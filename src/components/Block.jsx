@@ -1,5 +1,4 @@
 import React from "react";
-import ButtonDelete from "./Botones/ButtonDelete";
 import ButtonEdit from "./Botones/ButtonEdit";
 
 function Block({ nombre, address, id }) {
@@ -11,7 +10,7 @@ function Block({ nombre, address, id }) {
             </div>
             <div className="flex gap-9 px-9">
                 <ButtonEdit id={id} />
-                <ButtonDelete id={id} />
+                
             </div>
         </div>
     );

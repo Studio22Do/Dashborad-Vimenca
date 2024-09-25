@@ -3,9 +3,9 @@ import { Navigate } from "react-router-dom";
 import { useUserContext } from "../providers/UserProvider";
 
 const PrivateRoute = ({ children }) => {
-    const { user } = useUserContext(); // Obtén el usuario del contexto
+    const { token } = useUserContext();
 
-    return user ? children : <Navigate to="/" />; // Redirige a Login si no hay usuario
+    return token ? children : <Navigate to="/" />;
 };
 
 export default PrivateRoute; // Asegúrate de que esta línea esté presente

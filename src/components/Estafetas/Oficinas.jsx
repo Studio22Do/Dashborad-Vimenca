@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Block from "../Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
 import { useEstafetasContext, useItemsEstafetasContext } from "../../providers/EstafetasProviders";
 
-const Oficinas = React.memo(() => {
+const Oficinas = () => {
     const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
     const { ItemsEstafetas } = useItemsEstafetasContext(); 
 
@@ -12,6 +12,7 @@ const Oficinas = React.memo(() => {
     const itemsPerPage = 8;
     const [itemOffset, setItemOffset] = useState(0);
 
+    // Filtrado de elementos usando useMemo
     const filteredItems = useMemo(() => {
         if (searchTerm === "") {
             return ItemsEstafetas; // Mostrar todos los elementos si la búsqueda está vacía
@@ -25,16 +26,16 @@ const Oficinas = React.memo(() => {
             const results = fuse.search(searchTerm);
             return results.map((result) => result.item);
         }
-    }, [searchTerm, ItemsEstafetas]);
+    }, [searchTerm, ItemsEstafetas]); // Dependencias de useMemo
 
     const endOffset = itemOffset + itemsPerPage;
-    const currentItems = useMemo(() => filteredItems.slice(itemOffset, endOffset), [filteredItems, itemOffset, itemsPerPage]);
+    const currentItems = filteredItems.slice(itemOffset, endOffset);
     const pageCount = Math.ceil(filteredItems.length / itemsPerPage);
 
     const handlePageClick = useCallback((event) => {
         const newOffset = (event.selected * itemsPerPage) % filteredItems.length;
         setItemOffset(newOffset);
-    }, [filteredItems.length, itemsPerPage]);
+    }, [itemsPerPage, filteredItems.length]); // Actualiza las dependencias
 
     return (
         <div className="bg-white rounded-tr-2xl rounded-b-2xl">
@@ -65,8 +66,8 @@ const Oficinas = React.memo(() => {
             {currentItems.length > 0 ? (
                 currentItems.map((item) => (
                     <Block
-                        key={item.id}
-                        nombre={item.nombre}
+                        key={`${item.id}-${item.nombre_oficina}`} // Clave única combinando id y nombre
+                        nombre={item.nombre_oficina}
                         address={item.direccion}
                         id={item.id}
                     />
@@ -91,6 +92,6 @@ const Oficinas = React.memo(() => {
             />
         </div>
     );
-});
+};
 
 export default Oficinas;

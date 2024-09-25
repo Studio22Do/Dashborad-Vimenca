@@ -8,21 +8,26 @@ import Iconpagatodo from "../../assets/iconpagatodo.png";
 import Iconbancox from "../../assets/iconbancox.png";
 import ToggleButton from "../Botones/ToggleButton";
 import Popup from "reactjs-popup";
+import ButtonDelete from "../Botones/ButtonDelete";
+
 import {
     useEditEstafeta,
     useItemsEstafetasContext,
     useEstafetasContext,
+    getEstafetas, // Importa getEstafetas
 } from "../../providers/EstafetasProviders";
+
 import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
 function EditCard({ onSave }) {
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
-    const { ItemsEstafetas, updateEstafeta } = useItemsEstafetasContext();
+    const { ItemsEstafetas, updateEstafetaInDB, setItemsEstafetas } = useItemsEstafetasContext();
     const { setActiveEstafeta } = useEstafetasContext();
-    const { user, password } = useUserContext(); // Obtén el usuario y la contraseña
+    const { user, password, token } = useUserContext(); // Obtén el usuario, la contraseña y el token
     const [ItemActual, setItemActual] = useState(null);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
+    const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
     useEffect(() => {
         if (editEstafeta) {
@@ -32,7 +37,7 @@ function EditCard({ onSave }) {
             setItemActual(currentItem);
         }
     }, [editEstafeta, ItemsEstafetas]);
-
+    const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
     const [provincia, setProvincia] = useState("");
@@ -45,13 +50,17 @@ function EditCard({ onSave }) {
     const [domingoDesde, setDomingoDesde] = useState("");
     const [domingoHasta, setDomingoHasta] = useState("");
     const [telefono, setTelefono] = useState("");
-    const [agenteCambio, setAgenteCambio] = useState("");
-    const [vimenpaq, setVimenpaq] = useState("");
-    const [pagaTodo, setPagaTodo] = useState("");
-    const [bancoVimenca, setBancoVimenca] = useState("");
+    const [agenteCambio, setAgenteCambio] = useState(false); // Cambiado a booleano
+    const [vimenpaq, setVimenpaq] = useState(false); // Cambiado a booleano
+    const [pagaTodo, setPagaTodo] = useState(false); // Cambiado a booleano
+    const [bancoVimenca, setBancoVimenca] = useState(false); // Cambiado a booleano
     const [tipoOficina, setTipoOficina] = useState("");
 
     const convertTo24HourFormat = (time) => {
+        if (!time || typeof time !== "string") {
+            return "Formato de hora inválido"; // Manejo de caso donde time es undefined o no es una cadena
+        }
+
         let hours, minutes, modifier;
         if (time.length === 7) {
             // Formato "10:00PM"
@@ -86,39 +95,42 @@ function EditCard({ onSave }) {
 
     useEffect(() => {
         if (ItemActual) {
-            setNombre(ItemActual.nombre);
+            setId(ItemActual.id);
+            setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
-            setProvincia(ItemActual.Provincia);
-            setLatitud(ItemActual.Latitud);
-            setLongitud(ItemActual.Longitud);
-            setLunesViernesDesde(
-                convertTo24HourFormat(
-                    ItemActual["Lunes - Viernes"].split(" - ")[0]
-                )
-            );
-            setLunesViernesHasta(
-                convertTo24HourFormat(
-                    ItemActual["Lunes - Viernes"].split(" - ")[1]
-                )
-            );
-            setSabadoDesde(
-                convertTo24HourFormat(ItemActual.Sábado.split(" - ")[0])
-            );
-            setSabadoHasta(
-                convertTo24HourFormat(ItemActual.Sábado.split(" - ")[1])
-            );
-            setDomingoDesde(
-                convertTo24HourFormat(ItemActual.Domingo.split(" - ")[0])
-            );
-            setDomingoHasta(
-                convertTo24HourFormat(ItemActual.Domingo.split(" - ")[1])
-            );
-            setTelefono(ItemActual.Teléfono);
-            setAgenteCambio(ItemActual["Agente de Cambio"] === "SI");
-            setVimenpaq(ItemActual.Vimenpaq === "SI");
-            setPagaTodo(ItemActual.PagaTodo === "SI");
-            setBancoVimenca(ItemActual["Banco Vimenca"] === "SI");
-            setTipoOficina(ItemActual["Tipo de Oficina"]);
+            setProvincia(ItemActual.provincia);
+            setLatitud(ItemActual.latitud);
+            setLongitud(ItemActual.longitud);
+
+            // Manejo de horarios
+            const lunesViernes = ItemActual.lunes_viernes
+                ? ItemActual.lunes_viernes.split(" - ")
+                : ["", ""];
+            setLunesViernesDesde(convertTo24HourFormat(lunesViernes[0]));
+            setLunesViernesHasta(convertTo24HourFormat(lunesViernes[1]));
+
+            const sabado = ItemActual.sabado
+                ? ItemActual.sabado.split(" - ")
+                : ["", ""];
+            setSabadoDesde(convertTo24HourFormat(sabado[0]));
+            setSabadoHasta(convertTo24HourFormat(sabado[1]));
+
+            // Manejo del domingo
+            if (ItemActual.domingo === "NO LABORA") {
+                setDomingoDesde("");
+                setDomingoHasta("");
+            } else {
+                const domingo = ItemActual.domingo.split(" - ");
+                setDomingoDesde(convertTo24HourFormat(domingo[0]));
+                setDomingoHasta(convertTo24HourFormat(domingo[1]));
+            }
+
+            setTelefono(ItemActual.telefono);
+            setAgenteCambio(ItemActual.agente_de_cambio);
+            setVimenpaq(ItemActual.vimenpaq);
+            setPagaTodo(ItemActual.pagatodo);
+            setBancoVimenca(ItemActual.banco_vimenca);
+            setTipoOficina(ItemActual.tipo_oficina);
         }
     }, [ItemActual]);
 
@@ -126,38 +138,60 @@ function EditCard({ onSave }) {
         setShowConfirmPopup(true); // Muestra el popup de confirmación
     };
 
-    const handleConfirmSave = () => {
-        if (inputPassword === password) {
-            // Compara la contraseña ingresada con la almacenada
-            setShowConfirmPopup(false);
-            const updatedOficina = {
-                ...ItemActual,
-                nombre, // Asegúrate de que este campo sea correcto
-                direccion,
-                Provincia: provincia,
-                Latitud: latitud,
-                Longitud: longitud,
-                "Lunes - Viernes": `${convertTo12HourFormat(
-                    lunesViernesDesde
-                )} - ${convertTo12HourFormat(lunesViernesHasta)}`,
-                Sábado: `${convertTo12HourFormat(
-                    sabadoDesde
-                )} - ${convertTo12HourFormat(sabadoHasta)}`,
-                Domingo: `${convertTo12HourFormat(
-                    domingoDesde
-                )} - ${convertTo12HourFormat(domingoHasta)}`,
-                Teléfono: telefono,
-                "Agente de Cambio": agenteCambio ? "SI" : "NO",
-                Vimenpaq: vimenpaq ? "SI" : "NO",
-                PagaTodo: pagaTodo ? "SI" : "NO",
-                "Banco Vimenca": bancoVimenca ? "SI" : "NO",
-                "Tipo de Oficina": tipoOficina,
-            };
-            updateEstafeta(updatedOficina);
-            setActiveEstafeta(0);
-            onSave(updatedOficina);
-        } else {
-            alert("Contraseña incorrecta"); // Mensaje de error
+    const handleConfirmSave = async () => {
+        console.log("Contraseña ingresada:", inputPassword);
+        console.log("Contraseña almacenada:", password);
+
+        // Verifica la contraseña ingresada
+        if (inputPassword !== password) {
+            setErrorMessage("La contraseña es incorrecta."); // Establece el mensaje de error
+            console.log("Error: La contraseña es incorrecta.");
+            return; // Detiene la ejecución si la contraseña es incorrecta
+        }
+
+        // Validación de campos requeridos
+        if (!nombre || !direccion) {
+            setErrorMessage("Por favor, completa todos los campos requeridos."); // Mensaje de error
+            return; // Detiene la ejecución si hay campos vacíos
+        }
+
+        // Crea un objeto con los datos actualizados
+        const updatedOficina = {
+            id,
+            nombre_oficina: nombre,
+            direccion,
+            provincia,
+            latitud,
+            longitud,
+            lunes_viernes: `${convertTo12HourFormat(lunesViernesDesde)} - ${convertTo12HourFormat(lunesViernesHasta)}`,
+            sabado: `${convertTo12HourFormat(sabadoDesde)} - ${convertTo12HourFormat(sabadoHasta)}`,
+            domingo: domingoDesde ? `${convertTo12HourFormat(domingoDesde)} - ${convertTo12HourFormat(domingoHasta)}` : "NO LABORA",
+            telefono,
+            agente_de_cambio: agenteCambio,
+            vimenpaq,
+            pagatodo: pagaTodo,
+            banco_vimenca: bancoVimenca,
+            tipo_oficina: tipoOficina,
+        };
+
+        console.log("Datos a actualizar:", updatedOficina);
+
+        try {
+            // Llama a la función para actualizar la estafeta en la base de datos
+            const updatedData = await updateEstafetaInDB(id, updatedOficina, token);
+            console.log("Datos actualizados desde la API:", updatedData);
+
+            // Llama a la función que obtiene los datos de la API
+            getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento
+
+            // Actualiza el estado de la estafeta en edición
+            setEditEstafeta(null); // Cierra el modo de edición
+            setActiveEstafeta(0); // Cierra el modo de edición
+            setShowConfirmPopup(false); // Cierra el popup de confirmación
+            onSave(updatedData); // Llama a onSave con los datos actualizados
+        } catch (error) {
+            setErrorMessage("Error al guardar los cambios."); // Manejo de errores
+            console.error("Error al guardar los cambios:", error);
         }
     };
 
@@ -170,7 +204,7 @@ function EditCard({ onSave }) {
     };
 
     const handleToggleChange = (setter) => (newState) => {
-        setter(newState === "SI");
+        setter(newState);
     };
 
     return (
@@ -349,7 +383,7 @@ function EditCard({ onSave }) {
                             <ToggleButton
                                 icon={"Agente de Cambio"}
                                 initialState={agenteCambio}
-                                onChange={handleToggleChange(setAgenteCambio)}
+                                onChange={setAgenteCambio}
                             />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
@@ -357,7 +391,7 @@ function EditCard({ onSave }) {
                             <ToggleButton
                                 icon={"vimenpaq"}
                                 initialState={vimenpaq}
-                                onChange={handleToggleChange(setVimenpaq)}
+                                onChange={setVimenpaq}
                             />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
@@ -365,7 +399,7 @@ function EditCard({ onSave }) {
                             <ToggleButton
                                 icon={"bancovimenca"}
                                 initialState={bancoVimenca}
-                                onChange={handleToggleChange(setBancoVimenca)}
+                                onChange={setBancoVimenca}
                             />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
@@ -373,17 +407,13 @@ function EditCard({ onSave }) {
                             <ToggleButton
                                 icon={"pagatodo"}
                                 initialState={pagaTodo}
-                                onChange={handleToggleChange(setPagaTodo)}
+                                onChange={setPagaTodo}
                             />
                         </div>
                     </div>
                     <div className="flex gap-4 justify-center">
-                        <button
-                            className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
-                            onClick={handleBack}
-                        >
-                            Atras
-                        </button>
+                        <ButtonDelete id={id} />
+
                         <button
                             className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
                             onClick={handleSaveClick}
@@ -412,7 +442,7 @@ function EditCard({ onSave }) {
                                     } // Actualiza el estado
                                     className="border rounded-md p-2 w-full"
                                     placeholder="Your Password"
-                                    autoComplete="new-password" // Cambia a "new-password"
+                                    autoComplete="off" // Cambia a "new-password"
                                 />
                             </label>
                             <div className="flex justify-center gap-4 mt-4">
@@ -431,6 +461,7 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </Popup>
+                    {errorMessage && <p className="text-red-500">{errorMessage}</p>} {/* Muestra el mensaje de error */}
                 </div>
             </div>
         </div>

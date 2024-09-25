@@ -1,0 +1,118 @@
+Documentación de la API
+Esta documentación proporciona una guía completa sobre los endpoints disponibles en la API, así como los parámetros necesarios y los cuerpos de solicitud. Esta API está construida con Flask y utiliza JWT para la autenticación.
+Configuración Inicial
+Antes de comenzar a usar la API, asegúrate de que tu entorno esté configurado correctamente:
+Base de datos: PostgreSQL
+Dependencias: Flask, Flask-SQLAlchemy, Flask-JWT-Extended, Marshmallow, Flasgger, Flask-CORS, Flask-Migrate.
+Endpoints de la API
+1. Registro de Usuario
+Método: POST
+Endpoint: /register
+Cuerpo de Solicitud
+json
+{
+  "email": "usuario@example.com",
+  "password": "tu_contraseña"
+}
+
+Respuestas
+201: Usuario creado correctamente.
+400: El correo ya está registrado.
+2. Crear Sucursal
+Método: POST
+Endpoint: /sucursales/
+Cuerpo de Solicitud
+json
+{
+  "nombre_oficina": "Nombre de la Oficina",
+  "direccion": "Dirección de la sucursal",
+  "provincia": "Provincia",
+  "latitud": 12.3456,
+  "longitud": -12.3456,
+  "lunes_viernes": "09:00 - 17:00",
+  "sabado": "10:00 - 14:00",
+  "domingo": "Cerrado",
+  "telefono": "+123456789",
+  "agente_de_cambio": true,
+  "vimenpaq": false,
+  "pagatodo": true,
+  "banco_vimenca": false,
+  "tipo_oficina": "Tipo"
+}
+
+Respuestas
+201: Sucursal creada correctamente.
+400: Error en la solicitud.
+3. Obtener Todas las Sucursales
+Método: GET
+Endpoint: /sucursales/
+Respuestas
+200: Lista de sucursales.
+4. Obtener Sucursal por ID
+Método: GET
+Endpoint: /sucursales/<int:sucursal_id>
+Parámetros de Ruta
+sucursal_id: ID de la sucursal a recuperar.
+Respuestas
+200: Sucursal encontrada.
+404: Sucursal no encontrada.
+5. Actualizar Sucursal por ID
+Método: PUT
+Endpoint: /sucursales/<int:sucursal_id>
+Parámetros de Ruta
+sucursal_id: ID de la sucursal a actualizar.
+Cuerpo de Solicitud
+json
+{
+  "nombre_oficina": "Nuevo Nombre",
+  "direccion": "Nueva Dirección",
+  // Otros campos opcionales...
+}
+
+Respuestas
+200: Sucursal actualizada correctamente.
+404: Sucursal no encontrada.
+6. Eliminar Sucursal por ID
+Método: DELETE
+Endpoint: /sucursales/<int:sucursal_id>
+Parámetros de Ruta
+sucursal_id: ID de la sucursal a eliminar.
+Respuestas
+200: Sucursal eliminada correctamente.
+404: Sucursal no encontrada.
+7. Inicio de Sesión del Usuario
+Método: POST
+Endpoint: /login
+Cuerpo de Solicitud
+json
+{
+  "useremail": "usuario@example.com",
+  "password": "tu_contraseña"
+}
+
+Respuestas
+200: Token de acceso generado.
+401: Credenciales inválidas.
+Definiciones del Modelo para Swagger
+Sucursal
+json
+{
+    "type": "object",
+    "properties": {
+        "nombre_oficina": {"type": "string"},
+        "direccion": {"type": "string"},
+        "provincia": {"type": "string"},
+        "latitud": {"type": "number"},
+        "longitud": {"type": "number"},
+        "lunes_viernes": {"type": "string"},
+        "sabado": {"type": "string"},
+        "domingo": {"type": "string"},
+        "telefono": {"type": "string"},
+        "agente_de_cambio": {"type": "boolean"},
+        "vimenpaq": {"type": "boolean"},
+        "pagatodo": {"type": "boolean"},
+        "banco_vimenca": {"type": "boolean"},
+        "tipo_oficina": {"type": "string"}
+    }
+}
+

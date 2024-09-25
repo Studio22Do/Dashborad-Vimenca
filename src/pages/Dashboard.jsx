@@ -11,13 +11,12 @@ function Dashboard() {
     const handleButtonClick = (index) => {
         setActiveButton(index);
     };
-    let nombre = "John";
 
     return (
         <EstafetasProviders>
             <div className="flex">
                 <div
-                    className="flex flex-col w-2/12 px-12 py-24 items-center"
+                    className="flex flex-col w-2/12 h-lvh px-12 py-24 items-center sticky top-0"
                     style={{
                         backgroundImage: `url(${sidebar})`,
                         backgroundSize: "cover",
@@ -53,11 +52,6 @@ function Dashboard() {
                 </div>
 
                 <div className="w-10/12 min-h-lvh px-20 py-20 bg-[--gris]">
-                    <div className="mb-8">
-                        <h2 className="text-xl font-semibold">
-                            Hola {nombre} 👋
-                        </h2>
-                    </div>
                     {activeButton === 0 && <Sucursales />}
                     {activeButton === 1 && <Subagente />}
                     {activeButton === 2 && <Estafetas />}
