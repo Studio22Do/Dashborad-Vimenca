@@ -112,8 +112,18 @@ function EstafetasProviders({ children }) {
             });
     };
 
-    const addEstafeta = (newEstafeta) => {
-        setItemsEstafetas((prevItems) => [...prevItems, newEstafeta]);
+    const addEstafeta = async (newEstafeta) => {
+        try {
+            const response = await axios.post(`${serverUrl}/sucursales/`, newEstafeta, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setItemsEstafetas((prevItems) => [...prevItems, response.data]); // Agrega la nueva estafeta a la lista
+            console.log("Estafeta agregada:", response.data);
+        } catch (error) {
+            console.error("Error adding estafeta:", error.response ? error.response.data : error.message);
+        }
     };
 
     const deleteEstafeta = (id, token) => {
@@ -165,7 +175,7 @@ function EstafetasProviders({ children }) {
                     ItemsEstafetas,
                     setItemsEstafetas,
                     updateEstafetaInDB,
-                    addEstafeta,
+                    addEstafeta, // Asegúrate de que esta línea esté aquí
                     deleteEstafeta,
                 }}
             >

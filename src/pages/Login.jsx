@@ -9,6 +9,7 @@ import vimenpaq from "../assets/vimenpaq.png";
 import Datavimenca from "../assets/Data-vimenca.png";
 import pagatodo from "../assets/pagatodo.png";
 
+
 function Login() {
     const { login, token } = useUserContext(); // No es necesario obtener setToken aquí
     const [email, setEmail] = React.useState("");
@@ -16,12 +17,14 @@ function Login() {
     const [isSubmitting, setIsSubmitting] = React.useState(false); // Estado para controlar el botón
     const navigate = useNavigate(); // Inicializa useNavigate
 
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true); // Desactiva el botón al enviar
         const success = await login(email, password); // Llama a la función de login
         console.log("estos son los datos enviados: ", email, password);
-        
+
         if (success) {
             console.log("Inicio de sesión exitoso");
             // Aquí no redirigimos inmediatamente, ya que el useEffect se encargará de eso
@@ -95,7 +98,6 @@ function Login() {
                                 type="submit"
                                 className="text-white bg-[--primary] border py-2 px-16 rounded-full w-10/12 m-auto"
                                 disabled={isSubmitting} // Desactiva el botón si está enviando
-
                             >
                                 Iniciar Sesión
                             </button>

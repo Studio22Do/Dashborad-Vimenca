@@ -2,7 +2,7 @@ import { React, useState } from "react";
 import sidebar from "../assets/side-sm.png";
 import Logo from "../assets/Logo-blanco.png";
 import Estafetas from "../components/Estafetas";
-import Subagente from "../components/Subagente";
+import Representantes from "../components/Representantes";
 import Sucursales from "../components/Sucursales";
 import { EstafetasProviders } from "../providers/EstafetasProviders";
 
@@ -38,7 +38,7 @@ function Dashboard() {
                             } button-side`}
                             onClick={() => handleButtonClick(1)}
                         >
-                            Sub Agente
+                            Representantes
                         </button>
                         <button
                             className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
@@ -53,7 +53,7 @@ function Dashboard() {
 
                 <div className="w-10/12 min-h-lvh px-20 py-20 bg-[--gris]">
                     {activeButton === 0 && <Sucursales />}
-                    {activeButton === 1 && <Subagente />}
+                    {activeButton === 1 && <Representantes />}
                     {activeButton === 2 && <Estafetas />}
                 </div>
             </div>

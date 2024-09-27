@@ -62,23 +62,26 @@ function EditCard({ onSave }) {
         }
 
         let hours, minutes, modifier;
-        if (time.length === 7) {
-            // Formato "10:00PM"
-            hours = parseInt(time.substr(0, 2), 10);
-            minutes = time.substr(3, 2);
-            modifier = time.substr(5);
-        } else if (time.length === 6) {
-            // Formato "1:00PM"
-            hours = parseInt(time.substr(0, 1), 10);
-            minutes = time.substr(2, 2);
-            modifier = time.substr(4);
-        } else {
+        const timeParts = time.toLowerCase().split(' ');
+        
+        if (timeParts.length !== 2) {
             return "Formato de hora inválido";
         }
 
-        if (modifier.toUpperCase() === "PM" && hours !== 12) {
+        const [timePart, modifierPart] = timeParts;
+        const [hoursPart, minutesPart] = timePart.split(':');
+
+        hours = parseInt(hoursPart, 10);
+        minutes = minutesPart;
+        modifier = modifierPart;
+
+        if (isNaN(hours) || minutes.length !== 2) {
+            return "Formato de hora inválido";
+        }
+
+        if (modifier === "pm" && hours !== 12) {
             hours += 12;
-        } else if (modifier.toUpperCase() === "AM" && hours === 12) {
+        } else if (modifier === "am" && hours === 12) {
             hours = 0;
         }
 
@@ -88,9 +91,9 @@ function EditCard({ onSave }) {
     const convertTo12HourFormat = (time) => {
         let [hours, minutes] = time.split(":");
         hours = parseInt(hours, 10);
-        const modifier = hours >= 12 ? "PM" : "AM";
+        const modifier = hours >= 12 ? "pm" : "am";
         hours = hours % 12 || 12;
-        return `${hours}:${minutes}${modifier}`;
+        return `${hours}:${minutes} ${modifier}`;
     };
 
     useEffect(() => {
@@ -130,7 +133,7 @@ function EditCard({ onSave }) {
             setVimenpaq(ItemActual.vimenpaq);
             setPagaTodo(ItemActual.pagatodo);
             setBancoVimenca(ItemActual.banco_vimenca);
-            setTipoOficina(ItemActual.tipo_oficina);
+            setTipoOficina(ItemActual.tipo_de_oficina);
         }
     }, [ItemActual]);
 
@@ -211,7 +214,7 @@ function EditCard({ onSave }) {
         <div className="flex justify-center">
             <div className="border p-16 rounded-2xl">
                 <h2 className="font-bold text-xl text-[--primary] text-center border-b mb-2">
-                    EDITAR OFICINA
+                    EDITAR OFICINA - {tipoOficina}
                 </h2>
 
                 <h3 className="text-center text-gray-500 mb-4">{nombre}</h3>
@@ -279,7 +282,7 @@ function EditCard({ onSave }) {
                             <h3 className="font-semibold">Sábados</h3>
                             <div className="flex gap-8 mt-1">
                                 <label className="text-sm text-gray-500">
-                                    Desde:
+                                    Desde: {sabadoDesde}
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
@@ -290,7 +293,7 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
-                                    Hasta:
+                                    Hasta: {sabadoHasta}
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
