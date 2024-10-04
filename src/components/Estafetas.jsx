@@ -41,8 +41,8 @@ function Estafetas() {
                         </button>
                     </div>
                 )}
-                {activeEstafeta === 3 && (
-                    <button onClick={handleBack} className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] ">Atras</button>
+                {(activeEstafeta === 3 || activeEstafeta === 2) && (
+                    <button onClick={handleBack} className="py-2 mb-4 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] ">Atras</button>
                 )}
 
                 <div>

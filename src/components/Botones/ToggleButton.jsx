@@ -6,29 +6,27 @@ function ToggleKnob({ isOn }) {
     );
 }
 
-function ToggleButton({ icon, initialState, onChange }) {
-    const [isOn, setIsOn] = useState(initialState);
+function ToggleButton({ icon, state, setState }) {
+    const [isOn, setIsOn] = useState(state === "SI");
 
     useEffect(() => {
-        setIsOn(initialState);
-    }, [initialState]);
+        setIsOn(state === "SI");
+    }, [state]);
 
     const handleClick = () => {
-        setIsOn((prevState) => {
-            const newState = !prevState; // Cambiar el estado a su opuesto
-            console.log(`estado en el boton ${icon} es: ${newState}`); // Muestra el estado actualizado
-            if (onChange) {
-                onChange(newState); // Pasar el nuevo estado booleano
-            }
-            return newState;
-        });
+        const newState = !isOn; // Cambia el estado a su opuesto
+        console.log(`estado en el boton ${icon} es: ${newState}`); // Muestra el estado actualizado
+        setIsOn(newState); // Actualiza el estado local
+        if (setState) {
+            setState(newState); // Actualiza el estado en el componente padre
+        }
     };
 
     return (
         <div>
             <button
                 type="button" // Asegúrate de que el botón no envíe el formulario
-                className={`toggleContainer ${isOn ? "isActive" : ""}`}
+                className={`toggleContainer ${isOn ? "isActive" : ""}`} // Asegúrate de que estas clases estén definidas
                 onClick={handleClick}
             >
                 <ToggleKnob isOn={isOn} />

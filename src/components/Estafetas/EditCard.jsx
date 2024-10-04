@@ -9,6 +9,7 @@ import Iconbancox from "../../assets/iconbancox.png";
 import ToggleButton from "../Botones/ToggleButton";
 import Popup from "reactjs-popup";
 import ButtonDelete from "../Botones/ButtonDelete";
+import Mapa from "../Mapa";
 
 import {
     useEditEstafeta,
@@ -41,8 +42,8 @@ function EditCard({ onSave }) {
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
     const [provincia, setProvincia] = useState("");
-    const [latitud, setLatitud] = useState("");
-    const [longitud, setLongitud] = useState("");
+    const [latitud, setLatitud] = useState(null);
+    const [longitud, setLongitud] = useState(null);
     const [lunesViernesDesde, setLunesViernesDesde] = useState("");
     const [lunesViernesHasta, setLunesViernesHasta] = useState("");
     const [sabadoDesde, setSabadoDesde] = useState("");
@@ -54,6 +55,7 @@ function EditCard({ onSave }) {
     const [vimenpaq, setVimenpaq] = useState(false); // Cambiado a booleano
     const [pagaTodo, setPagaTodo] = useState(false); // Cambiado a booleano
     const [bancoVimenca, setBancoVimenca] = useState(false); // Cambiado a booleano
+    const [remesas, setRemesas] = useState(false); // Cambiado a booleano
     const [tipoOficina, setTipoOficina] = useState("");
 
     const convertTo24HourFormat = (time) => {
@@ -93,7 +95,7 @@ function EditCard({ onSave }) {
         hours = parseInt(hours, 10);
         const modifier = hours >= 12 ? "pm" : "am";
         hours = hours % 12 || 12;
-        return `${hours}:${minutes} ${modifier}`;
+        return `${hours}:${minutes}${modifier}`;
     };
 
     useEffect(() => {
@@ -133,6 +135,7 @@ function EditCard({ onSave }) {
             setVimenpaq(ItemActual.vimenpaq);
             setPagaTodo(ItemActual.pagatodo);
             setBancoVimenca(ItemActual.banco_vimenca);
+            setRemesas(ItemActual.remesas);
             setTipoOficina(ItemActual.tipo_de_oficina);
         }
     }, [ItemActual]);
@@ -380,37 +383,41 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </div>
+                    <div className="flex text-xs gap-3 text-center justify-center py-2 text-gray-400 w-full">
+                        <p>Lat: {latitud}</p>
+                        <p>Long: {longitud}</p>
+                    </div>
                     <div className="flex flex-col gap-3 py-7 justify-center w-full">
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"Agente de Cambio"}
-                                initialState={agenteCambio}
-                                onChange={setAgenteCambio}
+                                setState={setRemesas}
+                                state={remesas}
                             />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenpaq} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"vimenpaq"}
-                                initialState={vimenpaq}
-                                onChange={setVimenpaq}
+                                setState={setVimenpaq}
+                                state={vimenpaq}
                             />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconbancox} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"bancovimenca"}
-                                initialState={bancoVimenca}
-                                onChange={setBancoVimenca}
+                                setState={setBancoVimenca}
+                                state={bancoVimenca}
                             />
                         </div>
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconpagatodo} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"pagatodo"}
-                                initialState={pagaTodo}
-                                onChange={setPagaTodo}
+                                setState={setPagaTodo}
+                                state={pagaTodo}
                             />
                         </div>
                     </div>
@@ -464,8 +471,11 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </Popup>
-                    {errorMessage && <p className="text-red-500">{errorMessage}</p>} {/* Muestra el mensaje de error */}
+                    {errorMessage && <p className="text-red-500 text-center py-1">{errorMessage}</p>} {/* Muestra el mensaje de error */}
                 </div>
+            </div>
+            <div className="w-full h-96"> {/* Asegúrate de que el contenedor tenga un tamaño definido */}
+                <Mapa setLatitud={setLatitud} setLongitud={setLongitud} latitud={latitud} longitud={longitud}/>
             </div>
         </div>
     );
