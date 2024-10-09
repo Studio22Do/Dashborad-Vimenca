@@ -109,29 +109,30 @@ function EditCard({ onSave }) {
             setLongitud(ItemActual.longitud || 0); // Asegúrate de que no sea null
 
             // Manejo de horarios
-            const lunesViernes = ItemActual.lunes_viernes
-                ? ItemActual.lunes_viernes.split(" - ")
+            const lunesViernes = ItemActual.a_lunes_viernes
+                ? ItemActual.a_lunes_viernes.split(" - ")
                 : ["", ""];
             setLunesViernesDesde(convertTo24HourFormat(lunesViernes[0]));
             setLunesViernesHasta(convertTo24HourFormat(lunesViernes[1]));
 
-            const sabado = ItemActual.sabado
-                ? ItemActual.sabado.split(" - ")
+            const sabado = ItemActual.a_sabado
+                ? ItemActual.a_sabado.split(" - ")
                 : ["", ""];
             setSabadoDesde(convertTo24HourFormat(sabado[0]));
             setSabadoHasta(convertTo24HourFormat(sabado[1]));
 
             // Manejo del domingo
-            if (ItemActual.domingo === "NO LABORA") {
+            if (ItemActual.a_domingo === "NO LABORA") {
                 setDomingoDesde("");
                 setDomingoHasta("");
             } else {
-                const domingo = ItemActual.domingo.split(" - ");
+                const domingo = ItemActual.a_domingo.split(" - ");
                 setDomingoDesde(convertTo24HourFormat(domingo[0]));
                 setDomingoHasta(convertTo24HourFormat(domingo[1]));
             }
 
             setTelefono(ItemActual.telefono);
+
             setAgenteCambio(ItemActual.agente_de_cambio);
             setVimenpaq(ItemActual.vimenpaq);
             setPagaTodo(ItemActual.pagatodo);
@@ -170,9 +171,9 @@ function EditCard({ onSave }) {
             provincia,
             latitud,
             longitud,
-            lunes_viernes: `${convertTo12HourFormat(lunesViernesDesde)} - ${convertTo12HourFormat(lunesViernesHasta)}`,
-            sabado: `${convertTo12HourFormat(sabadoDesde)} - ${convertTo12HourFormat(sabadoHasta)}`,
-            domingo: domingoDesde ? `${convertTo12HourFormat(domingoDesde)} - ${convertTo12HourFormat(domingoHasta)}` : "NO LABORA",
+            a_lunes_viernes: `${convertTo12HourFormat(lunesViernesDesde)} - ${convertTo12HourFormat(lunesViernesHasta)}`,
+            a_sabado: `${convertTo12HourFormat(sabadoDesde)} - ${convertTo12HourFormat(sabadoHasta)}`,
+            a_domingo: domingoDesde ? `${convertTo12HourFormat(domingoDesde)} - ${convertTo12HourFormat(domingoHasta)}` : "NO LABORA",
             telefono,
             agente_de_cambio: agenteCambio,
             vimenpaq,
