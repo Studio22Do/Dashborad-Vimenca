@@ -16,8 +16,7 @@ function Login() {
     const [password, setPassword] = React.useState("");
     const [isSubmitting, setIsSubmitting] = React.useState(false); // Estado para controlar el botón
     const navigate = useNavigate(); // Inicializa useNavigate
-
-    
+    const [hasRedirected, setHasRedirected] = React.useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,11 +34,12 @@ function Login() {
     };
 
     useEffect(() => {
-        if (token) {
+        if (token && !hasRedirected) {
             console.log("Redirigiendo a Dashboard...");
-            navigate("/Dashboard"); // Redirige al Dashboard solo si el token está presente
+            navigate("/Dashboard");
+            setHasRedirected(true); // Marca que ya se ha redirigido
         }
-    }, [token, navigate]); // Dependencias: token y navigate
+    }, [token, hasRedirected]); // Asegúrate de que dependa de 'token' y 'hasRedirected'
 
     return (
         <form onSubmit={handleSubmit}>

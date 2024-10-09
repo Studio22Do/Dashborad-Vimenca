@@ -22,7 +22,7 @@ export function UserProvider({ children }) {
             const newToken = response.data.access_token; // Accede directamente al token
             console.log("este es el token: ", newToken);
             setPassword(password);
-            if (newToken) {
+            if (newToken && newToken !== token) { // Solo establece el token si es diferente
                 setToken(newToken); // Guarda el token
                 console.log("este es el token después de setear: ", newToken);
             }

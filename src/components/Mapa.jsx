@@ -1,53 +1,64 @@
-import React, { useEffect, useState } from "react"; // Importa useState
-import { Loader } from "@googlemaps/js-api-loader";
-
-const loader = new Loader({
-    apiKey: import.meta.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-    version: "weekly",
-});
-
-let map; // Declaración de la variable map
-
-async function initMap(setLatitud, setLongitud, latitud, longitud) { // Agrega parámetros para las funciones de estado
-    const { Map } = await google.maps.importLibrary("maps");
-    map = new Map(document.getElementById("map"), {
-        center: { lat: latitud || 18.4821577, lng: longitud || -69.934822 },
-        zoom: 13,
-    });
-
-    // Asegúrate de que latitud y longitud sean números válidos
-    const initialLat = typeof latitud === 'number' ? latitud : 18.4821577;
-    const initialLng = typeof longitud === 'number' ? longitud : -69.934822;
-
-    // Agregar un marcador en la ubicación proveniente de las props
-    const marker = new google.maps.Marker({
-        position: { lat: initialLat, lng: initialLng }, // Usar latitud y longitud de las props
-        map: map,
-        title: "Ubicación seleccionada", // Título del marcador
-    });
-
-    // Agregar un listener para el evento de clic en el mapa
-    map.addListener("click", (event) => {
-        const latitud = event.latLng.lat(); // Obtener latitud
-        const longitud = event.latLng.lng(); // Obtener longitud
-        console.log(`Latitud: ${latitud}, Longitud: ${longitud}`); // Mostrar en consola
-        setLatitud(latitud); // Actualizar el estado de latitud
-        setLongitud(longitud); // Actualizar el estado de longitud
-
-        // Mover el marcador a la nueva ubicación
-        marker.setPosition({ lat: latitud, lng: longitud });
-    });
-}
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+    APIProvider,
+    Map,
+    AdvancedMarker,
+    useMap,
+    Pin,
+} from "@vis.gl/react-google-maps";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
-    useEffect(() => {
-        loader.load().then(() => initMap(setLatitud, setLongitud, latitud, longitud)); // Pasa las funciones de estado a initMap
-    }, []); // Solo se ejecuta una vez al montar el componente
+    const apiKey = import.meta.env.VITE_SERVER_URL; // Asegúrate de que esta variable esté definida correctamente
+    const mapId = "YOUR_MAP_ID"; // Verifica que este ID sea válido
+
+    // Asegúrate de que las coordenadas sean números válidos
+    const validLat = typeof latitud === "number" ? latitud : -33.860664;
+    const validLng = typeof longitud === "number" ? longitud : 151.208138;
+
+    const handleApiLoad = () => {
+        console.log("Maps API has loaded");
+    };
+
+    const handleApiError = () => {
+        console.error("Error al cargar la API de Google Maps.");
+        alert(
+            "No se pudo cargar el mapa. Por favor verifica tu conexión a Internet o la clave de API."
+        );
+    };
 
     return (
-        <div className="w-full h-full">
-            <div id="map" className="w-full h-full" /> {/* Asegúrate de que este div esté presente */}
-        </div>
+        <APIProvider
+            apiKey={apiKey}
+            onLoad={handleApiLoad}
+            onError={handleApiError}
+        >
+            <Map
+                defaultZoom={13}
+                defaultCenter={{
+                    lat: validLat,
+                    lng: validLng,
+                }}
+                mapId={mapId}
+                options={{
+                    draggable: true,
+                }}
+            >
+                <AdvancedMarker
+                    position={{ lat: validLat, lng: validLng }}
+                    clickable={true}
+                    onClick={() => console.log("Marcador principal clicado")}
+                >
+                    <Pin
+                        background={"#4285F4"}
+                        glyphColor={"#FFF"}
+                        borderColor={"#000"}
+                    />
+                </AdvancedMarker>
+            </Map>
+            <h2>Latitud: {validLat}</h2>
+            <h2>Longitud: {validLng}</h2>
+        </APIProvider>
     );
 }
 

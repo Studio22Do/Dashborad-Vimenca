@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useUserContext } from "./UserProvider";
 const EstafetasContext = React.createContext();
@@ -7,45 +7,14 @@ const OnEditEstafetaContext = React.createContext();
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-let data = [];
-/* [
-        {
-            "id": 1,
-            "nombre": "VIMENCA - OFICINA PRINCIPAL",
-            "direccion": "Avenida Abraham Lincoln No. 306",
-            "Provincia": "Santo Domingo",
-            "Latitud": 18.461822,
-            "Longitud": -69.928519,
-            "Lunes - Viernes": "07:30AM - 11:00PM",
-            "Sábado": "08:00AM - 11:00PM",
-            "Domingo": "08:00AM - 12:00PM",
-            "Teléfono": "(809) 532-7381",
-            "Agente de Cambio": "NO",
-            "Vimenpaq": "SI",
-            "PagaTodo": "NO",
-            "Banco Vimenca": "NO",
-            "Tipo de Oficina": "Sucursal"
+const getEstafetas = async (token) => {
+    const response = await axios.get(`${serverUrl}/sucursales/`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
         },
-        {
-            "id": 2,
-            "nombre": "VIMENCA - OFICINA SANTO DOMINGO ESTE",
-            "direccion": "Avenida San Vicente de Paúl No. 100",
-            "Provincia": "Santo Domingo",
-            "Latitud": 18.500000,
-            "Longitud": -69.900000,
-            "Lunes - Viernes": "07:30AM - 10:00PM",
-            "Sábado": "08:00AM - 10:00PM",
-            "Domingo": "08:00AM - 10:00PM",
-            "Teléfono": "(809) 123-4567",
-            "Agente de Cambio": "SI",
-            "Vimenpaq": "NO",
-            "PagaTodo": "SI",
-            "Banco Vimenca": "SI",
-            "Tipo de Oficina": "Sucursal"
-        },
-        
-        
-    ] */
+    });
+    return response.data;
+};
 
 function useEstafetasContext() {
     return useContext(EstafetasContext);
@@ -65,34 +34,21 @@ function useEditEstafeta() {
     return context;
 }
 
-const getEstafetas = (token, setItemsEstafetas) => {
-    axios
-        .get(`${serverUrl}/sucursales/`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        })
-        .then((response) => {
-            setItemsEstafetas(response.data); // Actualiza el estado con los nuevos datos
-            console.log("Datos obtenidos de la API:", response.data);
-        })
-        .catch((error) => console.error("Error fetching data:", error.response ? error.response.data : error.message));
-};
-
 function EstafetasProviders({ children }) {
     const [activeEstafeta, setActiveEstafeta] = useState(0);
     const [ItemsEstafetas, setItemsEstafetas] = useState([]); // Inicializar como un array vacío
     const [editEstafeta, setEditEstafeta] = useState(null); // Estado para la estafeta en edición
     const { token } = useUserContext();
-    const updateEstafeta = (updatedEstafeta) => {
+
+    const updateEstafeta = useCallback((updatedEstafeta) => {
         setItemsEstafetas((prevItems) =>
             prevItems.map((item) =>
                 item.id === updatedEstafeta.id ? updatedEstafeta : item
             )
         );
-    };
-    
-    const updateEstafetaInDB = (id, updatedOficina, token) => {
+    }, []);
+
+    const updateEstafetaInDB = useCallback((id, updatedOficina, token) => {
         console.log("Actualizando estafeta en la base de datos con ID:", id);
         console.log("Datos enviados a la API:", updatedOficina);
 
@@ -110,9 +66,9 @@ function EstafetasProviders({ children }) {
                 console.error("Error updating office:", error.response ? error.response.data : error.message);
                 throw error; // Lanza el error para manejarlo en el componente
             });
-    };
+    }, []);
 
-    const addEstafeta = async (newEstafeta) => {
+    const addEstafeta = useCallback(async (newEstafeta) => {
         try {
             const response = await axios.post(`${serverUrl}/sucursales/`, newEstafeta, {
                 headers: {
@@ -124,9 +80,9 @@ function EstafetasProviders({ children }) {
         } catch (error) {
             console.error("Error adding estafeta:", error.response ? error.response.data : error.message);
         }
-    };
+    }, [token]);
 
-    const deleteEstafeta = (id, token) => {
+    const deleteEstafeta = useCallback((id, token) => {
         console.log("Eliminando estafeta con ID:", id); // Para depuración
         console.log("Token utilizado:", token); // Verifica el token
 
@@ -147,41 +103,44 @@ function EstafetasProviders({ children }) {
                     error.response ? error.response.data : error.message
                 );
             });
-    };
+    }, []);
+
+    
 
     useEffect(() => {
-        if (token) {
-            // Verifica si hay un token antes de hacer la petición
-            axios
-                .get(`${serverUrl}/sucursales/`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Agregar el token en los encabezados
-                    },
-                })
-                .then((response) => {
-                    setItemsEstafetas(response.data); // Usar response.data directamente
-                    console.log(response.data); // Mostrar los datos en consola
-                })
-                .catch((error) => console.error("Error fetching data:", error));
-        }
-    }, [token/* , ItemsEstafetas */]); // Dependencias del token y ItemsEstafetas
+        const fetchEstafetas = async () => {
+            if (token && ItemsEstafetas.length === 0) {
+                console.log("rrr")
+                const data = await getEstafetas(token);
+                console.log(data)
+                setItemsEstafetas(data);
+            }
+        };
+        fetchEstafetas();
+    }, []);
+
+    const estafetasContextValue = useMemo(() => ({
+        activeEstafeta,
+        setActiveEstafeta
+    }), [activeEstafeta]);
+
+    const itemsEstafetasContextValue = useMemo(() => ({
+        ItemsEstafetas,
+        setItemsEstafetas,
+        updateEstafetaInDB,
+        addEstafeta,
+        deleteEstafeta,
+    }), [ItemsEstafetas, updateEstafetaInDB, addEstafeta, deleteEstafeta]);
+
+    const onEditEstafetaContextValue = useMemo(() => ({
+        editEstafeta,
+        setEditEstafeta
+    }), [editEstafeta]);
 
     return (
-        <EstafetasContext.Provider
-            value={{ activeEstafeta, setActiveEstafeta }}
-        >
-            <ItemsEstafetasContext.Provider
-                value={{
-                    ItemsEstafetas,
-                    setItemsEstafetas,
-                    updateEstafetaInDB,
-                    addEstafeta, // Asegúrate de que esta línea esté aquí
-                    deleteEstafeta,
-                }}
-            >
-                <OnEditEstafetaContext.Provider
-                    value={{ editEstafeta, setEditEstafeta }}
-                >
+        <EstafetasContext.Provider value={estafetasContextValue}>
+            <ItemsEstafetasContext.Provider value={itemsEstafetasContextValue}>
+                <OnEditEstafetaContext.Provider value={onEditEstafetaContextValue}>
                     {children}
                 </OnEditEstafetaContext.Provider>
             </ItemsEstafetasContext.Provider>

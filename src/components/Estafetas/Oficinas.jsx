@@ -4,9 +4,11 @@ import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
 import { useEstafetasContext, useItemsEstafetasContext } from "../../providers/EstafetasProviders";
 
-const Oficinas = () => {
+const Oficinas = React.memo(() => {
     const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
     const { ItemsEstafetas } = useItemsEstafetasContext(); 
+
+    console.log("Oficinas renderizado"); // Verifica cuántas veces se renderiza
 
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 8;
@@ -92,6 +94,6 @@ const Oficinas = () => {
             />
         </div>
     );
-};
+});
 
 export default Oficinas;

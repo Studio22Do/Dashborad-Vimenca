@@ -100,12 +100,13 @@ function EditCard({ onSave }) {
 
     useEffect(() => {
         if (ItemActual) {
+            console.log("ItemActual:", ItemActual); // Verifica los datos
             setId(ItemActual.id);
             setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
             setProvincia(ItemActual.provincia);
-            setLatitud(ItemActual.latitud);
-            setLongitud(ItemActual.longitud);
+            setLatitud(ItemActual.latitud || 0); // Asegúrate de que no sea null
+            setLongitud(ItemActual.longitud || 0); // Asegúrate de que no sea null
 
             // Manejo de horarios
             const lunesViernes = ItemActual.lunes_viernes

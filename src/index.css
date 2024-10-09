@@ -15,7 +15,12 @@
 }
 
 .button-side {
+    font-size: 80%;
     position: relative;
+    display: flex;
+    
+    min-width: 100%;
+
 }
 .button-side::after {
     content: url(./assets/arrow.svg);
