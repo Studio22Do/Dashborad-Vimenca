@@ -1,24 +1,24 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
     APIProvider,
     Map,
     AdvancedMarker,
-    Pin,
+    Pin
 } from "@vis.gl/react-google-maps";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
     
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; // Asegúrate de que esta variable esté definida correctamente
     const mapId = "YOUR_MAP_ID"; // Verifica que este ID sea válido
-
-    console.log(apiKey);
-
-    // Asegúrate de que las coordenadas sean números válidos
-    const validLat = typeof latitud === "number" ? latitud : -33.860664;
-    const validLng = typeof longitud === "number" ? longitud : 151.208138;
-
-    const [mapCenter, setMapCenter] = useState({ lat: validLat, lng: validLng });
+    
+    // Validar las coordenadas y usar las proporcionadas por los props si son válidas
+    const validLat = typeof latitud === "number" ? latitud : null;
+    const validLng = typeof longitud === "number" ? longitud : null;
+    
+    // Establecer el centro del mapa solo si las coordenadas son válidas
+    const [mapCenter, setMapCenter] = useState(
+        validLat !== null && validLng !== null ? { lat: validLat, lng: validLng } : null
+    );
 
     const handleApiLoad = () => {
         console.log("Maps API has loaded");
@@ -33,13 +33,32 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
 
     const handleMarkerClick = useCallback((ev) => {
         if (!ev.latLng) return;
-        const newCenter = {
-            lat: ev.latLng.lat(),
-            lng: ev.latLng.lng(),
-        };
-        setMapCenter(newCenter);
-        console.log('Marcador clicado:', newCenter);
+        console.log('Marcador clicado:', ev.latLng.toString());
     }, []);
+
+    const handleMapClick = useCallback((ev) => {
+        console.log("Evento de clic en el mapa:", ev); // Log para ver la estructura del evento
+        const latLng = ev.detail?.latLng; // Acceder a latLng desde ev.detail
+        if (!latLng) {
+            console.log("No se pudo obtener latLng del evento");
+            return;
+        }
+        const newLat = latLng.lat;
+        const newLng = latLng.lng;
+        console.log("Mapa clicado en:", newLat, newLng); // Log para depurar
+        setMapCenter({ lat: newLat, lng: newLng });
+        setLatitud(newLat);
+        setLongitud(newLng);
+        console.log("Estado actualizado: Latitud:", newLat, "Longitud:", newLng); // Log para depurar
+    }, [setLatitud, setLongitud]);
+
+    // Actualiza el centro del mapa cuando cambian los props latitud y longitud
+    useEffect(() => {
+        console.log("Componente Mapa montado");
+        if (typeof latitud === "number" && typeof longitud === "number") {
+            setMapCenter({ lat: latitud, lng: longitud });
+        }
+    }, [latitud, longitud]);
 
     return (
         <APIProvider
@@ -47,30 +66,34 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
             onLoad={handleApiLoad}
             onError={handleApiError}
         >
-            <Map
-                defaultZoom={13}
-                defaultCenter={mapCenter} // Cambia defaultCenter a center
-                mapId={mapId}
-                options={{
-                    draggable: true,
-                }}
-            >
-                <AdvancedMarker
-                    position={{ lat: validLat, lng: validLng }}
-                    clickable={true}
-                    onClick={handleMarkerClick} // Usa la nueva función de clic
+            {mapCenter && ( // Renderizar el mapa solo si mapCenter es válido
+                <Map
+                    defaultZoom={13}
+                    defaultCenter={mapCenter} // Usa defaultCenter para la posición inicial
+                    mapId={mapId}
+                    options={{
+                        draggable: true, // Asegúrate de que esta opción esté habilitada
+                        scrollwheel: true,
+                        disableDoubleClickZoom: false,
+                    }}
+                    onClick={handleMapClick} // Añadir el evento de clic en el mapa
                 >
-                    <Pin
-                        background={"#FEC52E"}
-                        glyphColor={"#000"}
-                        borderColor={"#000"}
-                    />
-                </AdvancedMarker>
-            </Map>
-            <h2>Latitud: {mapCenter.lat}</h2>
-            <h2>Longitud: {mapCenter.lng}</h2>
+                    <AdvancedMarker
+                        position={mapCenter} // Actualizar la posición del marcador
+                        clickable={true}
+                        onClick={handleMarkerClick}
+                    >
+                        <Pin
+                            background={"#FEC52E"}
+                            glyphColor={"#000"}
+                            borderColor={"#000"}
+                        />
+                    </AdvancedMarker>
+                </Map>
             
-            
+            )}
+            <h2>Latitud: {validLat !== null ? validLat : "No válida"}</h2>
+            <h2>Longitud: {validLng !== null ? validLng : "No válida"}</h2>
         </APIProvider>
     );
 }
