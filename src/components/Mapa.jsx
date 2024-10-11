@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
     APIProvider,
     Map,
@@ -11,14 +11,46 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; // Asegúrate de que esta variable esté definida correctamente
     const mapId = "YOUR_MAP_ID"; // Verifica que este ID sea válido
     
+    // Ubicación por defecto (por ejemplo, Ciudad de México)
+    let defaultLocation = { lat: 18.471610, lng: -69.938787 };
+    console.log("defaultLocation",defaultLocation);
+
     // Validar las coordenadas y usar las proporcionadas por los props si son válidas
     const validLat = typeof latitud === "number" ? latitud : null;
     const validLng = typeof longitud === "number" ? longitud : null;
+    console.log("validLat",validLat, "validLng",validLng);
     
-    // Establecer el centro del mapa solo si las coordenadas son válidas
-    const [mapCenter, setMapCenter] = useState(
-        validLat !== null && validLng !== null ? { lat: validLat, lng: validLng } : null
-    );
+    // Establecer el centro del mapa basado en las coordenadas proporcionadas o la ubicación por defecto
+    const [mapCenter, setMapCenter] = useState(defaultLocation);
+
+    // Nuevo useEffect para observar cambios en mapCenter
+    useEffect(() => {
+        if (validLat !== null && validLng !== null) {
+            console.log("Actualizando mapCenter a coordenadas válidas:", { lat: validLat, lng: validLng });
+            setMapCenter({ lat: validLat, lng: validLng });
+            setShouldCenter(true); // Permitir que el mapa se centre automáticamente
+        } else {
+            console.log("Manteniendo mapCenter en ubicación por defecto:", defaultLocation);
+        }
+    }, [validLat, validLng]);
+
+    const [shouldCenter, setShouldCenter] = useState(true);
+
+    const mapRef = useRef(null);
+
+    useEffect(() => {
+        if (shouldCenter && mapRef.current) {
+            mapRef.current.panTo(mapCenter);
+        }
+    }, [mapCenter, shouldCenter]);
+
+    const handleMapLoad = (map) => {
+        mapRef.current = map;
+    };
+
+    const handleMapDragStart = () => {
+        setShouldCenter(false); // Desactivar el centrado automático al arrastrar
+    };
 
     const handleApiLoad = () => {
         console.log("Maps API has loaded");
@@ -37,28 +69,18 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
     }, []);
 
     const handleMapClick = useCallback((ev) => {
-        console.log("Evento de clic en el mapa:", ev); // Log para ver la estructura del evento
-        const latLng = ev.detail?.latLng; // Acceder a latLng desde ev.detail
+        const latLng = ev.detail?.latLng;
         if (!latLng) {
             console.log("No se pudo obtener latLng del evento");
             return;
         }
         const newLat = latLng.lat;
         const newLng = latLng.lng;
-        console.log("Mapa clicado en:", newLat, newLng); // Log para depurar
-        setMapCenter({ lat: newLat, lng: newLng });
+        console.log("Mapa clicado en:", newLat, newLng);
         setLatitud(newLat);
         setLongitud(newLng);
-        console.log("Estado actualizado: Latitud:", newLat, "Longitud:", newLng); // Log para depurar
+        console.log("Estado actualizado: Latitud:", newLat, "Longitud:", newLng);
     }, [setLatitud, setLongitud]);
-
-    // Actualiza el centro del mapa cuando cambian los props latitud y longitud
-    useEffect(() => {
-        console.log("Componente Mapa montado");
-        if (typeof latitud === "number" && typeof longitud === "number") {
-            setMapCenter({ lat: latitud, lng: longitud });
-        }
-    }, [latitud, longitud]);
 
     return (
         <APIProvider
@@ -66,20 +88,22 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
             onLoad={handleApiLoad}
             onError={handleApiError}
         >
-            {mapCenter && ( // Renderizar el mapa solo si mapCenter es válido
-                <Map
-                    defaultZoom={13}
-                    defaultCenter={mapCenter} // Usa defaultCenter para la posición inicial
-                    mapId={mapId}
-                    options={{
-                        draggable: true, // Asegúrate de que esta opción esté habilitada
-                        scrollwheel: true,
-                        disableDoubleClickZoom: false,
-                    }}
-                    onClick={handleMapClick} // Añadir el evento de clic en el mapa
-                >
+            <Map
+                defaultZoom={8}
+                defaultCenter={defaultLocation} // Usar defaultCenter para la posición inicial
+                mapId={mapId}
+                options={{
+                    draggable: true, // Asegúrate de que esta opción esté habilitada
+                    scrollwheel: true,
+                    disableDoubleClickZoom: false,
+                }}
+                onClick={handleMapClick} // Añadir el evento de clic en el mapa
+                onDragStart={handleMapDragStart} // Detectar cuando el usuario empieza a arrastrar
+                onLoad={handleMapLoad} // Capturar la referencia al mapa
+            >
+                {validLat !== null && validLng !== null && (
                     <AdvancedMarker
-                        position={mapCenter} // Actualizar la posición del marcador
+                        position={{ lat: validLat, lng: validLng }} // Actualizar la posición del marcador
                         clickable={true}
                         onClick={handleMarkerClick}
                     >
@@ -89,11 +113,11 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
                             borderColor={"#000"}
                         />
                     </AdvancedMarker>
-                </Map>
-            
-            )}
+                )}
+            </Map>
             <h2>Latitud: {validLat !== null ? validLat : "No válida"}</h2>
             <h2>Longitud: {validLng !== null ? validLng : "No válida"}</h2>
+            <h2>mapCenter: {JSON.stringify(mapCenter)}</h2>
         </APIProvider>
     );
 }
