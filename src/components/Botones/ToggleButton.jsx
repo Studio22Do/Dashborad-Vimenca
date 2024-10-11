@@ -7,15 +7,15 @@ function ToggleKnob({ isOn }) {
 }
 
 function ToggleButton({ icon, state, setState }) {
-    const [isOn, setIsOn] = useState(state === "SI");
+    const [isOn, setIsOn] = useState(state);
 
     useEffect(() => {
-        setIsOn(state === "SI");
+        setIsOn(state);
     }, [state]);
 
     const handleClick = () => {
         const newState = !isOn; // Cambia el estado a su opuesto
-        console.log(`estado en el boton ${icon} es: ${newState}`); // Muestra el estado actualizado
+        console.log(`Estado en el botón ${icon} es: ${newState}`); // Muestra el estado actualizado
         setIsOn(newState); // Actualiza el estado local
         if (setState) {
             setState(newState); // Actualiza el estado en el componente padre

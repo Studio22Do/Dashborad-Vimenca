@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import useGoogleMaps from './useGoogleMaps'; // Asegúrate de que la ruta sea correcta
 import {
     APIProvider,
     Map,
@@ -6,19 +7,24 @@ import {
     Pin
 } from "@vis.gl/react-google-maps";
 
-function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
+const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
     
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; // Asegúrate de que esta variable esté definida correctamente
+    const isLoaded = useGoogleMaps(apiKey);
+
     const mapId = "YOUR_MAP_ID"; // Verifica que este ID sea válido
     
     // Ubicación por defecto (por ejemplo, Ciudad de México)
-    let defaultLocation = { lat: 18.471610, lng: -69.938787 };
-    console.log("defaultLocation",defaultLocation);
+    let defaultLocation = { lat: 19.049289, lng: -70.317498 };
+    
+
+
+    /* console.log("defaultLocation",defaultLocation); */
 
     // Validar las coordenadas y usar las proporcionadas por los props si son válidas
     const validLat = typeof latitud === "number" ? latitud : null;
     const validLng = typeof longitud === "number" ? longitud : null;
-    console.log("validLat",validLat, "validLng",validLng);
+    /* console.log("validLat",validLat, "validLng",validLng); */
     
     // Establecer el centro del mapa basado en las coordenadas proporcionadas o la ubicación por defecto
     const [mapCenter, setMapCenter] = useState(defaultLocation);
@@ -26,11 +32,11 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
     // Nuevo useEffect para observar cambios en mapCenter
     useEffect(() => {
         if (validLat !== null && validLng !== null) {
-            console.log("Actualizando mapCenter a coordenadas válidas:", { lat: validLat, lng: validLng });
+            /* console.log("Actualizando mapCenter a coordenadas válidas:", { lat: validLat, lng: validLng }); */
             setMapCenter({ lat: validLat, lng: validLng });
             setShouldCenter(true); // Permitir que el mapa se centre automáticamente
         } else {
-            console.log("Manteniendo mapCenter en ubicación por defecto:", defaultLocation);
+            /* console.log("Manteniendo mapCenter en ubicación por defecto:", defaultLocation); */
         }
     }, [validLat, validLng]);
 
@@ -53,7 +59,7 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
     };
 
     const handleApiLoad = () => {
-        console.log("Maps API has loaded");
+        /* console.log("Maps API has loaded"); */
     };
 
     const handleApiError = () => {
@@ -65,7 +71,7 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
 
     const handleMarkerClick = useCallback((ev) => {
         if (!ev.latLng) return;
-        console.log('Marcador clicado:', ev.latLng.toString());
+        /* console.log('Marcador clicado:', ev.latLng.toString()); */
     }, []);
 
     const handleMapClick = useCallback((ev) => {
@@ -76,11 +82,15 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
         }
         const newLat = latLng.lat;
         const newLng = latLng.lng;
-        console.log("Mapa clicado en:", newLat, newLng);
+        /* console.log("Mapa clicado en:", newLat, newLng); */
         setLatitud(newLat);
         setLongitud(newLng);
-        console.log("Estado actualizado: Latitud:", newLat, "Longitud:", newLng);
+        /* console.log("Estado actualizado: Latitud:", newLat, "Longitud:", newLng); */
     }, [setLatitud, setLongitud]);
+
+    if (!isLoaded) {
+        return <div>Cargando mapa...</div>; // Muestra un mensaje de carga mientras se carga la API
+    }
 
     return (
         <APIProvider
@@ -89,6 +99,7 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
             onError={handleApiError}
         >
             <Map
+                
                 defaultZoom={8}
                 defaultCenter={defaultLocation} // Usar defaultCenter para la posición inicial
                 mapId={mapId}
@@ -120,6 +131,6 @@ function Mapa({ setLatitud, setLongitud, latitud, longitud }) {
             <h2>mapCenter: {JSON.stringify(mapCenter)}</h2>
         </APIProvider>
     );
-}
+});
 
 export default Mapa;

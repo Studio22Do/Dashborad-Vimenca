@@ -22,7 +22,8 @@ import { useUserContext } from "../../providers/UserProvider"; // Importa el con
 
 function EditCard({ onSave }) {
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
-    const { ItemsEstafetas, updateEstafetaInDB, setItemsEstafetas } = useItemsEstafetasContext();
+    const { ItemsEstafetas, updateEstafetaInDB, setItemsEstafetas } =
+        useItemsEstafetasContext();
     const { setActiveEstafeta } = useEstafetasContext();
     const { user, password, token } = useUserContext(); // Obtén el usuario, la contraseña y el token
     const [ItemActual, setItemActual] = useState(null);
@@ -64,14 +65,14 @@ function EditCard({ onSave }) {
         }
 
         let hours, minutes, modifier;
-        const timeParts = time.toLowerCase().split(' ');
-        
+        const timeParts = time.toLowerCase().split(" ");
+
         if (timeParts.length !== 2) {
             return "Formato de hora inválido";
         }
 
         const [timePart, modifierPart] = timeParts;
-        const [hoursPart, minutesPart] = timePart.split(':');
+        const [hoursPart, minutesPart] = timePart.split(":");
 
         hours = parseInt(hoursPart, 10);
         minutes = minutesPart;
@@ -171,22 +172,35 @@ function EditCard({ onSave }) {
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: `${convertTo12HourFormat(lunesViernesDesde)} - ${convertTo12HourFormat(lunesViernesHasta)}`,
-            a_sabado: `${convertTo12HourFormat(sabadoDesde)} - ${convertTo12HourFormat(sabadoHasta)}`,
-            a_domingo: domingoDesde ? `${convertTo12HourFormat(domingoDesde)} - ${convertTo12HourFormat(domingoHasta)}` : "NO LABORA",
+            a_lunes_viernes: `${convertTo12HourFormat(
+                lunesViernesDesde
+            )} - ${convertTo12HourFormat(lunesViernesHasta)}`,
+            a_sabado: `${convertTo12HourFormat(
+                sabadoDesde
+            )} - ${convertTo12HourFormat(sabadoHasta)}`,
+            a_domingo: domingoDesde
+                ? `${convertTo12HourFormat(
+                      domingoDesde
+                  )} - ${convertTo12HourFormat(domingoHasta)}`
+                : "NO LABORA",
             telefono,
             agente_de_cambio: agenteCambio,
             vimenpaq,
             pagatodo: pagaTodo,
             banco_vimenca: bancoVimenca,
-            tipo_oficina: tipoOficina,
+            tipo_de_oficina: tipoOficina,
         };
 
         console.log("Datos a actualizar:", updatedOficina);
+        setAgenteCambio(true);
 
         try {
             // Llama a la función para actualizar la estafeta en la base de datos
-            const updatedData = await updateEstafetaInDB(id, updatedOficina, token);
+            const updatedData = await updateEstafetaInDB(
+                id,
+                updatedOficina,
+                token
+            );
             console.log("Datos actualizados desde la API:", updatedData);
 
             // Llama a la función que obtiene los datos de la API
@@ -394,7 +408,7 @@ function EditCard({ onSave }) {
                             <img src={Iconvimenca} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"Agente de Cambio"}
-                                setState={setRemesas}
+                                setState={handleToggleChange(setRemesas)}
                                 state={remesas}
                             />
                         </div>
@@ -402,7 +416,7 @@ function EditCard({ onSave }) {
                             <img src={Iconvimenpaq} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"vimenpaq"}
-                                setState={setVimenpaq}
+                                setState={handleToggleChange(setVimenpaq)}
                                 state={vimenpaq}
                             />
                         </div>
@@ -410,7 +424,7 @@ function EditCard({ onSave }) {
                             <img src={Iconbancox} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"bancovimenca"}
-                                setState={setBancoVimenca}
+                                setState={handleToggleChange(setBancoVimenca)}
                                 state={bancoVimenca}
                             />
                         </div>
@@ -418,7 +432,7 @@ function EditCard({ onSave }) {
                             <img src={Iconpagatodo} alt="" className="w-11" />
                             <ToggleButton
                                 icon={"pagatodo"}
-                                setState={setPagaTodo}
+                                setState={handleToggleChange(setPagaTodo)}
                                 state={pagaTodo}
                             />
                         </div>
@@ -473,11 +487,24 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </Popup>
-                    {errorMessage && <p className="text-red-500 text-center py-1">{errorMessage}</p>} {/* Muestra el mensaje de error */}
+                    {errorMessage && (
+                        <p className="text-red-500 text-center py-1">
+                            {errorMessage}
+                        </p>
+                    )}{" "}
+                    {/* Muestra el mensaje de error */}
                 </div>
             </div>
-            <div className="w-full h-96"> {/* Asegúrate de que el contenedor tenga un tamaño definido */}
-                <Mapa setLatitud={setLatitud} setLongitud={setLongitud} latitud={latitud} longitud={longitud}/>
+            <div className="w-full h-[600px] p-4 ">
+                {" "}
+                {/* Asegúrate de que el contenedor tenga un tamaño definido */}
+                <Mapa
+                    setLatitud={setLatitud}
+                    setLongitud={setLongitud}
+                    latitud={latitud}
+                    longitud={longitud}
+                    className="w-full h-full"
+                />
             </div>
         </div>
     );

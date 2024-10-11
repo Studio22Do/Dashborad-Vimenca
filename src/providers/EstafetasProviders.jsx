@@ -51,6 +51,7 @@ function EstafetasProviders({ children }) {
     const updateEstafetaInDB = useCallback((id, updatedOficina, token) => {
         console.log("Actualizando estafeta en la base de datos con ID:", id);
         console.log("Datos enviados a la API:", updatedOficina);
+        console.log("Token utilizado:", token); // Verifica el token
 
         return axios
             .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {

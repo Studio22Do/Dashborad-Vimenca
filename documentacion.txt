@@ -1,0 +1,90 @@
+# Documentación del Proyecto
+
+## Descripción
+
+Este proyecto es una aplicación web para la gestión de estafetas, sucursales y representantes. Está construido utilizando React para el frontend y se comunica con una API backend para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre los datos de las estafetas.
+
+## Tecnologías Utilizadas
+
+- **Frontend**: React, Tailwind CSS
+- **Backend**: Flask (API)
+- **Autenticación**: JWT (JSON Web Tokens)
+- **Base de Datos**: PostgreSQL
+
+## Instalación
+
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/tu-usuario/tu-repositorio.git
+   cd tu-repositorio
+   ```
+
+2. **Instalar dependencias del frontend**:
+   ```bash
+   npm install
+   ```
+
+3. **Configurar el entorno del backend**:
+   - Asegúrate de tener Python y pip instalados.
+   - Instala las dependencias del backend:
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+4. **Configurar variables de entorno**:
+   - Crea un archivo `.env` en la raíz del proyecto y define las siguientes variables:
+     ```bash
+     VITE_SERVER_URL="/api"
+     ```
+
+5. **Iniciar el servidor de desarrollo**:
+   - Para el frontend:
+     ```bash
+     npm start
+     ```
+   - Para el backend:
+     ```bash
+     flask run
+     ```
+
+## Uso
+
+- **Inicio de Sesión**: Los usuarios pueden iniciar sesión utilizando su correo electrónico y contraseña.
+- **Gestión de Estafetas**: Los usuarios pueden crear, editar y eliminar estafetas.
+- **Navegación**: La aplicación permite navegar entre diferentes secciones como Sucursales, Representantes y Estafetas.
+
+## Endpoints de la API
+
+1. **Registro de Usuario**
+   - **Método**: POST
+   - **Endpoint**: `/register`
+   - **Cuerpo de Solicitud**:
+     ```json
+     {
+       "email": "usuario@example.com",
+       "password": "tu_contraseña"
+     }
+     ```
+
+2. **Inicio de Sesión**
+   - **Método**: POST
+   - **Endpoint**: `/login`
+   - **Cuerpo de Solicitud**:
+     ```json
+     {
+       "useremail": "usuario@example.com",
+       "password": "tu_contraseña"
+     }
+     ```
+
+3. **Gestión de Sucursales**
+   - **Crear Sucursal**: POST `/sucursales/`
+   - **Obtener Todas las Sucursales**: GET `/sucursales/`
+   - **Actualizar Sucursal**: PUT `/sucursales/<int:sucursal_id>`
+   - **Eliminar Sucursal**: DELETE `/sucursales/<int:sucursal_id>`
+
+## Contribuciones
+
+Las contribuciones son bienvenidas. Por favor, sigue los siguientes pasos para contribuir:
+
+
