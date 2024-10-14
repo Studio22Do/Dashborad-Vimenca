@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import Block from "./Block";
+import Block from "../Representantes/Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
 import {
@@ -50,7 +50,7 @@ const Oficinas = React.memo(() => {
         <div className="bg-white rounded-tr-2xl rounded-b-2xl">
             <div className="px-4 py-5 border-b flex justify-between">
                 <h2 className="text-xl font-bold text-[--primary]">
-                    Todas las Oficinas
+                    Todos los Representantes
                 </h2>
                 <div className="flex gap-4">
                     <button

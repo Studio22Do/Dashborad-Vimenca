@@ -126,9 +126,9 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
                     </AdvancedMarker>
                 )}
             </Map>
-            <h2>Latitud: {validLat !== null ? validLat : "No válida"}</h2>
+            {/* <h2>Latitud: {validLat !== null ? validLat : "No válida"}</h2>
             <h2>Longitud: {validLng !== null ? validLng : "No válida"}</h2>
-            <h2>mapCenter: {JSON.stringify(mapCenter)}</h2>
+            <h2>mapCenter: {JSON.stringify(mapCenter)}</h2> */}
         </APIProvider>
     );
 });

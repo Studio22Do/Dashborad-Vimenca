@@ -1,5 +1,5 @@
 import React from "react";
-import ButtonEdit from "./Botones/ButtonEdit";
+import ButtonEdit from "../Botones/Representantes/ButtonEditRepresentante";
 
 function Block({ nombre, address, id }) {
     return (

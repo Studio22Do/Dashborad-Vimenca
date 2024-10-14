@@ -40,13 +40,13 @@ function EstafetasProviders({ children }) {
     const [editEstafeta, setEditEstafeta] = useState(null); // Estado para la estafeta en edición
     const { token } = useUserContext();
 
-    const updateEstafeta = useCallback((updatedEstafeta) => {
+    /* const updateEstafeta = useCallback((updatedEstafeta) => {
         setItemsEstafetas((prevItems) =>
             prevItems.map((item) =>
                 item.id === updatedEstafeta.id ? updatedEstafeta : item
             )
         );
-    }, []);
+    }, []); */
 
     const updateEstafetaInDB = useCallback((id, updatedOficina, token) => {
         console.log("Actualizando estafeta en la base de datos con ID:", id);

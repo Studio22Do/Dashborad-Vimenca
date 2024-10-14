@@ -1,6 +1,6 @@
 import React from "react";
 import Oficinas from "./Estafetas/Oficinas";
-import Noticias from "./Estafetas/Noticias";
+// import Noticias from "./Estafetas/Noticias";
 import FormCard from "./Estafetas/FormCard";
 import { useEstafetasContext } from "../providers/EstafetasProviders";
 import EditCard from "./Estafetas/EditCard";
@@ -31,14 +31,14 @@ function Estafetas() {
                             Oficinas
                         </button>
 
-                        <button
+                        {/* <button
                             className={`w-80 px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
                                 activeEstafeta === 1 ? "active" : ""
                             }`}
                             onClick={() => handleButtonClick(1)}
                         >
                             Noticias
-                        </button>
+                        </button> */}
                     </div>
                 )}
                 {(activeEstafeta === 3 || activeEstafeta === 2) && (
@@ -47,7 +47,7 @@ function Estafetas() {
 
                 <div>
                     {activeEstafeta === 0 && <Oficinas />}
-                    {activeEstafeta === 1 && <Noticias />}
+                    {/* {activeEstafeta === 1 && <Noticias />} */}
                     {activeEstafeta === 2 && <FormCard />}
                     {activeEstafeta === 3 && (
                         <EditCard

@@ -4,7 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import UserProvider from "./providers/UserProvider";
 import PrivateRoute from "./components/PrivateRoute";
-import { EstafetasProviders } from "./providers/EstafetasProviders"; // Importa el proveedor
+import { EstafetasProviders } from "./providers/EstafetasProviders";
 
 function App() {
     return (

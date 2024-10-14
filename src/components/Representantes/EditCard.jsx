@@ -12,20 +12,18 @@ import ButtonDelete from "../Botones/ButtonDelete";
 import Mapa from "../Mapa";
 
 import {
-    useEditEstafeta,
-    useItemsEstafetasContext,
-    useEstafetasContext,
-    getEstafetas, // Importa getEstafetas
-} from "../../providers/EstafetasProviders";
+    useEditRepresentante,
+    useItemsRepresentantesContext,
+    useRepresentantesContext,
+} from "../../providers/RepresentantesProviders";
 
 import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
 function EditCard({ onSave }) {
-    console.log("onSave en estafeta:", onSave);
-    const { editEstafeta, setEditEstafeta } = useEditEstafeta();
-    const { ItemsEstafetas, updateEstafetaInDB, setItemsEstafetas } =
-        useItemsEstafetasContext();
-    const { setActiveEstafeta } = useEstafetasContext();
+    const { activeRepresentante, setActiveRepresentante } = useRepresentantesContext();
+    const { editRepresentante, setEditRepresentante } = useEditRepresentante();
+    const { itemsRepresentantes } = useItemsRepresentantesContext(); // Asegúrate de usar el hook correcto
+    
     const { user, password, token } = useUserContext(); // Obtén el usuario, la contraseña y el token
     const [ItemActual, setItemActual] = useState(null);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
@@ -33,13 +31,22 @@ function EditCard({ onSave }) {
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
     useEffect(() => {
-        if (editEstafeta) {
-            const currentItem = ItemsEstafetas.find(
-                (item) => item.id === editEstafeta
+        console.log("editRepresentante:", editRepresentante);
+        console.log("itemsRepresentantes:", itemsRepresentantes);
+
+        if (editRepresentante && itemsRepresentantes) {
+            console.log("editRepresentante:", editRepresentante);
+            console.log("itemsRepresentantes:", itemsRepresentantes);
+            const currentItem = itemsRepresentantes.find(
+                (item) => item.id === editRepresentante
             );
+            console.log("currentItem encontrado:", currentItem);
             setItemActual(currentItem);
         }
-    }, [editEstafeta, ItemsEstafetas]);
+    }, [editRepresentante, itemsRepresentantes]);
+
+    console.log("ItemActual en representante:", ItemActual);
+
     const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
@@ -102,7 +109,7 @@ function EditCard({ onSave }) {
 
     useEffect(() => {
         if (ItemActual) {
-            console.log("ItemActual:", ItemActual); // Verifica los datos
+            console.log("ItemActual después de encontrar:", ItemActual); // Verifica los datos
             setId(ItemActual.id);
             setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
@@ -149,6 +156,28 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
+        console.log("Datos antes de guardar:", {
+            id,
+            nombre,
+            direccion,
+            provincia,
+            latitud,
+            longitud,
+            lunesViernesDesde,
+            lunesViernesHasta,
+            sabadoDesde,
+            sabadoHasta,
+            domingoDesde,
+            domingoHasta,
+            telefono,
+            agenteCambio,
+            vimenpaq,
+            pagaTodo,
+            bancoVimenca,
+            remesas,
+            tipoOficina,
+        });
+
         console.log("Contraseña ingresada:", inputPassword);
         console.log("Contraseña almacenada:", password);
 
@@ -209,7 +238,7 @@ function EditCard({ onSave }) {
 
             // Actualiza el estado de la estafeta en edición
             setEditEstafeta(null); // Cierra el modo de edición
-            setActiveEstafeta(0); // Regresa a la vista de Oficinas después de guardar
+            setActiveEstafeta(0); // Cierra el modo de edición
             setShowConfirmPopup(false); // Cierra el popup de confirmación
             onSave(updatedData); // Llama a onSave con los datos actualizados
         } catch (error) {
@@ -443,15 +472,9 @@ function EditCard({ onSave }) {
 
                         <button
                             className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
-                            onClick={handleConfirmSave}
+                            onClick={handleSaveClick}
                         >
                             Guardar
-                        </button>
-                        <button
-                            className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
-                            onClick={handleBack}
-                        >
-                            Atras
                         </button>
                     </div>
                     <Popup
