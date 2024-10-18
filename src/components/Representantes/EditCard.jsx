@@ -13,39 +13,56 @@ import Mapa from "../Mapa";
 
 import {
     useEditRepresentante,
-    useItemsRepresentantesContext,
+    /* useItemsRepresentantesContext, */
     useRepresentantesContext,
+    /* getEstafetas, // Importa getEstafetas */
 } from "../../providers/RepresentantesProviders";
+
+import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 
 import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
 function EditCard({ onSave }) {
-    const { activeRepresentante, setActiveRepresentante } = useRepresentantesContext();
+    console.log("onSave en estafeta:", onSave);
     const { editRepresentante, setEditRepresentante } = useEditRepresentante();
-    const { itemsRepresentantes } = useItemsRepresentantesContext(); // Asegúrate de usar el hook correcto
     
+    const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
+    const [ItemsRepresentantes, setItemsRepresentantes] = useState([]);
+    const { setActiveRepresentante } = useRepresentantesContext();
     const { user, password, token } = useUserContext(); // Obtén el usuario, la contraseña y el token
     const [ItemActual, setItemActual] = useState(null);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
+    useEffect(() => {
+        setItemsRepresentantes(itemsOficinas.representantes);
+        /* console.log("ItemsEstafetas:", ItemsEstafetas); */
+        console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
+    }, [itemsOficinas]);
 
     useEffect(() => {
-        console.log("editRepresentante:", editRepresentante);
-        console.log("itemsRepresentantes:", itemsRepresentantes);
-
-        if (editRepresentante && itemsRepresentantes) {
-            console.log("editRepresentante:", editRepresentante);
-            console.log("itemsRepresentantes:", itemsRepresentantes);
-            const currentItem = itemsRepresentantes.find(
+        console.log("ItemsRepresentantes:", ItemsRepresentantes); // Verifica el contenido de ItemsEstafetas
+        if (editRepresentante) {
+            if (!ItemsRepresentantes || ItemsRepresentantes.length === 0) {
+                console.warn("No hay representantes disponibles para editar."); // Mensaje de advertencia
+                return; // Detiene la ejecución si no hay representantes
+            }
+            const currentItem = ItemsRepresentantes.find(
                 (item) => item.id === editRepresentante
             );
-            console.log("currentItem encontrado:", currentItem);
-            setItemActual(currentItem);
+            if (currentItem) {
+                setItemActual(currentItem);
+            } else {
+                console.warn(`No se encontró el item con id: ${editRepresentante}`); // Mensaje de advertencia
+            }
         }
-    }, [editRepresentante, itemsRepresentantes]);
+    }, [editRepresentante, ItemsRepresentantes]);
 
-    console.log("ItemActual en representante:", ItemActual);
+    useEffect(() => {
+        console.log("ItemActual:", ItemActual);
+        console.log("editRepresentante:", editRepresentante);
+    }, [ItemActual, editRepresentante]);
+
 
     const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
@@ -109,7 +126,7 @@ function EditCard({ onSave }) {
 
     useEffect(() => {
         if (ItemActual) {
-            console.log("ItemActual después de encontrar:", ItemActual); // Verifica los datos
+            console.log("ItemActual:", ItemActual); // Verifica los datos
             setId(ItemActual.id);
             setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
@@ -156,28 +173,6 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
-        console.log("Datos antes de guardar:", {
-            id,
-            nombre,
-            direccion,
-            provincia,
-            latitud,
-            longitud,
-            lunesViernesDesde,
-            lunesViernesHasta,
-            sabadoDesde,
-            sabadoHasta,
-            domingoDesde,
-            domingoHasta,
-            telefono,
-            agenteCambio,
-            vimenpaq,
-            pagaTodo,
-            bancoVimenca,
-            remesas,
-            tipoOficina,
-        });
-
         console.log("Contraseña ingresada:", inputPassword);
         console.log("Contraseña almacenada:", password);
 
@@ -226,19 +221,19 @@ function EditCard({ onSave }) {
 
         try {
             // Llama a la función para actualizar la estafeta en la base de datos
-            const updatedData = await updateEstafetaInDB(
+            const updatedData = await updateOficinaInDB(
                 id,
                 updatedOficina,
-                token
+                
             );
             console.log("Datos actualizados desde la API:", updatedData);
 
             // Llama a la función que obtiene los datos de la API
-            getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento
+            /* getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento */
 
             // Actualiza el estado de la estafeta en edición
-            setEditEstafeta(null); // Cierra el modo de edición
-            setActiveEstafeta(0); // Cierra el modo de edición
+            setEditRepresentante(null); // Cierra el modo de edición
+            setActiveRepresentante(0); // Regresa a la vista de Oficinas después de guardar
             setShowConfirmPopup(false); // Cierra el popup de confirmación
             onSave(updatedData); // Llama a onSave con los datos actualizados
         } catch (error) {
@@ -252,7 +247,7 @@ function EditCard({ onSave }) {
     };
 
     const handleBack = () => {
-        setActiveEstafeta(0);
+        setActiveRepresentante(0);
     };
 
     const handleToggleChange = (setter) => (newState) => {
@@ -476,6 +471,12 @@ function EditCard({ onSave }) {
                         >
                             Guardar
                         </button>
+                        {/* <button
+                            className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
+                            onClick={handleBack}
+                        >
+                            Atras
+                        </button> */}
                     </div>
                     <Popup
                         open={showConfirmPopup}

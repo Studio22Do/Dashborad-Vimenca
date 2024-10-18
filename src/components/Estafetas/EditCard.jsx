@@ -13,9 +13,7 @@ import Mapa from "../Mapa";
 
 import {
     useEditEstafeta,
-    useItemsEstafetasContext,
     useEstafetasContext,
-    getEstafetas, // Importa getEstafetas
 } from "../../providers/EstafetasProviders";
 
 import { useItemsOficinasContext } from "../../providers/OficinasProviders";
@@ -36,7 +34,6 @@ function EditCard({ onSave }) {
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
     useEffect(() => {
         setItemsEstafetas(itemsOficinas.estafetas);
-        /* console.log("ItemsEstafetas:", ItemsEstafetas); */
         console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
     }, [itemsOficinas]);
 

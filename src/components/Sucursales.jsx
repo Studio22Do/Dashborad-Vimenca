@@ -1,28 +1,28 @@
 import React from "react";
-import Oficinas from "./Estafetas/Oficinas";
+import Oficinas from "./Sucursales/Oficinas";
 // import Noticias from "./Estafetas/Noticias";
 import FormCard from "./Estafetas/FormCard";
-import { useEstafetasContext } from "../providers/EstafetasProviders";
-import EditCard from "./Estafetas/EditCard";
+import EditCard from "./Sucursales/EditCard";
+import { useSucursalesContext } from "../providers/SucursalesProviders";
 
 function Sucursales() {
-    const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
+    const { activeSucursal, setActiveSucursal } = useSucursalesContext();
 
     const handleButtonClick = (index) => {
-        setActiveEstafeta(index);
+        setActiveSucursal(index);
     };
 
     const handleBack = () => {
-        setActiveEstafeta(0); // Regresa a la vista de Oficinas
+        setActiveSucursal(0); // Regresa a la vista de Oficinas
     };
 
     return (
         <div className="">
-            {(activeEstafeta === 0 || activeEstafeta === 1) && (
+            {(activeSucursal === 0 || activeSucursal === 1) && (
                 <div className="flex ">
                     <button
                         className={`w-80 px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
-                            activeEstafeta === 0 ? "active" : ""
+                            activeSucursal === 0 ? "active" : ""
                         }`}
                         onClick={() => handleButtonClick(0)}
                     >
@@ -31,7 +31,7 @@ function Sucursales() {
 
                     {/* <button
                             className={`w-80 px-10 py-3 rounded-t-2xl font-bold text-gray-600 buttontab ${
-                                activeEstafeta === 1 ? "active" : ""
+                                activeRepresentante === 1 ? "active" : ""
                             }`}
                             onClick={() => handleButtonClick(1)}
                         >
@@ -39,7 +39,7 @@ function Sucursales() {
                         </button> */}
                 </div>
             )}
-            {(activeEstafeta === 3 || activeEstafeta === 2) && (
+            {(activeSucursal === 3 || activeSucursal === 2) && (
                 <button
                     onClick={handleBack}
                     className="py-2 mb-4 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] "
@@ -49,13 +49,13 @@ function Sucursales() {
             )}
 
             <div>
-                {activeEstafeta === 0 && <Oficinas />}
-                {/* {activeEstafeta === 1 && <Noticias />} */}
-                {activeEstafeta === 2 && <FormCard />}
-                {activeEstafeta === 3 && (
+                {activeSucursal === 0 && <Oficinas />}
+                {/* {activeSucursal === 1 && <Noticias />} */}
+                {activeSucursal === 2 && <FormCard />}
+                {activeSucursal === 3 && (
                     <EditCard
-                        onSave={(updatedEstafeta) =>
-                            console.log(updatedEstafeta)
+                        onSave={(updatedSucursal) =>
+                            console.log(updatedSucursal)
                         }
                     />
                 )}

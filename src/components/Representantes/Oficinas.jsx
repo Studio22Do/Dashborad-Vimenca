@@ -1,28 +1,34 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import Block from "../Representantes/Block";
+import Block from "./Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
-import {
-    useEstafetasContext,
-    useItemsEstafetasContext,
-} from "../../providers/EstafetasProviders";
+import { useRepresentantesContext } from "../../providers/RepresentantesProviders";
+
+import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 
 const Oficinas = React.memo(() => {
-    const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
-    const { ItemsEstafetas } = useItemsEstafetasContext();
-
+    const { activeRepresentante, setActiveRepresentante } = useRepresentantesContext();
+    const { itemsOficinas } = useItemsOficinasContext();
     console.log("Oficinas renderizado"); // Verifica cuántas veces se renderiza
-
+    console.log("itemsOficinas: ========== ", itemsOficinas);
+    const [ItemsRepresentantes, setItemsRepresentantes] = useState(
+        itemsOficinas.representantes
+    );
+    console.log("ItemsRepresentantes: ========== ", ItemsRepresentantes);
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 8;
     const [itemOffset, setItemOffset] = useState(0);
+    // Efecto para actualizar ItemsEstafetas cuando itemsOficinas cambie
+    useEffect(() => {
+        setItemsRepresentantes(itemsOficinas.representantes);
+    }, [itemsOficinas]); // Este efecto se ejecutará cada vez que itemsOficinas cambie
 
     // Filtrado de elementos usando useMemo
     const filteredItems = useMemo(() => {
         if (searchTerm === "") {
-            return ItemsEstafetas; // Mostrar todos los elementos si la búsqueda está vacía
+            return ItemsRepresentantes; // Mostrar todos los elementos si la búsqueda está vacía
         } else {
-            const fuse = new Fuse(ItemsEstafetas, {
+            const fuse = new Fuse(ItemsRepresentantes, {
                 keys: ["nombre_oficina", "direccion"],
                 includeScore: true,
                 ignoreLocation: true,
@@ -31,7 +37,7 @@ const Oficinas = React.memo(() => {
             const results = fuse.search(searchTerm);
             return results.map((result) => result.item);
         }
-    }, [searchTerm, ItemsEstafetas]); // Dependencias de useMemo
+    }, [searchTerm, ItemsRepresentantes]); // Dependencias de useMemo
 
     const endOffset = itemOffset + itemsPerPage;
     const currentItems = filteredItems.slice(itemOffset, endOffset);

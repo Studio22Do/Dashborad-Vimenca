@@ -12,53 +12,56 @@ import ButtonDelete from "../Botones/ButtonDelete";
 import Mapa from "../Mapa";
 
 import {
-    useEditEstafeta,
-    useEstafetasContext,
-} from "../../providers/EstafetasProviders";
+    useEditSucursal,
+    /* useItemsRepresentantesContext, */
+    useSucursalesContext,
+    /* getEstafetas, // Importa getEstafetas */
+} from "../../providers/SucursalesProviders";
 
 import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 
 import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
-function FormCard({ onSave }) {
+function EditCard({ onSave }) {
     console.log("onSave en estafeta:", onSave);
-    const { editEstafeta, setEditEstafeta } = useEditEstafeta();
+    const { editSucursal, setEditSucursal } = useEditSucursal();
     
     const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
-    const [ItemsEstafetas, setItemsEstafetas] = useState([]);
-    const { setActiveEstafeta } = useEstafetasContext();
+    const [ItemsSucursales, setItemsSucursales] = useState([]);
+    const { setActiveSucursal } = useSucursalesContext();
     const { user, password, token } = useUserContext(); // Obtén el usuario, la contraseña y el token
     const [ItemActual, setItemActual] = useState(null);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
     useEffect(() => {
-        setItemsEstafetas(itemsOficinas.estafetas);
+        setItemsSucursales(itemsOficinas.sucursales);
+        /* console.log("ItemsEstafetas:", ItemsEstafetas); */
         console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
     }, [itemsOficinas]);
 
     useEffect(() => {
-        console.log("ItemsEstafetas:", ItemsEstafetas); // Verifica el contenido de ItemsEstafetas
-        if (editEstafeta) {
-            if (!ItemsEstafetas || ItemsEstafetas.length === 0) {
-                console.warn("No hay estafetas disponibles para editar."); // Mensaje de advertencia
-                return; // Detiene la ejecución si no hay estafetas
+        console.log("ItemsSucursales:", ItemsSucursales); // Verifica el contenido de ItemsEstafetas
+        if (editSucursal) {
+            if (!ItemsSucursales || ItemsSucursales.length === 0) {
+                console.warn("No hay sucursales disponibles para editar."); // Mensaje de advertencia
+                return; // Detiene la ejecución si no hay sucursales
             }
-            const currentItem = ItemsEstafetas.find(
-                (item) => item.id === editEstafeta
+            const currentItem = ItemsSucursales.find(
+                (item) => item.id === editSucursal
             );
             if (currentItem) {
                 setItemActual(currentItem);
             } else {
-                console.warn(`No se encontró el item con id: ${editEstafeta}`); // Mensaje de advertencia
+                console.warn(`No se encontró el item con id: ${editSucursal}`); // Mensaje de advertencia
             }
         }
-    }, [editEstafeta, ItemsEstafetas]);
+    }, [editSucursal, ItemsSucursales]);
 
     useEffect(() => {
         console.log("ItemActual:", ItemActual);
-        console.log("editEstafeta:", editEstafeta);
-    }, [ItemActual, editEstafeta]);
+        console.log("editSucursal:", editSucursal);
+    }, [ItemActual, editSucursal]);
 
 
     const [id, setId] = useState("");
@@ -229,8 +232,8 @@ function FormCard({ onSave }) {
             /* getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento */
 
             // Actualiza el estado de la estafeta en edición
-            setEditEstafeta(null); // Cierra el modo de edición
-            setActiveEstafeta(0); // Regresa a la vista de Oficinas después de guardar
+            setEditSucursal(null); // Cierra el modo de edición
+            setActiveSucursal(0); // Regresa a la vista de Oficinas después de guardar
             setShowConfirmPopup(false); // Cierra el popup de confirmación
             onSave(updatedData); // Llama a onSave con los datos actualizados
         } catch (error) {
@@ -244,7 +247,7 @@ function FormCard({ onSave }) {
     };
 
     const handleBack = () => {
-        setActiveEstafeta(0);
+        setActiveSucursal(0);
     };
 
     const handleToggleChange = (setter) => (newState) => {
@@ -538,4 +541,4 @@ function FormCard({ onSave }) {
     );
 }
 
-export default FormCard;
+export default EditCard;

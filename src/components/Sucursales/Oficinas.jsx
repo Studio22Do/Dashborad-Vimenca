@@ -2,33 +2,33 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Block from "./Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
-import { useEstafetasContext } from "../../providers/EstafetasProviders";
+import { useSucursalesContext } from "../../providers/SucursalesProviders";
 
 import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 
 const Oficinas = React.memo(() => {
-    const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
+    const { activeSucursal, setActiveSucursal } = useSucursalesContext();
     const { itemsOficinas } = useItemsOficinasContext();
     console.log("Oficinas renderizado"); // Verifica cuántas veces se renderiza
     console.log("itemsOficinas: ========== ", itemsOficinas);
-    const [ItemsEstafetas, setItemsEstafetas] = useState(
-        itemsOficinas.estafetas
+    const [ItemsSucursales, setItemsSucursales] = useState(
+        itemsOficinas.sucursales
     );
-    console.log("ItemsEstafetas: ========== ", ItemsEstafetas);
+    console.log("ItemsSucursales: ========== ", ItemsSucursales);
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 8;
     const [itemOffset, setItemOffset] = useState(0);
     // Efecto para actualizar ItemsEstafetas cuando itemsOficinas cambie
     useEffect(() => {
-        setItemsEstafetas(itemsOficinas.estafetas);
+        setItemsSucursales(itemsOficinas.sucursales);
     }, [itemsOficinas]); // Este efecto se ejecutará cada vez que itemsOficinas cambie
 
     // Filtrado de elementos usando useMemo
     const filteredItems = useMemo(() => {
         if (searchTerm === "") {
-            return ItemsEstafetas; // Mostrar todos los elementos si la búsqueda está vacía
+            return ItemsSucursales; // Mostrar todos los elementos si la búsqueda está vacía
         } else {
-            const fuse = new Fuse(ItemsEstafetas, {
+            const fuse = new Fuse(ItemsSucursales, {
                 keys: ["nombre_oficina", "direccion"],
                 includeScore: true,
                 ignoreLocation: true,
@@ -37,7 +37,7 @@ const Oficinas = React.memo(() => {
             const results = fuse.search(searchTerm);
             return results.map((result) => result.item);
         }
-    }, [searchTerm, ItemsEstafetas]); // Dependencias de useMemo
+    }, [searchTerm, ItemsSucursales]); // Dependencias de useMemo
 
     const endOffset = itemOffset + itemsPerPage;
     const currentItems = filteredItems.slice(itemOffset, endOffset);
@@ -56,12 +56,12 @@ const Oficinas = React.memo(() => {
         <div className="bg-white rounded-tr-2xl rounded-b-2xl">
             <div className="px-4 py-5 border-b flex justify-between">
                 <h2 className="text-xl font-bold text-[--primary]">
-                    Todas las Estafetas
+                    Todas las Sucursales
                 </h2>
                 <div className="flex gap-4">
                     <button
                         className="py-2 px-5 text-[--primary] font-semibold border border-[--primary] rounded-lg"
-                        onClick={() => setActiveEstafeta(2)}
+                        onClick={() => setActiveSucursal(2)}
                     >
                         Crear Nuevo
                     </button>
