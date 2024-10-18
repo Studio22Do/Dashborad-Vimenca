@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useUserContext } from "./UserProvider";
+
 const EstafetasContext = React.createContext();
 const ItemsEstafetasContext = React.createContext();
 const OnEditEstafetaContext = React.createContext();
@@ -48,7 +49,7 @@ function EstafetasProviders({ children }) {
         );
     }, []); */
 
-    const updateEstafetaInDB = useCallback((id, updatedOficina, token) => {
+    /* const updateEstafetaInDB = useCallback((id, updatedOficina, token) => {
         console.log("Actualizando estafeta en la base de datos con ID:", id);
         console.log("Datos enviados a la API:", updatedOficina);
         console.log("Token utilizado:", token); // Verifica el token
@@ -67,7 +68,7 @@ function EstafetasProviders({ children }) {
                 console.error("Error updating office:", error.response ? error.response.data : error.message);
                 throw error; // Lanza el error para manejarlo en el componente
             });
-    }, []);
+    }, []); */
 
     const addEstafeta = useCallback(async (newEstafeta) => {
         try {
@@ -83,7 +84,7 @@ function EstafetasProviders({ children }) {
         }
     }, [token]);
 
-    const deleteEstafeta = useCallback((id, token) => {
+    /* const deleteEstafeta = useCallback((id, token) => {
         console.log("Eliminando estafeta con ID:", id); // Para depuración
         console.log("Token utilizado:", token); // Verifica el token
 
@@ -104,11 +105,11 @@ function EstafetasProviders({ children }) {
                     error.response ? error.response.data : error.message
                 );
             });
-    }, []);
+    }, []); */
 
     
 
-    useEffect(() => {
+    /* useEffect(() => {
         const fetchEstafetas = async () => {
             if (token && ItemsEstafetas.length === 0) {
                 console.log("rrr")
@@ -118,7 +119,7 @@ function EstafetasProviders({ children }) {
             }
         };
         fetchEstafetas();
-    }, []);
+    }, []); */
 
     const estafetasContextValue = useMemo(() => ({
         activeEstafeta,
@@ -128,10 +129,10 @@ function EstafetasProviders({ children }) {
     const itemsEstafetasContextValue = useMemo(() => ({
         ItemsEstafetas,
         setItemsEstafetas,
-        updateEstafetaInDB,
+        /* updateEstafetaInDB, */
         addEstafeta,
-        deleteEstafeta,
-    }), [ItemsEstafetas, updateEstafetaInDB, addEstafeta, deleteEstafeta]);
+        /* deleteEstafeta, */
+    }), [ItemsEstafetas, /* updateEstafetaInDB, */ addEstafeta/* , deleteEstafeta */]);
 
     const onEditEstafetaContextValue = useMemo(() => ({
         editEstafeta,

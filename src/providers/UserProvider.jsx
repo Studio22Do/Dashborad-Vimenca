@@ -2,7 +2,8 @@ import React, { createContext, useState, useContext } from "react";
 import axios from "axios";
 
 const UserContext = createContext();
-
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+console.log("este es el serverUrl: ", serverUrl);
 export function useUserContext() {
     return useContext(UserContext);
 }
@@ -14,7 +15,7 @@ export function UserProvider({ children }) {
 
     const login = async (email, password) => {
         try {
-            const serverUrl = import.meta.env.VITE_SERVER_URL;
+            
             const response = await axios.post(`${serverUrl}/login`, {
                 useremail: email,
                 password,

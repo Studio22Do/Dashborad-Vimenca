@@ -1,12 +1,14 @@
 import React, { useState } from "react"; // Importa useState
 import { useItemsEstafetasContext, useEstafetasContext } from "../../providers/EstafetasProviders";
+import { useItemsOficinasContext} from "../../providers/OficinasProviders";
 import { useUserContext } from "../../providers/UserProvider";
 import Popup from "reactjs-popup"; // Importa Popup 
 
 
 
-function ButtonDelete({ id }) {
-    const { deleteEstafeta } = useItemsEstafetasContext();
+function ButtonDelete({ id, tipo="estafeta" }) {
+    /* const { deleteEstafeta } = useItemsEstafetasContext(); */
+    const { deleteOficina } = useItemsOficinasContext();
     const { token } = useUserContext();
     const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Estado para el popup
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
@@ -19,7 +21,7 @@ function ButtonDelete({ id }) {
 
     const handleConfirmDelete = () => {
         if (inputPassword === password) { // Compara la contraseña
-            deleteEstafeta(id, token);
+            deleteOficina(id, token);
             console.log(`Oficina con el id ${id} ha sido eliminada`);
             setShowConfirmPopup(false); // Cierra el popup
             setActiveEstafeta(0);

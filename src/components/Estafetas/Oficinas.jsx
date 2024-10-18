@@ -2,20 +2,26 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import Block from "./Block";
 import ReactPaginate from "react-paginate";
 import Fuse from "fuse.js";
-import {
-    useEstafetasContext,
-    useItemsEstafetasContext,
-} from "../../providers/EstafetasProviders";
+import { useEstafetasContext } from "../../providers/EstafetasProviders";
+
+import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 
 const Oficinas = React.memo(() => {
     const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
-    const { ItemsEstafetas } = useItemsEstafetasContext();
-
+    const { itemsOficinas } = useItemsOficinasContext();
     console.log("Oficinas renderizado"); // Verifica cuántas veces se renderiza
-
+    console.log("itemsOficinas: ========== ", itemsOficinas);
+    const [ItemsEstafetas, setItemsEstafetas] = useState(
+        itemsOficinas.estafetas
+    );
+    console.log("ItemsEstafetas: ========== ", ItemsEstafetas);
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 8;
     const [itemOffset, setItemOffset] = useState(0);
+    // Efecto para actualizar ItemsEstafetas cuando itemsOficinas cambie
+    useEffect(() => {
+        setItemsEstafetas(itemsOficinas.estafetas);
+    }, [itemsOficinas]); // Este efecto se ejecutará cada vez que itemsOficinas cambie
 
     // Filtrado de elementos usando useMemo
     const filteredItems = useMemo(() => {

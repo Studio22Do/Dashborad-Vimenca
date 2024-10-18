@@ -18,28 +18,52 @@ import {
     getEstafetas, // Importa getEstafetas
 } from "../../providers/EstafetasProviders";
 
+import { useItemsOficinasContext } from "../../providers/OficinasProviders";
+
 import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
 function EditCard({ onSave }) {
     console.log("onSave en estafeta:", onSave);
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
-    const { ItemsEstafetas, updateEstafetaInDB, setItemsEstafetas } =
-        useItemsEstafetasContext();
+    
+    const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
+    const [ItemsEstafetas, setItemsEstafetas] = useState([]);
     const { setActiveEstafeta } = useEstafetasContext();
     const { user, password, token } = useUserContext(); // Obtén el usuario, la contraseña y el token
     const [ItemActual, setItemActual] = useState(null);
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
+    useEffect(() => {
+        setItemsEstafetas(itemsOficinas.estafetas);
+        /* console.log("ItemsEstafetas:", ItemsEstafetas); */
+        console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
+    }, [itemsOficinas]);
 
     useEffect(() => {
+        console.log("ItemsEstafetas:", ItemsEstafetas); // Verifica el contenido de ItemsEstafetas
         if (editEstafeta) {
+            if (!ItemsEstafetas || ItemsEstafetas.length === 0) {
+                console.warn("No hay estafetas disponibles para editar."); // Mensaje de advertencia
+                return; // Detiene la ejecución si no hay estafetas
+            }
             const currentItem = ItemsEstafetas.find(
                 (item) => item.id === editEstafeta
             );
-            setItemActual(currentItem);
+            if (currentItem) {
+                setItemActual(currentItem);
+            } else {
+                console.warn(`No se encontró el item con id: ${editEstafeta}`); // Mensaje de advertencia
+            }
         }
     }, [editEstafeta, ItemsEstafetas]);
+
+    useEffect(() => {
+        console.log("ItemActual:", ItemActual);
+        console.log("editEstafeta:", editEstafeta);
+    }, [ItemActual, editEstafeta]);
+
+
     const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
@@ -197,15 +221,15 @@ function EditCard({ onSave }) {
 
         try {
             // Llama a la función para actualizar la estafeta en la base de datos
-            const updatedData = await updateEstafetaInDB(
+            const updatedData = await updateOficinaInDB(
                 id,
                 updatedOficina,
-                token
+                
             );
             console.log("Datos actualizados desde la API:", updatedData);
 
             // Llama a la función que obtiene los datos de la API
-            getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento
+            /* getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento */
 
             // Actualiza el estado de la estafeta en edición
             setEditEstafeta(null); // Cierra el modo de edición
@@ -443,16 +467,16 @@ function EditCard({ onSave }) {
 
                         <button
                             className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
-                            onClick={handleConfirmSave}
+                            onClick={handleSaveClick}
                         >
                             Guardar
                         </button>
-                        <button
+                        {/* <button
                             className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
                             onClick={handleBack}
                         >
                             Atras
-                        </button>
+                        </button> */}
                     </div>
                     <Popup
                         open={showConfirmPopup}

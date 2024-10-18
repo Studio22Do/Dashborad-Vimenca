@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import axios from "axios";
 import { useUserContext } from "./UserProvider";
 
-const OficinasContext = React.createContext();
 const ItemsOficinasContext = React.createContext();
-const OnEditOficinasContext = React.createContext();
+
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+
+function useItemsOficinasContext() {
+    return useContext(ItemsOficinasContext);
+}
 
 const getOficinas = async (token) => {
     const response = await axios.get(`${serverUrl}/sucursales/`, {
@@ -18,90 +22,131 @@ const getOficinas = async (token) => {
 };
 
 function OficinasProviders({ children }) {
-    const [activeOficinas, setActiveOficinas] = useState(0);
-    const [itemsOficinas, setItemsOficinas] = useState([]);
-    const [editOficinas, setEditOficinas] = useState(null);
+    const [itemsOficinas, setItemsOficinas] = useState({
+        sucursales: [],
+        representantes: [],
+        estafetas: [],
+    });
+    
+    console.log("itemsOficinas despues de declarar: ", itemsOficinas);
+
     const { token } = useUserContext();
 
-    const updateOficinaInDB = useCallback((id, updatedOficina) => {
-        return axios
-            .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((response) => response.data)
-            .catch((error) => {
-                console.error("Error updating office:", error.response ? error.response.data : error.message);
-                throw error;
-            });
-    }, [token]);
+    const updateOficinaInDB = useCallback(
+        
+        (id, updatedOficina) => {
+            console.log("se ejecuto la funcion de editar en oficinasproviers")
+            return axios
+                .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((response) => response.data)
+                .then(getOficinas(token))
+                .catch((error) => {
+                    console.error(
+                        "Error updating office:",
+                        error.response ? error.response.data : error.message
+                    );
+                    throw error;
+                });
+        },
+        [token]
+    );
 
-    const addOficina = useCallback(async (newOficina) => {
-        try {
-            const response = await axios.post(`${serverUrl}/sucursales/`, newOficina, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setItemsOficinas((prevItems) => [...prevItems, response.data]);
-        } catch (error) {
-            console.error("Error adding office:", error.response ? error.response.data : error.message);
-        }
-    }, [token]);
+    const addOficina = useCallback(
+        async (newOficina, tipo) => {
+            try {
+                const response = await axios.post(
+                    `${serverUrl}/sucursales/`,
+                    newOficina,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setItemsOficinas((prevItems) => ({
+                    ...prevItems,
+                    [tipo]: [...prevItems[tipo], response.data],
+                }));
+            } catch (error) {
+                console.error(
+                    "Error adding office:",
+                    error.response ? error.response.data : error.message
+                );
+            }
+        },
+        [token]
+    );
 
-    const deleteOficina = useCallback((id) => {
-        axios
-            .delete(`${serverUrl}/sucursales/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then(() => {
-                setItemsOficinas((prevItems) => prevItems.filter((item) => item.id !== id));
-            })
-            .catch((error) => {
-                console.error("Error deleting office:", error.response ? error.response.data : error.message);
-            });
-    }, [token]);
+    const deleteOficina = useCallback(
+        (id, tipo) => {
+            axios
+                .delete(`${serverUrl}/sucursales/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then(() => {
+                    setItemsOficinas((prevItems) => ({
+                        ...prevItems,
+                        [tipo]: prevItems[tipo].filter(
+                            (item) => item.id !== id
+                        ),
+                    }));
+                })
+                .catch((error) => {
+                    console.error(
+                        "Error deleting office:",
+                        error.response ? error.response.data : error.message
+                    );
+                });
+        },
+        [token]
+    );
 
     useEffect(() => {
         const fetchOficinas = async () => {
-            if (token && itemsOficinas.length === 0) {
+            if (token) {
                 const data = await getOficinas(token);
-                setItemsOficinas(data);
+                console.log("data desde oficinas", data);
+                setItemsOficinas({
+                    sucursales: data.filter((d) => d.tipo_de_oficina
+                    === "Sucursal"),
+                    representantes: data.filter(
+                        (d) => d.tipo_de_oficina === "Representante"
+                    ),
+                    estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                });
+                
             }
         };
         fetchOficinas();
-    }, [token, itemsOficinas.length]);
+        
+    }, [token]); // Agregar token como dependencia
 
-    const oficinasContextValue = useMemo(() => ({
-        activeOficinas,
-        setActiveOficinas
-    }), [activeOficinas]);
+    useEffect(() => {
+        console.log("itemsOficinas después de set: ********** ", itemsOficinas);
+    }, [itemsOficinas]); // Este efecto se ejecutará cada vez que itemsOficinas cambie
 
-    const itemsOficinasContextValue = useMemo(() => ({
-        itemsOficinas,
-        setItemsOficinas,
-        updateOficinaInDB,
-        addOficina,
-        deleteOficina,
-    }), [itemsOficinas, updateOficinaInDB, addOficina, deleteOficina]);
-
-    const onEditOficinasContextValue = useMemo(() => ({
-        editOficinas,
-        setEditOficinas
-    }), [editOficinas]);
+    const itemsOficinasContextValue = useMemo(
+        () => ({
+            itemsOficinas,
+            setItemsOficinas,
+            updateOficinaInDB,
+            addOficina,
+            deleteOficina,
+        }),
+        [itemsOficinas, updateOficinaInDB, addOficina, deleteOficina]
+    );
 
     return (
-        <OficinasContext.Provider value={oficinasContextValue}>
-            <ItemsOficinasContext.Provider value={itemsOficinasContextValue}>
-                <OnEditOficinasContext.Provider value={onEditOficinasContextValue}>
-                    {children}
-                </OnEditOficinasContext.Provider>
-            </ItemsOficinasContext.Provider>
-        </OficinasContext.Provider>
+        <ItemsOficinasContext.Provider value={itemsOficinasContextValue}>
+            {children}
+        </ItemsOficinasContext.Provider>
     );
 }
 
-export default OficinasProviders;
+export { OficinasProviders, useItemsOficinasContext };
