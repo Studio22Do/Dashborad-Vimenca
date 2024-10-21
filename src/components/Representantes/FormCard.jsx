@@ -10,11 +10,11 @@ import ToggleButton from "../Botones/ToggleButton";
 import Popup from "reactjs-popup";
 import Mapa from "../Mapa";
 import { useItemsOficinasContext } from "../../providers/OficinasProviders";
-import { useEstafetasContext } from "../../providers/EstafetasProviders";
+import { useRepresentantesContext } from "../../providers/RepresentantesProviders";
 
 function FormCard() {
     const { addOficina } = useItemsOficinasContext(); // Función para crear oficina
-    const { setActiveEstafeta } = useEstafetasContext();
+    const { setActiveRepresentante } = useRepresentantesContext();
 
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
@@ -33,7 +33,7 @@ function FormCard() {
     const [pagaTodo, setPagaTodo] = useState(false);
     const [bancoVimenca, setBancoVimenca] = useState(false);
     const [remesas, setRemesas] = useState(false);
-    const [tipoOficina, setTipoOficina] = useState("Estafeta");
+    const [tipoOficina, setTipoOficina] = useState("Representante");
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -94,7 +94,7 @@ function FormCard() {
             setRemesas(false);
             setTipoOficina("Estafeta"); // Asegúrate de que el tipo de oficina se restablezca correctamente
             setShowConfirmPopup(false); // Cierra el popup de confirmación
-            setActiveEstafeta(0);
+            setActiveRepresentante(0);
         } catch (error) {
             setErrorMessage("Error al guardar los cambios.");
             console.error("Error al guardar los cambios:", error);

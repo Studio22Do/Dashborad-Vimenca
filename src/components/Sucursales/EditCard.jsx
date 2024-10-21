@@ -54,6 +54,8 @@ function EditCard({ onSave }) {
                 setItemActual(currentItem);
             } else {
                 console.warn(`No se encontró el item con id: ${editSucursal}`); // Mensaje de advertencia
+                setEditSucursal(null); // Resetea editSucursal si no se encuentra
+                setActiveSucursal(0); // Regresa a la vista de Oficinas después de guardar
             }
         }
     }, [editSucursal, ItemsSucursales]);

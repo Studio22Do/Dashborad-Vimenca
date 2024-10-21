@@ -14,9 +14,9 @@ function useItemsOficinasContext() {
 
 const getOficinas = async (token) => {
     const response = await axios.get(`${serverUrl}/sucursales/`, {
-        headers: {
+        /* headers: {
             Authorization: `Bearer ${token}`,
-        },
+        }, */
     });
     return response.data;
 };
@@ -33,7 +33,6 @@ function OficinasProviders({ children }) {
     const { token } = useUserContext();
 
     const updateOficinaInDB = useCallback(
-        
         (id, updatedOficina) => {
             console.log("se ejecuto la funcion de editar en oficinasproviers")
             return axios
@@ -42,8 +41,14 @@ function OficinasProviders({ children }) {
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((response) => response.data)
-                .then(getOficinas(token))
+                .then(() => getOficinas(token)) // Cambiado para usar el resultado
+                .then((data) => {
+                    setItemsOficinas({
+                        sucursales: data.filter((d) => d.tipo_de_oficina === "Sucursal"),
+                        representantes: data.filter((d) => d.tipo_de_oficina === "Representante"),
+                        estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                    });
+                })
                 .catch((error) => {
                     console.error(
                         "Error updating office:",
@@ -54,11 +59,10 @@ function OficinasProviders({ children }) {
         },
         [token]
     );
-
     const addOficina = useCallback(
         async (newOficina, tipo) => {
             try {
-                const response = await axios.post(
+                await axios.post(
                     `${serverUrl}/sucursales/`,
                     newOficina,
                     {
@@ -67,42 +71,51 @@ function OficinasProviders({ children }) {
                         },
                     }
                 );
-                setItemsOficinas((prevItems) => ({
-                    ...prevItems,
-                    [tipo]: [...prevItems[tipo], response.data],
-                }));
+                // Obtener los datos actualizados después de agregar la nueva oficina
+                const data = await getOficinas(token);
+                // Actualizar el estado con los datos filtrados
+                setItemsOficinas({
+                    sucursales: data.filter((d) => d.tipo_de_oficina === "Sucursal"),
+                    representantes: data.filter((d) => d.tipo_de_oficina === "Representante"),
+                    estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                });
             } catch (error) {
                 console.error(
-                    "Error adding office:",
+                    "Error al agregar oficina:",
                     error.response ? error.response.data : error.message
                 );
+                throw error;
             }
         },
         [token]
     );
 
     const deleteOficina = useCallback(
-        (id, tipo) => {
-            axios
-                .delete(`${serverUrl}/sucursales/${id}`, {
+        async (id, tipo) => {
+            try {
+                await axios.delete(`${serverUrl}/sucursales/${id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                })
-                .then(() => {
-                    setItemsOficinas((prevItems) => ({
-                        ...prevItems,
-                        [tipo]: prevItems[tipo].filter(
-                            (item) => item.id !== id
-                        ),
-                    }));
-                })
-                .catch((error) => {
-                    console.error(
-                        "Error deleting office:",
-                        error.response ? error.response.data : error.message
-                    );
                 });
+                console.log("Se ejecutó la función de eliminar en oficinasproviders");
+                
+                // Obtener los datos actualizados después de eliminar la oficina
+                const data = await getOficinas(token);
+                
+                // Actualizar el estado con los datos filtrados
+                setItemsOficinas({
+                    sucursales: data.filter((d) => d.tipo_de_oficina === "Sucursal"),
+                    representantes: data.filter((d) => d.tipo_de_oficina === "Representante"),
+                    estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                });
+            } catch (error) {
+                console.error(
+                    "Error al eliminar oficina:",
+                    error.response ? error.response.data : error.message
+                );
+                throw error;
+            }
         },
         [token]
     );

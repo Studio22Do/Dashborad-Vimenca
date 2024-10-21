@@ -6,8 +6,8 @@ import Popup from "reactjs-popup"; // Importa Popup
 
 
 
-function ButtonDelete({ id, tipo="estafeta" }) {
-    /* const { deleteEstafeta } = useItemsEstafetasContext(); */
+function ButtonDelete({ id }) {
+    
     const { deleteOficina } = useItemsOficinasContext();
     const { token } = useUserContext();
     const [showConfirmPopup, setShowConfirmPopup] = useState(false); // Estado para el popup

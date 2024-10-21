@@ -61,7 +61,7 @@ const Oficinas = React.memo(() => {
                 <div className="flex gap-4">
                     <button
                         className="py-2 px-5 text-[--primary] font-semibold border border-[--primary] rounded-lg"
-                        onClick={() => setActiveEstafeta(2)}
+                        onClick={() => setActiveRepresentante(2)}
                     >
                         Crear Nuevo
                     </button>

@@ -54,6 +54,8 @@ function EditCard({ onSave }) {
                 setItemActual(currentItem);
             } else {
                 console.warn(`No se encontró el item con id: ${editRepresentante}`); // Mensaje de advertencia
+                setEditRepresentante(null); // Resetea editRepresentante si no se encuentra
+                setActiveRepresentante(0); // Regresa a la vista de Oficinas después de guardar
             }
         }
     }, [editRepresentante, ItemsRepresentantes]);
@@ -432,7 +434,7 @@ function EditCard({ onSave }) {
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
                             <ToggleButton
-                                icon={"Agente de Cambio"}
+                                icon={"Remesas"}
                                 setState={handleToggleChange(setRemesas)}
                                 state={remesas}
                             />

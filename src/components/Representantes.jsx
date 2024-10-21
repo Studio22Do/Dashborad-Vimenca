@@ -1,7 +1,7 @@
 import React from "react";
 import Oficinas from "./Representantes/Oficinas";
 // import Noticias from "./Estafetas/Noticias";
-import FormCard from "./Estafetas/FormCard";
+import FormCard from "./Representantes/FormCard";
 import EditCard from "./Representantes/EditCard";
 import { useRepresentantesContext } from "../providers/RepresentantesProviders";
 

@@ -51,6 +51,8 @@ function EditCard({ onSave }) {
                 setItemActual(currentItem);
             } else {
                 console.warn(`No se encontró el item con id: ${editEstafeta}`); // Mensaje de advertencia
+                setEditEstafeta(null); // Resetea editEstafeta si no se encuentra
+                setActiveEstafeta(0); // Regresa a la vista de Oficinas después de guardar
             }
         }
     }, [editEstafeta, ItemsEstafetas]);
@@ -429,7 +431,7 @@ function EditCard({ onSave }) {
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
                             <ToggleButton
-                                icon={"Agente de Cambio"}
+                                icon={"Remesas"}
                                 setState={handleToggleChange(setRemesas)}
                                 state={remesas}
                             />

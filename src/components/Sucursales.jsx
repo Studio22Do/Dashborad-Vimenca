@@ -1,7 +1,7 @@
 import React from "react";
 import Oficinas from "./Sucursales/Oficinas";
 // import Noticias from "./Estafetas/Noticias";
-import FormCard from "./Estafetas/FormCard";
+import FormCard from "./Sucursales/FormCard";
 import EditCard from "./Sucursales/EditCard";
 import { useSucursalesContext } from "../providers/SucursalesProviders";
 
