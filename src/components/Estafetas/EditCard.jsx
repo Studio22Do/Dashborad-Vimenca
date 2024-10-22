@@ -10,6 +10,7 @@ import ToggleButton from "../Botones/ToggleButton";
 import Popup from "reactjs-popup";
 import ButtonDelete from "../Botones/ButtonDelete";
 import Mapa from "../Mapa";
+import { format, parse } from "date-fns";
 
 import {
     useEditEstafeta,
@@ -23,7 +24,7 @@ import { useUserContext } from "../../providers/UserProvider"; // Importa el con
 function EditCard({ onSave }) {
     console.log("onSave en estafeta:", onSave);
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
-    
+
     const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
     const [ItemsEstafetas, setItemsEstafetas] = useState([]);
     const { setActiveEstafeta } = useEstafetasContext();
@@ -62,7 +63,6 @@ function EditCard({ onSave }) {
         console.log("editEstafeta:", editEstafeta);
     }, [ItemActual, editEstafeta]);
 
-
     const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
     const [direccion, setDireccion] = useState("");
@@ -85,22 +85,20 @@ function EditCard({ onSave }) {
 
     const convertTo24HourFormat = (time) => {
         if (!time || typeof time !== "string") {
-            return "Formato de hora inválido"; // Manejo de caso donde time es undefined o no es una cadena
+            return "Formato de hora inválido";
         }
+        // Eliminar todos los espacios en blanco
+        time = time.replace(/\s+/g, "");
 
         let hours, minutes, modifier;
-        const timeParts = time.toLowerCase().split(" ");
+        const timeParts = time.toLowerCase().match(/(\d+):(\d+)(am|pm)/);
 
-        if (timeParts.length !== 2) {
+        if (!timeParts) {
             return "Formato de hora inválido";
         }
 
-        const [timePart, modifierPart] = timeParts;
-        const [hoursPart, minutesPart] = timePart.split(":");
-
-        hours = parseInt(hoursPart, 10);
-        minutes = minutesPart;
-        modifier = modifierPart;
+        [, hours, minutes, modifier] = timeParts;
+        hours = parseInt(hours, 10);
 
         if (isNaN(hours) || minutes.length !== 2) {
             return "Formato de hora inválido";
@@ -116,12 +114,26 @@ function EditCard({ onSave }) {
     };
 
     const convertTo12HourFormat = (time) => {
+        if (!time) return "";
         let [hours, minutes] = time.split(":");
         hours = parseInt(hours, 10);
-        const modifier = hours >= 12 ? "pm" : "am";
-        hours = hours % 12 || 12;
-        return `${hours}:${minutes}${modifier}`;
+        const ampm = hours >= 12 ? "pm" : "am";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // la hora '0' debe ser '12'
+        return `${hours}:${minutes.padStart(2, "0")}${ampm}`;
     };
+
+    const formatTimeRange = (start, end) => {
+        const formattedStart = convertTo12HourFormat(start);
+        const formattedEnd = convertTo12HourFormat(end);
+        return `${formattedStart} - ${formattedEnd}`;
+    };
+
+    // Función auxiliar para convertir "Y"/"N" a booleano
+    const convertYNToBoolean = (value) => value === "Y";
+
+    // Función auxiliar para convertir booleano a "Y"/"N"
+    const convertBooleanToYN = (value) => value ? "Y" : "N";
 
     useEffect(() => {
         if (ItemActual) {
@@ -134,35 +146,39 @@ function EditCard({ onSave }) {
             setLongitud(ItemActual.longitud || 0); // Asegúrate de que no sea null
 
             // Manejo de horarios
-            const lunesViernes = ItemActual.a_lunes_viernes
-                ? ItemActual.a_lunes_viernes.split(" - ")
+            const lunesViernes = ItemActual.lunes_viernes_a
+                ? ItemActual.lunes_viernes_a
+                      .split(" - ")
+                      .map((time) => time.trim()) // Aplica trim() a cada parte
                 : ["", ""];
             setLunesViernesDesde(convertTo24HourFormat(lunesViernes[0]));
             setLunesViernesHasta(convertTo24HourFormat(lunesViernes[1]));
 
-            const sabado = ItemActual.a_sabado
-                ? ItemActual.a_sabado.split(" - ")
+            const sabado = ItemActual.sabado_a
+                ? ItemActual.sabado_a.split(" - ").map((time) => time.trim()) // Aplica trim() a cada parte
                 : ["", ""];
             setSabadoDesde(convertTo24HourFormat(sabado[0]));
             setSabadoHasta(convertTo24HourFormat(sabado[1]));
 
             // Manejo del domingo
-            if (ItemActual.a_domingo === "NO LABORA") {
+            if (ItemActual.domingo_a === "CERRADO") {
                 setDomingoDesde("");
                 setDomingoHasta("");
             } else {
-                const domingo = ItemActual.a_domingo.split(" - ");
+                const domingo = ItemActual.domingo_a
+                    .split(" - ")
+                    .map((time) => time.trim()); // Aplica trim() a cada parte
                 setDomingoDesde(convertTo24HourFormat(domingo[0]));
                 setDomingoHasta(convertTo24HourFormat(domingo[1]));
             }
 
             setTelefono(ItemActual.telefono);
 
-            setAgenteCambio(ItemActual.agente_de_cambio);
-            setVimenpaq(ItemActual.vimenpaq);
-            setPagaTodo(ItemActual.pagatodo);
-            setBancoVimenca(ItemActual.banco_vimenca);
-            setRemesas(ItemActual.remesas);
+            setAgenteCambio(convertYNToBoolean(ItemActual.agente_de_cambio));
+            setVimenpaq(convertYNToBoolean(ItemActual.vimenpaq));
+            setPagaTodo(convertYNToBoolean(ItemActual.pagatodo));
+            setBancoVimenca(convertYNToBoolean(ItemActual.banco_vimenca));
+            setRemesas(convertYNToBoolean(ItemActual.remesas));
             setTipoOficina(ItemActual.tipo_de_oficina);
         }
     }, [ItemActual]);
@@ -188,7 +204,39 @@ function EditCard({ onSave }) {
             return; // Detiene la ejecución si hay campos vacíos
         }
 
-        // Crea un objeto con los datos actualizados
+        // Función para convertir de formato 24h a 12h
+        const convertTo12HourFormat = (time24) => {
+            console.log("time24:", time24);
+            const date = parse(time24, "HH:mm", new Date());
+            console.log("date:", date);
+            return format(date, "h:mm a");
+        };
+
+        // Función para formatear el rango de horas
+        const formatTimeRange = (start, end) => {
+            return `${convertTo12HourFormat(start)} - ${convertTo12HourFormat(
+                end
+            )}`;
+        };
+
+        // Preparar los horarios en el formato correcto
+        const lunesViernesHorario = formatTimeRange(
+            lunesViernesDesde,
+            lunesViernesHasta
+        );
+        const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
+        const domingoHorario =
+            domingoDesde && domingoHasta
+                ? formatTimeRange(domingoDesde, domingoHasta)
+                : "NO LABORA";
+
+        // Imprimir en consola los horarios formateados
+        console.log("Horarios formateados:");
+        console.log("Lunes a Viernes:", lunesViernesHorario);
+        console.log("Sábado:", sabadoHorario);
+        console.log("Domingo:", domingoHorario);
+
+        // Crear el objeto con los datos actualizados
         const updatedOficina = {
             id,
             nombre_oficina: nombre,
@@ -196,47 +244,32 @@ function EditCard({ onSave }) {
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: `${convertTo12HourFormat(
-                lunesViernesDesde
-            )} - ${convertTo12HourFormat(lunesViernesHasta)}`,
-            a_sabado: `${convertTo12HourFormat(
-                sabadoDesde
-            )} - ${convertTo12HourFormat(sabadoHasta)}`,
-            a_domingo: domingoDesde
-                ? `${convertTo12HourFormat(
-                      domingoDesde
-                  )} - ${convertTo12HourFormat(domingoHasta)}`
-                : "NO LABORA",
+            a_lunes_viernes: lunesViernesHorario,
+            a_sabado: sabadoHorario,
+            a_domingo: domingoHorario,
             telefono,
-            agente_de_cambio: agenteCambio,
-            vimenpaq,
-            pagatodo: pagaTodo,
-            banco_vimenca: bancoVimenca,
+            agente_de_cambio: convertBooleanToYN(agenteCambio),
+            vimenpaq: convertBooleanToYN(vimenpaq),
+            pagatodo: convertBooleanToYN(pagaTodo),
+            banco_vimenca: convertBooleanToYN(bancoVimenca),
             tipo_de_oficina: tipoOficina,
+            remesas: convertBooleanToYN(remesas),
+            // Asegúrate de incluir todos los campos necesarios
         };
 
         console.log("Datos a actualizar:", updatedOficina);
-        setAgenteCambio(true);
 
         try {
-            // Llama a la función para actualizar la estafeta en la base de datos
-            const updatedData = await updateOficinaInDB(
-                id,
-                updatedOficina,
-                
-            );
+            // Llamar a la función para actualizar la estafeta en la base de datos
+            const updatedData = await updateOficinaInDB(id, updatedOficina);
             console.log("Datos actualizados desde la API:", updatedData);
 
-            // Llama a la función que obtiene los datos de la API
-            /* getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento */
-
-            // Actualiza el estado de la estafeta en edición
             setEditEstafeta(null); // Cierra el modo de edición
             setActiveEstafeta(0); // Regresa a la vista de Oficinas después de guardar
             setShowConfirmPopup(false); // Cierra el popup de confirmación
             onSave(updatedData); // Llama a onSave con los datos actualizados
         } catch (error) {
-            setErrorMessage("Error al guardar los cambios."); // Manejo de errores
+            setErrorMessage("Error al guardar los cambios.");
             console.error("Error al guardar los cambios:", error);
         }
     };

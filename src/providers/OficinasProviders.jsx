@@ -92,6 +92,7 @@ function OficinasProviders({ children }) {
 
     const deleteOficina = useCallback(
         async (id, tipo) => {
+            console.log("borrando el id: ", id);
             try {
                 await axios.delete(`${serverUrl}/sucursales/${id}`, {
                     headers: {
@@ -114,6 +115,7 @@ function OficinasProviders({ children }) {
                     "Error al eliminar oficina:",
                     error.response ? error.response.data : error.message
                 );
+                alert("Error al eliminar oficina");
                 throw error;
             }
         },

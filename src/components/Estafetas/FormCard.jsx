@@ -35,8 +35,44 @@ function FormCard() {
     const [remesas, setRemesas] = useState(false);
     const [tipoOficina, setTipoOficina] = useState("Estafeta");
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
-    const [inputPassword, setInputPassword] = useState("");
+    const [inputPassword, setInputPassword] = useState("")
     const [errorMessage, setErrorMessage] = useState("");
+
+    const convertTo24HourFormat = (time) => {
+        if (!time || typeof time !== "string") {
+            return "";
+        }
+        time = time.replace(/\s+/g, "");
+        let hours, minutes, modifier;
+        const timeParts = time.toLowerCase().match(/(\d+):(\d+)(am|pm)/);
+        if (!timeParts) {
+            return "";
+        }
+        [, hours, minutes, modifier] = timeParts;
+        hours = parseInt(hours, 10);
+        if (modifier === "pm" && hours !== 12) {
+            hours += 12;
+        } else if (modifier === "am" && hours === 12) {
+            hours = 0;
+        }
+        return `${hours.toString().padStart(2, "0")}:${minutes}`;
+    };
+
+    const convertTo12HourFormat = (time) => {
+        if (!time) return "";
+        let [hours, minutes] = time.split(":");
+        hours = parseInt(hours, 10);
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes.padStart(2, '0')}${ampm}`;
+    };
+
+    const formatTimeRange = (start, end) => {
+        const formattedStart = convertTo12HourFormat(start);
+        const formattedEnd = convertTo12HourFormat(end);
+        return `${formattedStart} - ${formattedEnd}`;
+    };
 
     const handleSaveClick = () => {
         setShowConfirmPopup(true); // Muestra el popup de confirmación
@@ -46,35 +82,41 @@ function FormCard() {
         // Validación de campos requeridos
         if (!nombre || !direccion) {
             setErrorMessage("Por favor, completa todos los campos requeridos.");
-            return; // Detiene la ejecución si hay campos vacíos
+            return;
         }
 
-        // Crea un objeto con los datos ingresados
+        // Formatear los horarios
+        const lunesViernesHorario = formatTimeRange(lunesViernesDesde, lunesViernesHasta);
+        const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
+        const domingoHorario = domingoDesde && domingoHasta
+            ? formatTimeRange(domingoDesde, domingoHasta)
+            : "NO LABORA";
+
+        // Crear un objeto con los datos ingresados
         const newOficina = {
             nombre_oficina: nombre,
             direccion,
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: `${lunesViernesDesde} - ${lunesViernesHasta}`,
-            a_sabado: `${sabadoDesde} - ${sabadoHasta}`,
-            a_domingo: domingoDesde ? `${domingoDesde} - ${domingoHasta}` : "NO LABORA",
+            a_lunes_viernes: lunesViernesHorario,
+            a_sabado: sabadoHorario,
+            a_domingo: domingoHorario,
             telefono,
             agente_de_cambio: agenteCambio,
             vimenpaq,
             pagatodo: pagaTodo,
             banco_vimenca: bancoVimenca,
             remesas,
-            tipo_de_oficina: tipoOficina, // Asegúrate de que este valor sea correcto
+            tipo_de_oficina: tipoOficina,
             servicio_principal: "Remesas",
-            id: Math.floor(Math.random() * 1000000) // Genera un número entero aleatorio
+            id: Math.floor(Math.random() * 1000000)
         };
 
         try {
-            // Llama a la función para crear la nueva oficina en la base de datos
-            await addOficina(newOficina, tipoOficina); // Asegúrate de que tipoOficina se pase correctamente
-            console.log("newOficina: ", newOficina);
-            // Limpia los campos después de guardar
+            await addOficina(newOficina, tipoOficina);
+            console.log("Nueva oficina creada:", newOficina);
+            // Limpiar campos y cerrar popup
             setNombre("");
             setDireccion("");
             setProvincia("");
@@ -93,7 +135,7 @@ function FormCard() {
             setBancoVimenca(false);
             setRemesas(false);
             setTipoOficina("Estafeta"); // Asegúrate de que el tipo de oficina se restablezca correctamente
-            setShowConfirmPopup(false); // Cierra el popup de confirmación
+            setShowConfirmPopup(false);
             setActiveEstafeta(0);
         } catch (error) {
             setErrorMessage("Error al guardar los cambios.");
