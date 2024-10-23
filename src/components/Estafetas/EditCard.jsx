@@ -24,7 +24,6 @@ import { useUserContext } from "../../providers/UserProvider"; // Importa el con
 function EditCard({ onSave }) {
     console.log("onSave en estafeta:", onSave);
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
-
     const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
     const [ItemsEstafetas, setItemsEstafetas] = useState([]);
     const { setActiveEstafeta } = useEstafetasContext();
@@ -71,11 +70,21 @@ function EditCard({ onSave }) {
     const [longitud, setLongitud] = useState(null);
     const [lunesViernesDesde, setLunesViernesDesde] = useState("");
     const [lunesViernesHasta, setLunesViernesHasta] = useState("");
+    const [lunesViernesDesde2, setLunesViernesDesde2] = useState("");
+    const [lunesViernesHasta2, setLunesViernesHasta2] = useState("");
     const [sabadoDesde, setSabadoDesde] = useState("");
     const [sabadoHasta, setSabadoHasta] = useState("");
+    const [sabadoDesde2, setSabadoDesde2] = useState("");
+    const [sabadoHasta2, setSabadoHasta2] = useState("");
     const [domingoDesde, setDomingoDesde] = useState("");
     const [domingoHasta, setDomingoHasta] = useState("");
+    const [domingoDesde2, setDomingoDesde2] = useState("");
+    const [domingoHasta2, setDomingoHasta2] = useState("");
+    const [diasFeriadosDesde, setDiasFeriadosDesde] = useState("");
+    const [diasFeriadosHasta, setDiasFeriadosHasta] = useState("");
+
     const [telefono, setTelefono] = useState("");
+    const [servicioPrincipal, setServicioPrincipal] = useState("");
     const [agenteCambio, setAgenteCambio] = useState(false); // Cambiado a booleano
     const [vimenpaq, setVimenpaq] = useState(false); // Cambiado a booleano
     const [pagaTodo, setPagaTodo] = useState(false); // Cambiado a booleano
@@ -85,23 +94,24 @@ function EditCard({ onSave }) {
 
     const convertTo24HourFormat = (time) => {
         if (!time || typeof time !== "string") {
-            return "Formato de hora inválido";
+            return "";
         }
-        // Eliminar todos los espacios en blanco
-        time = time.replace(/\s+/g, "");
+        // Eliminar todos los espacios en blanco excepto el que separa la hora del AM/PM
+        time = time.replace(/\s+/g, " ").trim();
 
         let hours, minutes, modifier;
-        const timeParts = time.toLowerCase().match(/(\d+):(\d+)(am|pm)/);
+        const timeParts = time.toLowerCase().match(/(\d+):(\d+)\s*(am|pm)?/);
 
         if (!timeParts) {
-            return "Formato de hora inválido";
+            return "";
         }
 
         [, hours, minutes, modifier] = timeParts;
         hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
 
-        if (isNaN(hours) || minutes.length !== 2) {
-            return "Formato de hora inválido";
+        if (isNaN(hours) || isNaN(minutes)) {
+            return "";
         }
 
         if (modifier === "pm" && hours !== 12) {
@@ -110,17 +120,20 @@ function EditCard({ onSave }) {
             hours = 0;
         }
 
-        return `${hours.toString().padStart(2, "0")}:${minutes}`;
+        return `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}`;
     };
 
     const convertTo12HourFormat = (time) => {
         if (!time) return "";
         let [hours, minutes] = time.split(":");
         hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
         const ampm = hours >= 12 ? "pm" : "am";
         hours = hours % 12;
         hours = hours ? hours : 12; // la hora '0' debe ser '12'
-        return `${hours}:${minutes.padStart(2, "0")}${ampm}`;
+        return `${hours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
     };
 
     const formatTimeRange = (start, end) => {
@@ -133,7 +146,7 @@ function EditCard({ onSave }) {
     const convertYNToBoolean = (value) => value === "Y";
 
     // Función auxiliar para convertir booleano a "Y"/"N"
-    const convertBooleanToYN = (value) => value ? "Y" : "N";
+    const convertBooleanToYN = (value) => (value ? "Y" : "N");
 
     useEffect(() => {
         if (ItemActual) {
@@ -149,16 +162,28 @@ function EditCard({ onSave }) {
             const lunesViernes = ItemActual.lunes_viernes_a
                 ? ItemActual.lunes_viernes_a
                       .split(" - ")
-                      .map((time) => time.trim()) // Aplica trim() a cada parte
+                      .map((time) => time.trim())
                 : ["", ""];
             setLunesViernesDesde(convertTo24HourFormat(lunesViernes[0]));
             setLunesViernesHasta(convertTo24HourFormat(lunesViernes[1]));
+            const lunesViernes2 = ItemActual.lunes_viernes_b
+                ? ItemActual.lunes_viernes_b
+                      .split(" - ")
+                      .map((time) => time.trim())
+                : ["", ""];
+            setLunesViernesDesde2(convertTo24HourFormat(lunesViernes2[0]));
+            setLunesViernesHasta2(convertTo24HourFormat(lunesViernes2[1]));
 
             const sabado = ItemActual.sabado_a
-                ? ItemActual.sabado_a.split(" - ").map((time) => time.trim()) // Aplica trim() a cada parte
+                ? ItemActual.sabado_a.split(" - ").map((time) => time.trim())
                 : ["", ""];
             setSabadoDesde(convertTo24HourFormat(sabado[0]));
             setSabadoHasta(convertTo24HourFormat(sabado[1]));
+            const sabado2 = ItemActual.sabado_b
+                ? ItemActual.sabado_b.split(" - ").map((time) => time.trim())
+                : ["", ""];
+            setSabadoDesde2(convertTo24HourFormat(sabado2[0]));
+            setSabadoHasta2(convertTo24HourFormat(sabado2[1]));
 
             // Manejo del domingo
             if (ItemActual.domingo_a === "CERRADO") {
@@ -167,13 +192,26 @@ function EditCard({ onSave }) {
             } else {
                 const domingo = ItemActual.domingo_a
                     .split(" - ")
-                    .map((time) => time.trim()); // Aplica trim() a cada parte
+                    .map((time) => time.trim());
                 setDomingoDesde(convertTo24HourFormat(domingo[0]));
                 setDomingoHasta(convertTo24HourFormat(domingo[1]));
             }
+            const domingo2 = ItemActual.domingo_b
+                ? ItemActual.domingo_b.split(" - ").map((time) => time.trim())
+                : ["", ""];
+            setDomingoDesde2(convertTo24HourFormat(domingo2[0]));
+            setDomingoHasta2(convertTo24HourFormat(domingo2[1]));
+
+            const diasFeriados = ItemActual.dias_feriados_a
+                ? ItemActual.dias_feriados_a.split(" - ").map((time) => time.trim())
+                : ["", ""];
+            setDiasFeriadosDesde(convertTo24HourFormat(diasFeriados[0]));
+            setDiasFeriadosHasta(convertTo24HourFormat(diasFeriados[1]));
+            
+
 
             setTelefono(ItemActual.telefono);
-
+            setServicioPrincipal(ItemActual.servicio_principal);
             setAgenteCambio(convertYNToBoolean(ItemActual.agente_de_cambio));
             setVimenpaq(convertYNToBoolean(ItemActual.vimenpaq));
             setPagaTodo(convertYNToBoolean(ItemActual.pagatodo));
@@ -224,18 +262,32 @@ function EditCard({ onSave }) {
             lunesViernesDesde,
             lunesViernesHasta
         );
+        const lunesViernesHorario2 = formatTimeRange(
+            lunesViernesDesde2,
+            lunesViernesHasta2
+        );
         const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
+        const sabadoHorario2 = formatTimeRange(sabadoDesde2, sabadoHasta2);
         const domingoHorario =
             domingoDesde && domingoHasta
                 ? formatTimeRange(domingoDesde, domingoHasta)
-                : "NO LABORA";
+                : "CERRADO";
+        const domingoHorario2 =
+            domingoDesde2 && domingoHasta2
+                ? formatTimeRange(domingoDesde2, domingoHasta2)
+                : "CERRADO";
+
+        const diasFeriadosHorario = formatTimeRange(
+            diasFeriadosDesde,
+            diasFeriadosHasta
+        );
 
         // Imprimir en consola los horarios formateados
         console.log("Horarios formateados:");
         console.log("Lunes a Viernes:", lunesViernesHorario);
         console.log("Sábado:", sabadoHorario);
         console.log("Domingo:", domingoHorario);
-
+        console.log("Dias Feriados:", diasFeriadosHorario);
         // Crear el objeto con los datos actualizados
         const updatedOficina = {
             id,
@@ -244,10 +296,15 @@ function EditCard({ onSave }) {
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: lunesViernesHorario,
-            a_sabado: sabadoHorario,
-            a_domingo: domingoHorario,
+            lunes_viernes_a: lunesViernesHorario,
+            lunes_viernes_b: lunesViernesHorario2,
+            sabado_a: sabadoHorario,
+            sabado_b: sabadoHorario2,
+            domingo_a: domingoHorario,
+            domingo_b: domingoHorario2,
+            dias_feriados_a: diasFeriadosHorario,
             telefono,
+            servicio_principal: servicioPrincipal,
             agente_de_cambio: convertBooleanToYN(agenteCambio),
             vimenpaq: convertBooleanToYN(vimenpaq),
             pagatodo: convertBooleanToYN(pagaTodo),
@@ -350,6 +407,35 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                             </div>
+                            {/* #################### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesDesde2}
+                                        onChange={(e) =>
+                                            setLunesViernesDesde2(
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesHasta2}
+                                        onChange={(e) =>
+                                            setLunesViernesHasta2(
+                                                e.target.value
+                                            )
+                                        }
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div className="flex gap-5 mb-4 p-1">
@@ -376,6 +462,31 @@ function EditCard({ onSave }) {
                                         value={sabadoHasta}
                                         onChange={(e) =>
                                             setSabadoHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            {/* #################### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde: {sabadoDesde2}
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoDesde2}
+                                        onChange={(e) =>
+                                            setSabadoDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta: {sabadoHasta2}
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoHasta2}
+                                        onChange={(e) =>
+                                            setSabadoHasta2(e.target.value)
                                         }
                                     />
                                 </label>
@@ -410,8 +521,68 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                             </div>
+                            {/* #################### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoDesde2}
+                                        onChange={(e) =>
+                                            setDomingoDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoHasta2}
+                                        onChange={(e) =>
+                                            setDomingoHasta2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
+                    {/* #################### */}
+
+
+                    <div className="flex gap-5 p-1 my-4">
+                        <div className="w-4"></div>
+                        <div>
+                            <h3 className="font-semibold">Dias Feriados</h3>
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={diasFeriadosDesde}
+                                        onChange={(e) =>
+                                            setDiasFeriadosDesde(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={diasFeriadosHasta}
+                                        onChange={(e) =>
+                                            setDiasFeriadosHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div className="flex items-center gap-3 p-1">
                         <img
                             src={Loc}
@@ -453,6 +624,30 @@ function EditCard({ onSave }) {
                                         }
                                     />
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex gap-2 items-end mb-1 p-1">
+                        <div className="w-6"></div>
+                        <div className="w-full">
+                            <div className="w-full">
+                                <select
+                                    className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={servicioPrincipal}
+                                    onChange={(e) =>
+                                        setServicioPrincipal(e.target.value)
+                                    }
+                                >
+                                    <option value="">
+                                        Seleccione un servicio principal
+                                    </option>
+                                    <option value="PagaTodo">PagaTodo</option>
+                                    <option value="Remesas">Remesas</option>
+                                    <option value="Banco vimenca">
+                                        Banco vimenca
+                                    </option>
+                                    <option value="Vimenpaq">Vimenpaq</option>
+                                </select>
                             </div>
                         </div>
                     </div>

@@ -72,11 +72,18 @@ function EditCard({ onSave }) {
     const [longitud, setLongitud] = useState(null);
     const [lunesViernesDesde, setLunesViernesDesde] = useState("");
     const [lunesViernesHasta, setLunesViernesHasta] = useState("");
+    const [lunesViernesDesde2, setLunesViernesDesde2] = useState("");
+    const [lunesViernesHasta2, setLunesViernesHasta2] = useState("");
     const [sabadoDesde, setSabadoDesde] = useState("");
     const [sabadoHasta, setSabadoHasta] = useState("");
+    const [sabadoDesde2, setSabadoDesde2] = useState("");
+    const [sabadoHasta2, setSabadoHasta2] = useState("");
     const [domingoDesde, setDomingoDesde] = useState("");
     const [domingoHasta, setDomingoHasta] = useState("");
+    const [domingoDesde2, setDomingoDesde2] = useState("");
+    const [domingoHasta2, setDomingoHasta2] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [servicioPrincipal, setServicioPrincipal] = useState("");
     const [agenteCambio, setAgenteCambio] = useState(false); // Cambiado a booleano
     const [vimenpaq, setVimenpaq] = useState(false); // Cambiado a booleano
     const [pagaTodo, setPagaTodo] = useState(false); // Cambiado a booleano
@@ -152,11 +159,23 @@ function EditCard({ onSave }) {
             setLunesViernesDesde(convertTo24HourFormat(lunesViernes[0]));
             setLunesViernesHasta(convertTo24HourFormat(lunesViernes[1]));
 
+            const lunesViernes2 = ItemActual.lunes_viernes_b
+                ? ItemActual.lunes_viernes_b.split(" - ")
+                : ["", ""];
+            setLunesViernesDesde2(convertTo24HourFormat(lunesViernes2[0]));
+            setLunesViernesHasta2(convertTo24HourFormat(lunesViernes2[1]));
+
             const sabado = ItemActual.sabado_a
                 ? ItemActual.sabado_a.split(" - ")
                 : ["", ""];
             setSabadoDesde(convertTo24HourFormat(sabado[0]));
             setSabadoHasta(convertTo24HourFormat(sabado[1]));
+
+            const sabado2 = ItemActual.sabado_b
+                ? ItemActual.sabado_b.split(" - ")
+                : ["", ""];
+            setSabadoDesde2(convertTo24HourFormat(sabado2[0]));
+            setSabadoHasta2(convertTo24HourFormat(sabado2[1]));
 
             // Manejo del domingo
             if (ItemActual.domingo_a === "CERRADO") {
@@ -168,8 +187,14 @@ function EditCard({ onSave }) {
                 setDomingoHasta(convertTo24HourFormat(domingo[1]));
             }
 
-            setTelefono(ItemActual.telefono);
+            const domingo2 = ItemActual.domingo_b
+                ? ItemActual.domingo_b.split(" - ")
+                : ["", ""];
+            setDomingoDesde2(convertTo24HourFormat(domingo2[0]));
+            setDomingoHasta2(convertTo24HourFormat(domingo2[1]));
 
+            setTelefono(ItemActual.telefono);
+            setServicioPrincipal(ItemActual.servicio_principal);
             setAgenteCambio(convertYNToBoolean(ItemActual.agente_de_cambio));
             setVimenpaq(convertYNToBoolean(ItemActual.vimenpaq));
             setPagaTodo(convertYNToBoolean(ItemActual.pagatodo));
@@ -200,7 +225,48 @@ function EditCard({ onSave }) {
             return; // Detiene la ejecución si hay campos vacíos
         }
 
-        // Crea un objeto con los datos actualizados
+        // Función para convertir de formato 24h a 12h
+        const convertTo12HourFormat = (time24) => {
+            console.log("time24:", time24);
+            const date = parse(time24, "HH:mm", new Date());
+            console.log("date:", date);
+            return format(date, "h:mm a");
+        };
+
+        // Función para formatear el rango de horas
+        const formatTimeRange = (start, end) => {
+            return `${convertTo12HourFormat(start)} - ${convertTo12HourFormat(
+                end
+            )}`;
+        };
+
+        // Preparar los horarios en el formato correcto
+        const lunesViernesHorario = formatTimeRange(
+            lunesViernesDesde,
+            lunesViernesHasta
+        );
+        const lunesViernesHorario2 = formatTimeRange(
+            lunesViernesDesde2,
+            lunesViernesHasta2
+        );
+        const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
+        const sabadoHorario2 = formatTimeRange(sabadoDesde2, sabadoHasta2);
+        const domingoHorario =
+            domingoDesde && domingoHasta
+                ? formatTimeRange(domingoDesde, domingoHasta)
+                : "CERRADO";
+        const domingoHorario2 =
+            domingoDesde2 && domingoHasta2
+                ? formatTimeRange(domingoDesde2, domingoHasta2)
+                : "CERRADO";
+
+        // Imprimir en consola los horarios formateados
+        console.log("Horarios formateados:");
+        console.log("Lunes a Viernes:", lunesViernesHorario);
+        console.log("Sábado:", sabadoHorario);
+        console.log("Domingo:", domingoHorario);
+
+        // Crear el objeto con los datos actualizados
         const updatedOficina = {
             id,
             nombre_oficina: nombre,
@@ -208,20 +274,22 @@ function EditCard({ onSave }) {
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: formatTimeRange(lunesViernesDesde, lunesViernesHasta),
-            a_sabado: formatTimeRange(sabadoDesde, sabadoHasta),
-            a_domingo: domingoDesde && domingoHasta
-                ? formatTimeRange(domingoDesde, domingoHasta)
-                : "NO LABORA",
+            lunes_viernes_a: lunesViernesHorario,
+            lunes_viernes_b: lunesViernesHorario2,
+            sabado_a: sabadoHorario,
+            sabado_b: sabadoHorario2,
+            domingo_a: domingoHorario,
+            domingo_b: domingoHorario2,
             telefono,
+            servicio_principal: servicioPrincipal,
             agente_de_cambio: convertBooleanToYN(agenteCambio),
             vimenpaq: convertBooleanToYN(vimenpaq),
             pagatodo: convertBooleanToYN(pagaTodo),
             banco_vimenca: convertBooleanToYN(bancoVimenca),
-            remesas: convertBooleanToYN(remesas),
             tipo_de_oficina: tipoOficina,
+            remesas: convertBooleanToYN(remesas),
+            // Asegúrate de incluir todos los campos necesarios
         };
-
         console.log("Datos a actualizar:", updatedOficina);
         setAgenteCambio(true);
 
@@ -324,6 +392,31 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                             </div>
+                            {/* ############### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesDesde2}
+                                        onChange={(e) =>
+                                            setLunesViernesDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesHasta2}
+                                        onChange={(e) =>
+                                            setLunesViernesHasta2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div className="flex gap-5 mb-4 p-1">
@@ -354,6 +447,31 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                             </div>
+                            {/* ############### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde: {sabadoDesde2}
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoDesde2}
+                                        onChange={(e) =>
+                                            setSabadoDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta: {sabadoHasta2}
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoHasta2}
+                                        onChange={(e) =>
+                                            setSabadoHasta2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div className="flex gap-5 p-1">
@@ -380,6 +498,31 @@ function EditCard({ onSave }) {
                                         value={domingoHasta}
                                         onChange={(e) =>
                                             setDomingoHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            {/* ############### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoDesde2}
+                                        onChange={(e) =>
+                                            setDomingoDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoHasta2}
+                                        onChange={(e) =>
+                                            setDomingoHasta2(e.target.value)
                                         }
                                     />
                                 </label>
@@ -430,6 +573,33 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </div>
+
+
+                    <div className="flex gap-2 items-end mb-1 p-1">
+                        <div className="w-6"></div>
+                        <div className="w-full">
+                            <div className="w-full">
+                                <select
+                                    className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={servicioPrincipal}
+                                    onChange={(e) =>
+                                        setServicioPrincipal(e.target.value)
+                                    }
+                                >
+                                    <option value="">
+                                        Seleccione un servicio principal
+                                    </option>
+                                    <option value="PagaTodo">PagaTodo</option>
+                                    <option value="Remesas">Remesas</option>
+                                    <option value="Banco vimenca">
+                                        Banco vimenca
+                                    </option>
+                                    <option value="Vimenpaq">Vimenpaq</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="flex text-xs gap-3 text-center justify-center py-2 text-gray-400 w-full">
                         <p>Lat: {latitud}</p>
                         <p>Long: {longitud}</p>

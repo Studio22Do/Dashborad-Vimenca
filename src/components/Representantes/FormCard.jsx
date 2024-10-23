@@ -23,11 +23,18 @@ function FormCard() {
     const [longitud, setLongitud] = useState(null);
     const [lunesViernesDesde, setLunesViernesDesde] = useState("");
     const [lunesViernesHasta, setLunesViernesHasta] = useState("");
+    const [lunesViernesDesde2, setLunesViernesDesde2] = useState("");
+    const [lunesViernesHasta2, setLunesViernesHasta2] = useState("");
     const [sabadoDesde, setSabadoDesde] = useState("");
     const [sabadoHasta, setSabadoHasta] = useState("");
+    const [sabadoDesde2, setSabadoDesde2] = useState("");
+    const [sabadoHasta2, setSabadoHasta2] = useState("");
     const [domingoDesde, setDomingoDesde] = useState("");
     const [domingoHasta, setDomingoHasta] = useState("");
+    const [domingoDesde2, setDomingoDesde2] = useState("");
+    const [domingoHasta2, setDomingoHasta2] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [servicioPrincipal, setServicioPrincipal] = useState("");
     const [agenteCambio, setAgenteCambio] = useState(false);
     const [vimenpaq, setVimenpaq] = useState(false);
     const [pagaTodo, setPagaTodo] = useState(false);
@@ -72,10 +79,10 @@ function FormCard() {
         if (!time) return "";
         let [hours, minutes] = time.split(":");
         hours = parseInt(hours, 10);
-        const ampm = hours >= 12 ? 'pm' : 'am';
+        const ampm = hours >= 12 ? "pm" : "am";
         hours = hours % 12;
         hours = hours ? hours : 12; // la hora '0' debe ser '12'
-        return `${hours}:${minutes.padStart(2, '0')}${ampm}`;
+        return `${hours}:${minutes.padStart(2, "0")}${ampm}`;
     };
 
     const formatTimeRange = (start, end) => {
@@ -96,11 +103,24 @@ function FormCard() {
         }
 
         // Formatear los horarios
-        const lunesViernesHorario = formatTimeRange(lunesViernesDesde, lunesViernesHasta);
+        const lunesViernesHorario = formatTimeRange(
+            lunesViernesDesde,
+            lunesViernesHasta
+        );
+        const lunesViernesHorario2 = formatTimeRange(
+            lunesViernesDesde2,
+            lunesViernesHasta2
+        );
         const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
-        const domingoHorario = domingoDesde && domingoHasta
-            ? formatTimeRange(domingoDesde, domingoHasta)
-            : "NO LABORA";
+        const sabadoHorario2 = formatTimeRange(sabadoDesde2, sabadoHasta2);
+        const domingoHorario =
+            domingoDesde && domingoHasta
+                ? formatTimeRange(domingoDesde, domingoHasta)
+                : "NO LABORA";
+        const domingoHorario2 =
+            domingoDesde2 && domingoHasta2
+                ? formatTimeRange(domingoDesde2, domingoHasta2)
+                : "NO LABORA";
 
         // Crear un objeto con los datos ingresados
         const newOficina = {
@@ -109,9 +129,12 @@ function FormCard() {
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: lunesViernesHorario,
-            a_sabado: sabadoHorario,
-            a_domingo: domingoHorario,
+            lunes_viernes_a: lunesViernesHorario,
+            sabado_a: sabadoHorario,
+            domingo_a: domingoHorario,
+            lunes_viernes_b: lunesViernesHorario2,
+            sabado_b: sabadoHorario2,
+            domingo_b: domingoHorario2,
             telefono,
             agente_de_cambio: agenteCambio ? "Y" : "N",
             vimenpaq: vimenpaq ? "Y" : "N",
@@ -119,8 +142,8 @@ function FormCard() {
             banco_vimenca: bancoVimenca ? "Y" : "N",
             remesas: remesas ? "Y" : "N",
             tipo_de_oficina: tipoOficina,
-            servicio_principal: "Remesas",
-            id: Math.floor(Math.random() * 1000000)
+            servicio_principal: servicioPrincipal,
+            id: Math.floor(Math.random() * 1000000),
         };
 
         try {
@@ -134,11 +157,18 @@ function FormCard() {
             setLongitud(null);
             setLunesViernesDesde("");
             setLunesViernesHasta("");
+            setLunesViernesDesde2("");
+            setLunesViernesHasta2("");
             setSabadoDesde("");
             setSabadoHasta("");
+            setSabadoDesde2("");
+            setSabadoHasta2("");
             setDomingoDesde("");
             setDomingoHasta("");
+            setDomingoDesde2("");
+            setDomingoHasta2("");
             setTelefono("");
+            setServicioPrincipal("");
             setAgenteCambio(false);
             setVimenpaq(false);
             setPagaTodo(false);
@@ -167,14 +197,18 @@ function FormCard() {
                     <div className="flex gap-2 items-end mb-4 p-1 w-full">
                         <div className="w-7"></div>
                         <div className="w-full">
-                            <h3 className="font-semibold">Nombre de la oficina</h3>
+                            <h3 className="font-semibold">
+                                Nombre de la oficina
+                            </h3>
                             <div className="flex gap-8 mt-1">
                                 <label className="text-sm text-gray-500 w-full">
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="text"
                                         value={nombre}
-                                        onChange={(e) => setNombre(e.target.value)}
+                                        onChange={(e) =>
+                                            setNombre(e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
@@ -191,7 +225,9 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={lunesViernesDesde}
-                                        onChange={(e) => setLunesViernesDesde(e.target.value)}
+                                        onChange={(e) =>
+                                            setLunesViernesDesde(e.target.value)
+                                        }
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
@@ -200,7 +236,34 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={lunesViernesHasta}
-                                        onChange={(e) => setLunesViernesHasta(e.target.value)}
+                                        onChange={(e) =>
+                                            setLunesViernesHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            {/* ############# */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesDesde2}
+                                        onChange={(e) =>
+                                            setLunesViernesDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesHasta2}
+                                        onChange={(e) =>
+                                            setLunesViernesHasta2(e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
@@ -217,7 +280,9 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={sabadoDesde}
-                                        onChange={(e) => setSabadoDesde(e.target.value)}
+                                        onChange={(e) =>
+                                            setSabadoDesde(e.target.value)
+                                        }
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
@@ -226,7 +291,34 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={sabadoHasta}
-                                        onChange={(e) => setSabadoHasta(e.target.value)}
+                                        onChange={(e) =>
+                                            setSabadoHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            {/* ############# */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoDesde2}
+                                        onChange={(e) =>
+                                            setSabadoDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoHasta2}
+                                        onChange={(e) =>
+                                            setSabadoHasta2(e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
@@ -243,7 +335,9 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={domingoDesde}
-                                        onChange={(e) => setDomingoDesde(e.target.value)}
+                                        onChange={(e) =>
+                                            setDomingoDesde(e.target.value)
+                                        }
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
@@ -252,7 +346,34 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={domingoHasta}
-                                        onChange={(e) => setDomingoHasta(e.target.value)}
+                                        onChange={(e) =>
+                                            setDomingoHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                            {/* ############# */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoDesde2}
+                                        onChange={(e) =>
+                                            setDomingoDesde2(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoHasta2}
+                                        onChange={(e) =>
+                                            setDomingoHasta2(e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
@@ -266,7 +387,9 @@ function FormCard() {
                                     <textarea
                                         className="de text-black relative flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         value={direccion}
-                                        onChange={(e) => setDireccion(e.target.value)}
+                                        onChange={(e) =>
+                                            setDireccion(e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
@@ -282,12 +405,41 @@ function FormCard() {
                                         type="tel"
                                         placeholder="809-000-0000"
                                         value={telefono}
-                                        onChange={(e) => setTelefono(e.target.value)}
+                                        onChange={(e) =>
+                                            setTelefono(e.target.value)
+                                        }
                                     />
                                 </label>
                             </div>
                         </div>
                     </div>
+
+                    <div className="flex gap-2 items-end mb-1 p-1">
+                        <div className="w-6"></div>
+                        <div className="w-full">
+                            <div className="w-full">
+                                <select
+                                    className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={servicioPrincipal}
+                                    onChange={(e) =>
+                                        setServicioPrincipal(e.target.value)
+                                    }
+                                >
+                                    <option value="">
+                                        Seleccione un servicio principal
+                                    </option>
+                                    <option value="PagaTodo">PagaTodo</option>
+                                    <option value="Remesas">Remesas</option>
+                                    <option value="Banco vimenca">
+                                        Banco vimenca
+                                    </option>
+                                    <option value="Vimenpaq">Vimenpaq</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div className="flex flex-col gap-3 py-7 justify-center w-full">
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
@@ -330,7 +482,11 @@ function FormCard() {
                             Guardar
                         </button>
                     </div>
-                    <Popup open={showConfirmPopup} onClose={handleCancelSave} modal>
+                    <Popup
+                        open={showConfirmPopup}
+                        onClose={handleCancelSave}
+                        modal
+                    >
                         <div className="bg-white py-8 px-12 rounded-lg shadow-lg">
                             <h2 className="font-bold text-xl text-center mb-4 text-[--primary]">
                                 ¿Estás seguro de que deseas continuar?
@@ -341,7 +497,9 @@ function FormCard() {
                                     type="password"
                                     id="editCardPassword"
                                     value={inputPassword}
-                                    onChange={(e) => setInputPassword(e.target.value)}
+                                    onChange={(e) =>
+                                        setInputPassword(e.target.value)
+                                    }
                                     className="border rounded-md p-2 w-full"
                                     placeholder="Tu Contraseña"
                                     autoComplete="off"

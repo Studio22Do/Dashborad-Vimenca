@@ -23,11 +23,18 @@ function FormCard() {
     const [longitud, setLongitud] = useState(null);
     const [lunesViernesDesde, setLunesViernesDesde] = useState("");
     const [lunesViernesHasta, setLunesViernesHasta] = useState("");
+    const [lunesViernesDesde2, setLunesViernesDesde2] = useState("");
+    const [lunesViernesHasta2, setLunesViernesHasta2] = useState("");
     const [sabadoDesde, setSabadoDesde] = useState("");
     const [sabadoHasta, setSabadoHasta] = useState("");
+    const [sabadoDesde2, setSabadoDesde2] = useState("");
+    const [sabadoHasta2, setSabadoHasta2] = useState("");
     const [domingoDesde, setDomingoDesde] = useState("");
     const [domingoHasta, setDomingoHasta] = useState("");
+    const [domingoDesde2, setDomingoDesde2] = useState("");
+    const [domingoHasta2, setDomingoHasta2] = useState("");
     const [telefono, setTelefono] = useState("");
+    const [servicioPrincipal, setServicioPrincipal] = useState("");
     const [agenteCambio, setAgenteCambio] = useState(false);
     const [vimenpaq, setVimenpaq] = useState(false);
     const [pagaTodo, setPagaTodo] = useState(false);
@@ -87,9 +94,14 @@ function FormCard() {
 
         // Formatear los horarios
         const lunesViernesHorario = formatTimeRange(lunesViernesDesde, lunesViernesHasta);
+        const lunesViernesHorario2 = formatTimeRange(lunesViernesDesde2, lunesViernesHasta2);
         const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
+        const sabadoHorario2 = formatTimeRange(sabadoDesde2, sabadoHasta2);
         const domingoHorario = domingoDesde && domingoHasta
             ? formatTimeRange(domingoDesde, domingoHasta)
+            : "NO LABORA";
+        const domingoHorario2 = domingoDesde2 && domingoHasta2
+            ? formatTimeRange(domingoDesde2, domingoHasta2)
             : "NO LABORA";
 
         // Crear un objeto con los datos ingresados
@@ -99,17 +111,21 @@ function FormCard() {
             provincia,
             latitud,
             longitud,
-            a_lunes_viernes: lunesViernesHorario,
-            a_sabado: sabadoHorario,
-            a_domingo: domingoHorario,
+            lunes_viernes_a: lunesViernesHorario,
+            lunes_viernes_b: lunesViernesHorario2,
+            sabado_a: sabadoHorario,
+            sabado_b: sabadoHorario2,
+            domingo_a: domingoHorario,
+            domingo_b: domingoHorario2,
             telefono,
+            
             agente_de_cambio: agenteCambio ? "Y" : "N",
             vimenpaq: vimenpaq ? "Y" : "N",
             pagatodo: pagaTodo ? "Y" : "N",
             banco_vimenca: bancoVimenca ? "Y" : "N",
             remesas: remesas ? "Y" : "N",
             tipo_de_oficina: tipoOficina,
-            servicio_principal: "Remesas",
+            servicio_principal: servicioPrincipal,
             id: Math.floor(Math.random() * 1000000)
         };
 
@@ -124,11 +140,18 @@ function FormCard() {
             setLongitud(null);
             setLunesViernesDesde("");
             setLunesViernesHasta("");
+            setLunesViernesDesde2("");
+            setLunesViernesHasta2("");
             setSabadoDesde("");
             setSabadoHasta("");
+            setSabadoDesde2("");
+            setSabadoHasta2("");
             setDomingoDesde("");
             setDomingoHasta("");
+            setDomingoDesde2("");
+            setDomingoHasta2("");
             setTelefono("");
+            setServicioPrincipal("");
             setAgenteCambio(false);
             setVimenpaq(false);
             setPagaTodo(false);
@@ -194,6 +217,27 @@ function FormCard() {
                                     />
                                 </label>
                             </div>
+                            {/* #################### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesDesde2}
+                                        onChange={(e) => setLunesViernesDesde2(e.target.value)}
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={lunesViernesHasta2}
+                                        onChange={(e) => setLunesViernesHasta2(e.target.value)}
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div className="flex gap-5 mb-4 p-1">
@@ -220,6 +264,27 @@ function FormCard() {
                                     />
                                 </label>
                             </div>
+                            {/* #################### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoDesde2}
+                                        onChange={(e) => setSabadoDesde2(e.target.value)}
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={sabadoHasta2}
+                                        onChange={(e) => setSabadoHasta2(e.target.value)}
+                                    />
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div className="flex gap-5 p-1">
@@ -243,6 +308,27 @@ function FormCard() {
                                         type="time"
                                         value={domingoHasta}
                                         onChange={(e) => setDomingoHasta(e.target.value)}
+                                    />
+                                </label>
+                            </div>
+                            {/* #################### */}
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoDesde2}
+                                        onChange={(e) => setDomingoDesde2(e.target.value)}
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={domingoHasta2}
+                                        onChange={(e) => setDomingoHasta2(e.target.value)}
                                     />
                                 </label>
                             </div>
@@ -278,6 +364,36 @@ function FormCard() {
                             </div>
                         </div>
                     </div>
+
+
+                    <div className="flex gap-2 items-end mb-1 p-1">
+                        <div className="w-6"></div>
+                        <div className="w-full">
+                            <div className="w-full">
+                                <select
+                                    className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={servicioPrincipal}
+                                    onChange={(e) =>
+                                        setServicioPrincipal(e.target.value)
+                                    }
+                                >
+                                    <option value="">
+                                        Seleccione un servicio principal
+                                    </option>
+                                    <option value="PagaTodo">PagaTodo</option>
+                                    <option value="Remesas">Remesas</option>
+                                    <option value="Banco vimenca">
+                                        Banco vimenca
+                                    </option>
+                                    <option value="Vimenpaq">Vimenpaq</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
                     <div className="flex flex-col gap-3 py-7 justify-center w-full">
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
