@@ -83,6 +83,8 @@ function EditCard({ onSave }) {
     const [domingoHasta, setDomingoHasta] = useState("");
     const [domingoDesde2, setDomingoDesde2] = useState("");
     const [domingoHasta2, setDomingoHasta2] = useState("");
+    const [diasFeriadosDesde, setDiasFeriadosDesde] = useState("");
+    const [diasFeriadosHasta, setDiasFeriadosHasta] = useState("");
     const [telefono, setTelefono] = useState("");
     const [servicioPrincipal, setServicioPrincipal] = useState("");
     const [agenteCambio, setAgenteCambio] = useState(false); // Cambiado a booleano
@@ -195,6 +197,12 @@ function EditCard({ onSave }) {
             setDomingoDesde2(convertTo24HourFormat(domingo2[0]));
             setDomingoHasta2(convertTo24HourFormat(domingo2[1]));
 
+            const diasFeriados = ItemActual.dias_feriados_a
+                ? ItemActual.dias_feriados_a.split(" - ").map((time) => time.trim())
+                : ["", ""];
+            setDiasFeriadosDesde(convertTo24HourFormat(diasFeriados[0]));
+            setDiasFeriadosHasta(convertTo24HourFormat(diasFeriados[1]));
+
             setTelefono(ItemActual.telefono);
             setServicioPrincipal(ItemActual.servicio_principal);
 
@@ -262,6 +270,10 @@ function EditCard({ onSave }) {
             domingoDesde2 && domingoHasta2
                 ? formatTimeRange(domingoDesde2, domingoHasta2)
                 : "CERRADO";
+        const diasFeriadosHorario = formatTimeRange(
+            diasFeriadosDesde,
+            diasFeriadosHasta
+        );
 
         // Imprimir en consola los horarios formateados
         console.log("Horarios formateados:");
@@ -283,6 +295,7 @@ function EditCard({ onSave }) {
             sabado_b: sabadoHorario2,
             domingo_a: domingoHorario,
             domingo_b: domingoHorario2,
+            dias_feriados_a: diasFeriadosHorario,
             telefono,
             servicio_principal: servicioPrincipal,
             agente_de_cambio: convertBooleanToYN(agenteCambio),
@@ -525,6 +538,41 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </div>
+
+
+                    <div className="flex gap-5 p-1 my-4">
+                        <div className="w-4"></div>
+                        <div>
+                            <h3 className="font-semibold">Dias Feriados</h3>
+                            <div className="flex gap-8 mt-1">
+                                <label className="text-sm text-gray-500">
+                                    Desde:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={diasFeriadosDesde}
+                                        onChange={(e) =>
+                                            setDiasFeriadosDesde(e.target.value)
+                                        }
+                                    />
+                                </label>
+                                <label className="text-sm text-gray-500">
+                                    Hasta:
+                                    <input
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="time"
+                                        value={diasFeriadosHasta}
+                                        onChange={(e) =>
+                                            setDiasFeriadosHasta(e.target.value)
+                                        }
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
                     <div className="flex items-center gap-3 p-1">
                         <img
                             src={Loc}
