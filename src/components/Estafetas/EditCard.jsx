@@ -125,20 +125,27 @@ function EditCard({ onSave }) {
             .padStart(2, "0")}`;
     };
 
-    const convertTo12HourFormat = (time) => {
-        if (!time) return "";
-        let [hours, minutes] = time.split(":");
-        hours = parseInt(hours, 10);
-        minutes = parseInt(minutes, 10);
-        const ampm = hours >= 12 ? "pm" : "am";
-        hours = hours % 12;
-        hours = hours ? hours : 12; // la hora '0' debe ser '12'
-        return `${hours}:${minutes.toString().padStart(2, "0")} ${ampm}`;
+    const convertTo12HourFormat = (time24) => {
+        if (!time24 || time24 === "") return "";
+        try {
+            const [hours, minutes] = time24.split(':').map(Number);
+            if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                console.warn(`Formato de hora inválido: ${time24}`);
+                return "";
+            }
+            const date = new Date(2000, 0, 1, hours, minutes);
+            return format(date, 'h:mm a');
+        } catch (error) {
+            console.error(`Error al convertir la hora: ${time24}`, error);
+            return "";
+        }
     };
 
     const formatTimeRange = (start, end) => {
+        if (!start || !end) return "CERRADO";
         const formattedStart = convertTo12HourFormat(start);
         const formattedEnd = convertTo12HourFormat(end);
+        if (!formattedStart || !formattedEnd) return "CERRADO";
         return `${formattedStart} - ${formattedEnd}`;
     };
 
@@ -242,45 +249,14 @@ function EditCard({ onSave }) {
             return; // Detiene la ejecución si hay campos vacíos
         }
 
-        // Función para convertir de formato 24h a 12h
-        const convertTo12HourFormat = (time24) => {
-            console.log("time24:", time24);
-            const date = parse(time24, "HH:mm", new Date());
-            console.log("date:", date);
-            return format(date, "h:mm a");
-        };
-
-        // Función para formatear el rango de horas
-        const formatTimeRange = (start, end) => {
-            return `${convertTo12HourFormat(start)} - ${convertTo12HourFormat(
-                end
-            )}`;
-        };
-
         // Preparar los horarios en el formato correcto
-        const lunesViernesHorario = formatTimeRange(
-            lunesViernesDesde,
-            lunesViernesHasta
-        );
-        const lunesViernesHorario2 = formatTimeRange(
-            lunesViernesDesde2,
-            lunesViernesHasta2
-        );
+        const lunesViernesHorario = formatTimeRange(lunesViernesDesde, lunesViernesHasta);
+        const lunesViernesHorario2 = formatTimeRange(lunesViernesDesde2, lunesViernesHasta2);
         const sabadoHorario = formatTimeRange(sabadoDesde, sabadoHasta);
         const sabadoHorario2 = formatTimeRange(sabadoDesde2, sabadoHasta2);
-        const domingoHorario =
-            domingoDesde && domingoHasta
-                ? formatTimeRange(domingoDesde, domingoHasta)
-                : "CERRADO";
-        const domingoHorario2 =
-            domingoDesde2 && domingoHasta2
-                ? formatTimeRange(domingoDesde2, domingoHasta2)
-                : "CERRADO";
-
-        const diasFeriadosHorario = formatTimeRange(
-            diasFeriadosDesde,
-            diasFeriadosHasta
-        );
+        const domingoHorario = formatTimeRange(domingoDesde, domingoHasta);
+        const domingoHorario2 = formatTimeRange(domingoDesde2, domingoHasta2);
+        const diasFeriadosHorario = formatTimeRange(diasFeriadosDesde, diasFeriadosHasta);
 
         // Imprimir en consola los horarios formateados
         console.log("Horarios formateados:");
@@ -288,6 +264,7 @@ function EditCard({ onSave }) {
         console.log("Sábado:", sabadoHorario);
         console.log("Domingo:", domingoHorario);
         console.log("Dias Feriados:", diasFeriadosHorario);
+
         // Crear el objeto con los datos actualizados
         const updatedOficina = {
             id,
