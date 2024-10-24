@@ -7,8 +7,7 @@ export default defineConfig({
   /* server: {
     proxy: {
       '/api': {
-        target: 'http://172.18.102.46:3000', //server 
-        target: 'https://66.179.210.91', //ionos
+        target: 'https://mapasgv.com/', //ionos
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

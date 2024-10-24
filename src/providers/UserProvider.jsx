@@ -26,7 +26,7 @@ export function UserProvider({ children }) {
                     withCredentials: true,
                     headers: {
                         "Content-Type": "application/json",
-                        Accept: "application/json",
+                        /* Accept: "application/json", */
                     },
                 }
             );
