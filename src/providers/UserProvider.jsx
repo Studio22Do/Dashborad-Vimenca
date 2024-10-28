@@ -18,15 +18,14 @@ export function UserProvider({ children }) {
             const response = await axios.post(
                 `${serverUrl}/login/`,
                 {
-                    /* useremail: email, //server */
-                    usermail: email, // ionos
+                    usermail: email,
                     password,
                 },
                 {
                     withCredentials: true,
                     headers: {
                         "Content-Type": "application/json",
-                        /* Accept: "application/json", */
+                        "Access-Control-Allow-Origin": "*",  // Añadir este header
                     },
                 }
             );
@@ -45,7 +44,7 @@ export function UserProvider({ children }) {
                 "Error al iniciar sesión:",
                 error.response ? error.response.data : error.message
             );
-            return false; // Indica que el inicio de sesión falló
+            throw error; // Lanzar el error para mejor manejo
         }
     };
 
