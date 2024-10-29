@@ -41,6 +41,7 @@ function OficinasProviders({ children }) {
             console.log("se ejecuto la funcion de editar en oficinasproviers");
             return axios
                 .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {
+                    credentials: 'include',
                     headers: {
                         Authorization: `Bearer ${token}`,
                         withCredentials: true,

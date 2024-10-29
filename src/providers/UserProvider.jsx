@@ -23,6 +23,7 @@ export function UserProvider({ children }) {
                 },
                 {
                     withCredentials: true,
+                    credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
                         "Access-Control-Allow-Origin": "*",  // Añadir este header
