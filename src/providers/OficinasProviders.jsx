@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useCallback, useMemo, useContext } from "react";
+import React, {
+    useState,
+    useEffect,
+    useCallback,
+    useMemo,
+    useContext,
+} from "react";
 import axios from "axios";
 import { useUserContext } from "./UserProvider";
 
 const ItemsOficinasContext = React.createContext();
 
-
 const serverUrl = import.meta.env.VITE_SERVER_URL;
-
 
 function useItemsOficinasContext() {
     return useContext(ItemsOficinasContext);
@@ -27,26 +31,37 @@ function OficinasProviders({ children }) {
         representantes: [],
         estafetas: [],
     });
-    
+
     console.log("itemsOficinas despues de declarar: ", itemsOficinas);
 
     const { token } = useUserContext();
 
     const updateOficinaInDB = useCallback(
         (id, updatedOficina) => {
-            console.log("se ejecuto la funcion de editar en oficinasproviers")
+            console.log("se ejecuto la funcion de editar en oficinasproviers");
             return axios
                 .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        withCredentials: true,
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Access-Control-Allow-Origin": "*", // Añadir este header
+                        },
                     },
                 })
                 .then(() => getOficinas(token)) // Cambiado para usar el resultado
                 .then((data) => {
                     setItemsOficinas({
-                        sucursales: data.filter((d) => d.tipo_de_oficina === "Sucursal"),
-                        representantes: data.filter((d) => d.tipo_de_oficina === "Representante"),
-                        estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                        sucursales: data.filter(
+                            (d) => d.tipo_de_oficina === "Sucursal"
+                        ),
+                        representantes: data.filter(
+                            (d) => d.tipo_de_oficina === "Representante"
+                        ),
+                        estafetas: data.filter(
+                            (d) => d.tipo_de_oficina === "Estafeta"
+                        ),
                     });
                 })
                 .catch((error) => {
@@ -62,22 +77,24 @@ function OficinasProviders({ children }) {
     const addOficina = useCallback(
         async (newOficina, tipo) => {
             try {
-                await axios.post(
-                    `${serverUrl}/sucursales/`,
-                    newOficina,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                await axios.post(`${serverUrl}/sucursales/`, newOficina, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
                 // Obtener los datos actualizados después de agregar la nueva oficina
                 const data = await getOficinas(token);
                 // Actualizar el estado con los datos filtrados
                 setItemsOficinas({
-                    sucursales: data.filter((d) => d.tipo_de_oficina === "Sucursal"),
-                    representantes: data.filter((d) => d.tipo_de_oficina === "Representante"),
-                    estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                    sucursales: data.filter(
+                        (d) => d.tipo_de_oficina === "Sucursal"
+                    ),
+                    representantes: data.filter(
+                        (d) => d.tipo_de_oficina === "Representante"
+                    ),
+                    estafetas: data.filter(
+                        (d) => d.tipo_de_oficina === "Estafeta"
+                    ),
                 });
             } catch (error) {
                 console.error(
@@ -99,16 +116,24 @@ function OficinasProviders({ children }) {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log("Se ejecutó la función de eliminar en oficinasproviders");
-                
+                console.log(
+                    "Se ejecutó la función de eliminar en oficinasproviders"
+                );
+
                 // Obtener los datos actualizados después de eliminar la oficina
                 const data = await getOficinas(token);
-                
+
                 // Actualizar el estado con los datos filtrados
                 setItemsOficinas({
-                    sucursales: data.filter((d) => d.tipo_de_oficina === "Sucursal"),
-                    representantes: data.filter((d) => d.tipo_de_oficina === "Representante"),
-                    estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                    sucursales: data.filter(
+                        (d) => d.tipo_de_oficina === "Sucursal"
+                    ),
+                    representantes: data.filter(
+                        (d) => d.tipo_de_oficina === "Representante"
+                    ),
+                    estafetas: data.filter(
+                        (d) => d.tipo_de_oficina === "Estafeta"
+                    ),
                 });
             } catch (error) {
                 console.error(
@@ -128,18 +153,19 @@ function OficinasProviders({ children }) {
                 const data = await getOficinas(token);
                 console.log("data desde oficinas", data);
                 setItemsOficinas({
-                    sucursales: data.filter((d) => d.tipo_de_oficina
-                    === "Sucursal"),
+                    sucursales: data.filter(
+                        (d) => d.tipo_de_oficina === "Sucursal"
+                    ),
                     representantes: data.filter(
                         (d) => d.tipo_de_oficina === "Representante"
                     ),
-                    estafetas: data.filter((d) => d.tipo_de_oficina === "Estafeta"),
+                    estafetas: data.filter(
+                        (d) => d.tipo_de_oficina === "Estafeta"
+                    ),
                 });
-                
             }
         };
         fetchOficinas();
-        
     }, [token]); // Agregar token como dependencia
 
     useEffect(() => {
