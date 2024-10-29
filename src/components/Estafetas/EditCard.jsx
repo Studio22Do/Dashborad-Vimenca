@@ -233,7 +233,7 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
-        console.log("Contraseña ingresada:", inputPassword);
+        /* console.log("Contraseña ingresada:", inputPassword);
         console.log("Contraseña almacenada:", password);
 
         // Verifica la contraseña ingresada
@@ -241,7 +241,7 @@ function EditCard({ onSave }) {
             setErrorMessage("La contraseña es incorrecta."); // Establece el mensaje de error
             console.log("Error: La contraseña es incorrecta.");
             return; // Detiene la ejecución si la contraseña es incorrecta
-        }
+        } */
 
         // Validación de campos requeridos
         if (!nombre || !direccion) {
@@ -671,7 +671,8 @@ function EditCard({ onSave }) {
 
                         <button
                             className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
-                            onClick={handleSaveClick}
+                            /* onClick={handleSaveClick} */
+                            onClick={handleConfirmSave}
                         >
                             Guardar
                         </button>
