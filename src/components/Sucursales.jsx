@@ -5,6 +5,8 @@ import FormCard from "./Sucursales/FormCard";
 import EditCard from "./Sucursales/EditCard";
 import { useSucursalesContext } from "../providers/SucursalesProviders";
 
+
+
 function Sucursales() {
     const { activeSucursal, setActiveSucursal } = useSucursalesContext();
 
