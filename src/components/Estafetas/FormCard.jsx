@@ -48,7 +48,7 @@ function FormCard() {
     const [inputPassword, setInputPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    const convertTo24HourFormat = (time) => {
+    /* const convertTo24HourFormat = (time) => {
         if (!time || typeof time !== "string") {
             return "";
         }
@@ -66,7 +66,7 @@ function FormCard() {
             hours = 0;
         }
         return `${hours.toString().padStart(2, "0")}:${minutes}`;
-    };
+    }; */
 
     const convertTo12HourFormat = (time) => {
         if (!time) return "";
@@ -75,7 +75,7 @@ function FormCard() {
         const ampm = hours >= 12 ? "pm" : "am";
         hours = hours % 12;
         hours = hours ? hours : 12;
-        return `${hours}:${minutes.padStart(2, "0")}${ampm}`;
+        return `${hours}:${minutes.padStart(2, "0")} ${ampm}`;
     };
 
     const formatTimeRange = (start, end) => {

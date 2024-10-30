@@ -13,6 +13,8 @@ function Representantes() {
         setActiveRepresentante(index);
     };
 
+
+    
     const handleBack = () => {
         setActiveRepresentante(0); // Regresa a la vista de Oficinas
     };

@@ -37,8 +37,7 @@ function OficinasProviders({ children }) {
     const { token } = useUserContext();
 
     const updateOficinaInDB = useCallback(
-        
-        (id, updatedOficina) => {
+        async (id, updatedOficina) => {
             console.log("token en oficinasproviders=======================: ", token);
             console.log("se ejecuto la funcion de editar en oficinasproviers");
             return axios

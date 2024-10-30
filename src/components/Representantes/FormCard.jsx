@@ -83,8 +83,8 @@ function FormCard() {
         hours = parseInt(hours, 10);
         const ampm = hours >= 12 ? "pm" : "am";
         hours = hours % 12;
-        hours = hours ? hours : 12; // la hora '0' debe ser '12'
-        return `${hours}:${minutes.padStart(2, "0")}${ampm}`;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes.padStart(2, "0")} ${ampm}`;
     };
 
     const formatTimeRange = (start, end) => {
