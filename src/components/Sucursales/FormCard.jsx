@@ -74,7 +74,7 @@ function FormCard() {
         const ampm = hours >= 12 ? 'pm' : 'am';
         hours = hours % 12;
         hours = hours ? hours : 12;
-        return `${hours}:${minutes.padStart(2, '0')}${ampm}`;
+        return `${hours}:${minutes.padStart(2, '0')} ${ampm}`;
     };
 
     const formatTimeRange = (start, end) => {
@@ -116,13 +116,13 @@ function FormCard() {
             provincia,
             latitud,
             longitud,
-            lunes_viernes_a: lunesViernesHorario,
+            lunes_viernes_a: lunesViernesHorario === " - " ? "CERRADO" : lunesViernesHorario,
             lunes_viernes_b: lunesViernesHorario2,
-            sabado_a: sabadoHorario,
+            sabado_a: sabadoHorario === " - " ? "CERRADO" : sabadoHorario,
             sabado_b: sabadoHorario2,
             domingo_a: domingoHorario,
             domingo_b: domingoHorario2,
-            dias_feriados_a: diasFeriadosHorario,
+            dias_feriados_a: diasFeriadosHorario === " - " ? "CERRADO" : diasFeriadosHorario,
             telefono,
             
             agente_de_cambio: agenteCambio ? "Y" : "N",

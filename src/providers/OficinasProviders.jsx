@@ -114,8 +114,12 @@ function OficinasProviders({ children }) {
             console.log("borrando el id: ", id);
             try {
                 await axios.delete(`${serverUrl}/sucursales/${id}`, {
+                    credentials: 'include',
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        withCredentials: true,
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*",
                     },
                 });
                 console.log(
