@@ -22,7 +22,6 @@ import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 import { useUserContext } from "../../providers/UserProvider"; // Importa el contexto de usuario
 
 function EditCard({ onSave }) {
-    console.log("onSave en estafeta:", onSave);
     const { editEstafeta, setEditEstafeta } = useEditEstafeta();
     const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
     const [ItemsEstafetas, setItemsEstafetas] = useState([]);
@@ -34,14 +33,11 @@ function EditCard({ onSave }) {
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
     useEffect(() => {
         setItemsEstafetas(itemsOficinas.estafetas);
-        console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
     }, [itemsOficinas]);
 
     useEffect(() => {
-        console.log("ItemsEstafetas:", ItemsEstafetas); // Verifica el contenido de ItemsEstafetas
         if (editEstafeta) {
             if (!ItemsEstafetas || ItemsEstafetas.length === 0) {
-                console.warn("No hay estafetas disponibles para editar."); // Mensaje de advertencia
                 return; // Detiene la ejecución si no hay estafetas
             }
             const currentItem = ItemsEstafetas.find(
@@ -57,10 +53,6 @@ function EditCard({ onSave }) {
         }
     }, [editEstafeta, ItemsEstafetas]);
 
-    useEffect(() => {
-        console.log("ItemActual:", ItemActual);
-        console.log("editEstafeta:", editEstafeta);
-    }, [ItemActual, editEstafeta]);
 
     const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
@@ -125,21 +117,7 @@ function EditCard({ onSave }) {
             .padStart(2, "0")}`;
     };
 
-    /* const convertTo12HourFormat = (time24) => {
-        if (!time24 || time24 === "") return "";
-        try {
-            const [hours, minutes] = time24.split(':').map(Number);
-            if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-                console.warn(`Formato de hora inválido: ${time24}`);
-                return "";
-            }
-            const date = new Date(2000, 0, 1, hours, minutes);
-            return format(date, 'h:mm a');
-        } catch (error) {
-            console.error(`Error al convertir la hora: ${time24}`, error);
-            return "";
-        }
-    }; */
+
     const convertTo12HourFormat = (time) => {
         if (!time) return "";
         let [hours, minutes] = time.split(":");
@@ -166,7 +144,6 @@ function EditCard({ onSave }) {
 
     useEffect(() => {
         if (ItemActual) {
-            console.log("ItemActual:", ItemActual); // Verifica los datos
             setId(ItemActual.id);
             setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
@@ -267,12 +244,7 @@ function EditCard({ onSave }) {
         const domingoHorario2 = formatTimeRange(domingoDesde2, domingoHasta2);
         const diasFeriadosHorario = formatTimeRange(diasFeriadosDesde, diasFeriadosHasta);
 
-        // Imprimir en consola los horarios formateados
-        console.log("Horarios formateados:");
-        console.log("Lunes a Viernes:", lunesViernesHorario);
-        console.log("Sábado:", sabadoHorario);
-        console.log("Domingo:", domingoHorario);
-        console.log("Dias Feriados:", diasFeriadosHorario);
+
 
         // Crear el objeto con los datos actualizados
         const updatedOficina = {
@@ -300,12 +272,10 @@ function EditCard({ onSave }) {
             // Asegúrate de incluir todos los campos necesarios
         };
 
-        console.log("Datos a actualizar:", updatedOficina);
 
         try {
             // Llamar a la función para actualizar la estafeta en la base de datos
             const updatedData = await updateOficinaInDB(id, updatedOficina);
-            console.log("Datos actualizados desde la API:", updatedData);
 
             setEditEstafeta(null); // Cierra el modo de edición
             setActiveEstafeta(0); // Regresa a la vista de Oficinas después de guardar

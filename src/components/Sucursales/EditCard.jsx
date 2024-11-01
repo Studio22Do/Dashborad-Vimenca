@@ -21,7 +21,6 @@ import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 import { useUserContext } from "../../providers/UserProvider";
 
 function EditCard({ onSave }) {
-    console.log("onSave en estafeta:", onSave);
     const { editSucursal, setEditSucursal } = useEditSucursal();
     
     const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
@@ -35,14 +34,11 @@ function EditCard({ onSave }) {
     useEffect(() => {
         setItemsSucursales(itemsOficinas.sucursales);
         /* console.log("ItemsEstafetas:", ItemsEstafetas); */
-        console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
     }, [itemsOficinas]);
 
     useEffect(() => {
-        console.log("ItemsSucursales:", ItemsSucursales); // Verifica el contenido de ItemsEstafetas
         if (editSucursal) {
             if (!ItemsSucursales || ItemsSucursales.length === 0) {
-                console.warn("No hay sucursales disponibles para editar."); // Mensaje de advertencia
                 return; // Detiene la ejecución si no hay sucursales
             }
             const currentItem = ItemsSucursales.find(
@@ -57,11 +53,6 @@ function EditCard({ onSave }) {
             }
         }
     }, [editSucursal, ItemsSucursales]);
-
-    useEffect(() => {
-        console.log("ItemActual:", ItemActual);
-        console.log("editSucursal:", editSucursal);
-    }, [ItemActual, editSucursal]);
 
 
     const [id, setId] = useState("");
@@ -95,22 +86,24 @@ function EditCard({ onSave }) {
 
     const convertTo24HourFormat = (time) => {
         if (!time || typeof time !== "string") {
-            return "Formato de hora inválido";
+            return "";
         }
-        time = time.replace(/\s+/g, "");
+        // Eliminar todos los espacios en blanco excepto el que separa la hora del AM/PM
+        time = time.replace(/\s+/g, " ").trim();
 
         let hours, minutes, modifier;
-        const timeParts = time.toLowerCase().match(/(\d+):(\d+)(am|pm)/);
+        const timeParts = time.toLowerCase().match(/(\d+):(\d+)\s*(am|pm)?/);
 
         if (!timeParts) {
-            return "Formato de hora inválido";
+            return "";
         }
 
         [, hours, minutes, modifier] = timeParts;
         hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
 
-        if (isNaN(hours) || minutes.length !== 2) {
-            return "Formato de hora inválido";
+        if (isNaN(hours) || isNaN(minutes)) {
+            return "";
         }
 
         if (modifier === "pm" && hours !== 12) {
@@ -119,7 +112,9 @@ function EditCard({ onSave }) {
             hours = 0;
         }
 
-        return `${hours.toString().padStart(2, "0")}:${minutes}`;
+        return `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}`;
     };
 
     const convertTo12HourFormat = (time) => {
@@ -148,7 +143,6 @@ function EditCard({ onSave }) {
 
     useEffect(() => {
         if (ItemActual) {
-            console.log("ItemActual:", ItemActual); // Verifica los datos
             setId(ItemActual.id);
             setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
@@ -219,13 +213,11 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
-        console.log("Contraseña ingresada:", inputPassword);
-        console.log("Contraseña almacenada:", password);
+
 
         // Verifica la contraseña ingresada
         if (inputPassword !== password) {
             setErrorMessage("La contraseña es incorrecta."); // Establece el mensaje de error
-            console.log("Error: La contraseña es incorrecta.");
             return; // Detiene la ejecución si la contraseña es incorrecta
         }
 
@@ -237,9 +229,7 @@ function EditCard({ onSave }) {
 
         // Función para convertir de formato 24h a 12h
         const convertTo12HourFormat = (time24) => {
-            console.log("time24:", time24);
             const date = parse(time24, "HH:mm", new Date());
-            console.log("date:", date);
             return format(date, "h:mm a");
         };
 
@@ -275,12 +265,6 @@ function EditCard({ onSave }) {
             diasFeriadosHasta
         );
 
-        // Imprimir en consola los horarios formateados
-        console.log("Horarios formateados:");
-        console.log("Lunes a Viernes:", lunesViernesHorario);
-        console.log("Sábado:", sabadoHorario);
-        console.log("Domingo:", domingoHorario);
-        console.log("Dias Feriados:", diasFeriadosHorario);
 
         // Crear el objeto con los datos actualizados
         const updatedOficina = {
@@ -307,7 +291,6 @@ function EditCard({ onSave }) {
             remesas: convertBooleanToYN(remesas),
             // Asegúrate de incluir todos los campos necesarios
         };
-        console.log("Datos a actualizar:", updatedOficina);
         setAgenteCambio(true);
 
         try {
@@ -317,7 +300,6 @@ function EditCard({ onSave }) {
                 updatedOficina,
                 
             );
-            console.log("Datos actualizados desde la API:", updatedData);
 
             // Llama a la función que obtiene los datos de la API
             /* getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento */

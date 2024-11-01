@@ -22,7 +22,6 @@ import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 import { useUserContext } from "../../providers/UserProvider";
 
 function EditCard({ onSave }) {
-    console.log("onSave en estafeta:", onSave);
     const { editRepresentante, setEditRepresentante } = useEditRepresentante();
     
     const { itemsOficinas, updateOficinaInDB } = useItemsOficinasContext();
@@ -36,14 +35,11 @@ function EditCard({ onSave }) {
     useEffect(() => {
         setItemsRepresentantes(itemsOficinas.representantes);
         /* console.log("ItemsEstafetas:", ItemsEstafetas); */
-        console.log("ItemsOficinas: ^^^^^^^^^^", itemsOficinas);
     }, [itemsOficinas]);
 
     useEffect(() => {
-        console.log("ItemsRepresentantes:", ItemsRepresentantes); // Verifica el contenido de ItemsEstafetas
         if (editRepresentante) {
             if (!ItemsRepresentantes || ItemsRepresentantes.length === 0) {
-                console.warn("No hay representantes disponibles para editar."); // Mensaje de advertencia
                 return; // Detiene la ejecución si no hay representantes
             }
             const currentItem = ItemsRepresentantes.find(
@@ -52,18 +48,11 @@ function EditCard({ onSave }) {
             if (currentItem) {
                 setItemActual(currentItem);
             } else {
-                console.warn(`No se encontró el item con id: ${editRepresentante}`); // Mensaje de advertencia
                 setEditRepresentante(null); // Resetea editRepresentante si no se encuentra
                 setActiveRepresentante(0); // Regresa a la vista de Oficinas después de guardar
             }
         }
     }, [editRepresentante, ItemsRepresentantes]);
-
-    useEffect(() => {
-        console.log("ItemActual:", ItemActual);
-        console.log("editRepresentante:", editRepresentante);
-    }, [ItemActual, editRepresentante]);
-
 
     const [id, setId] = useState("");
     const [nombre, setNombre] = useState("");
@@ -96,22 +85,24 @@ function EditCard({ onSave }) {
 
     const convertTo24HourFormat = (time) => {
         if (!time || typeof time !== "string") {
-            return "Formato de hora inválido";
+            return "";
         }
-        time = time.replace(/\s+/g, "");
+        // Eliminar todos los espacios en blanco excepto el que separa la hora del AM/PM
+        time = time.replace(/\s+/g, " ").trim();
 
         let hours, minutes, modifier;
-        const timeParts = time.toLowerCase().match(/(\d+):(\d+)(am|pm)/);
+        const timeParts = time.toLowerCase().match(/(\d+):(\d+)\s*(am|pm)?/);
 
         if (!timeParts) {
-            return "Formato de hora inválido";
+            return "";
         }
 
         [, hours, minutes, modifier] = timeParts;
         hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
 
-        if (isNaN(hours) || minutes.length !== 2) {
-            return "Formato de hora inválido";
+        if (isNaN(hours) || isNaN(minutes)) {
+            return "";
         }
 
         if (modifier === "pm" && hours !== 12) {
@@ -120,7 +111,9 @@ function EditCard({ onSave }) {
             hours = 0;
         }
 
-        return `${hours.toString().padStart(2, "0")}:${minutes}`;
+        return `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}`;
     };
 
     const convertTo12HourFormat = (time) => {
@@ -215,6 +208,7 @@ function EditCard({ onSave }) {
             setRemesas(convertYNToBoolean(ItemActual.remesas));
             setTipoOficina(ItemActual.tipo_de_oficina);
         }
+        console.log("ItemActual:", ItemActual);
     }, [ItemActual]);
 
     const handleSaveClick = () => {
@@ -222,36 +216,19 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
-        console.log("Contraseña ingresada:", inputPassword);
-        console.log("Contraseña almacenada:", password);
 
         // Verifica la contraseña ingresada
         if (inputPassword !== password) {
             setErrorMessage("La contraseña es incorrecta."); // Establece el mensaje de error
-            console.log("Error: La contraseña es incorrecta.");
             return; // Detiene la ejecución si la contraseña es incorrecta
         }
 
         // Validación de campos requeridos
-        if (!nombre || !direccion) {
+        if (!nombre || !direccion || !latitud || !longitud) {
             setErrorMessage("Por favor, completa todos los campos requeridos."); // Mensaje de error
             return; // Detiene la ejecución si hay campos vacíos
         }
 
-        // Función para convertir de formato 24h a 12h
-        const convertTo12HourFormat = (time24) => {
-            console.log("time24:", time24);
-            const date = parse(time24, "HH:mm", new Date());
-            console.log("date:", date);
-            return format(date, "h:mm a");
-        };
-
-        // Función para formatear el rango de horas
-        /* const formatTimeRange = (start, end) => {
-            return `${convertTo12HourFormat(start)} - ${convertTo12HourFormat(
-                end
-            )}`;
-        }; */
 
         // Preparar los horarios en el formato correcto
         const lunesViernesHorario = formatTimeRange(
@@ -277,12 +254,7 @@ function EditCard({ onSave }) {
             diasFeriadosHasta
         );
 
-        // Imprimir en consola los horarios formateados
-        console.log("Horarios formateados:");
-        console.log("Lunes a Viernes:", lunesViernesHorario);
-        console.log("Sábado:", sabadoHorario);
-        console.log("Domingo:", domingoHorario);
-        console.log("Dias Feriados:", diasFeriadosHorario);
+
 
         // Crear el objeto con los datos actualizados
         const updatedOficina = {
@@ -310,7 +282,6 @@ function EditCard({ onSave }) {
             // Asegúrate de incluir todos los campos necesarios
         };
 
-        console.log("Datos a actualizar:", updatedOficina);
 
         try {
             // Llama a la función para actualizar la oficina en la base de datos

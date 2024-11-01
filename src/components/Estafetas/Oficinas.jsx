@@ -9,12 +9,10 @@ import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 const Oficinas = React.memo(() => {
     const { activeEstafeta, setActiveEstafeta } = useEstafetasContext();
     const { itemsOficinas } = useItemsOficinasContext();
-    console.log("Oficinas renderizado"); // Verifica cuántas veces se renderiza
-    console.log("itemsOficinas: ========== ", itemsOficinas);
+
     const [ItemsEstafetas, setItemsEstafetas] = useState(
         itemsOficinas.estafetas
     );
-    console.log("ItemsEstafetas: ========== ", ItemsEstafetas);
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 8;
     const [itemOffset, setItemOffset] = useState(0);

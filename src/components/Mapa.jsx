@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import useGoogleMaps from './useGoogleMaps'; // Asegúrate de que la ruta sea correcta
 import {
     APIProvider,
     Map,
@@ -8,35 +7,22 @@ import {
 } from "@vis.gl/react-google-maps";
 
 const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY; // Asegúrate de que esta variable esté definida correctamente
-    const isLoaded = useGoogleMaps(apiKey);
-
-    const mapId = "YOUR_MAP_ID"; // Verifica que este ID sea válido
+    const mapId = "YOUR_MAP_ID";
     
-    // Ubicación por defecto (por ejemplo, Ciudad de México)
     let defaultLocation = { lat: 19.049289, lng: -70.317498 };
     
-
-
-    /* console.log("defaultLocation",defaultLocation); */
-
-    // Validar las coordenadas y usar las proporcionadas por los props si son válidas
     const validLat = typeof latitud === "number" ? latitud : null;
     const validLng = typeof longitud === "number" ? longitud : null;
-    /* console.log("validLat",validLat, "validLng",validLng); */
     
-    // Establecer el centro del mapa basado en las coordenadas proporcionadas o la ubicación por defecto
     const [mapCenter, setMapCenter] = useState(defaultLocation);
 
-    // Nuevo useEffect para observar cambios en mapCenter
     useEffect(() => {
         if (validLat !== null && validLng !== null) {
-            /* console.log("Actualizando mapCenter a coordenadas válidas:", { lat: validLat, lng: validLng }); */
             setMapCenter({ lat: validLat, lng: validLng });
-            setShouldCenter(true); // Permitir que el mapa se centre automáticamente
+            setShouldCenter(true);
         } else {
-            /* console.log("Manteniendo mapCenter en ubicación por defecto:", defaultLocation); */
         }
     }, [validLat, validLng]);
 
@@ -55,11 +41,10 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
     };
 
     const handleMapDragStart = () => {
-        setShouldCenter(false); // Desactivar el centrado automático al arrastrar
+        setShouldCenter(false);
     };
 
     const handleApiLoad = () => {
-        /* console.log("Maps API has loaded"); */
     };
 
     const handleApiError = () => {
@@ -71,7 +56,6 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
 
     const handleMarkerClick = useCallback((ev) => {
         if (!ev.latLng) return;
-        /* console.log('Marcador clicado:', ev.latLng.toString()); */
     }, []);
 
     const handleMapClick = useCallback((ev) => {
@@ -82,15 +66,9 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
         }
         const newLat = latLng.lat;
         const newLng = latLng.lng;
-        /* console.log("Mapa clicado en:", newLat, newLng); */
         setLatitud(newLat);
         setLongitud(newLng);
-        /* console.log("Estado actualizado: Latitud:", newLat, "Longitud:", newLng); */
     }, [setLatitud, setLongitud]);
-
-    if (!isLoaded) {
-        return <div>Cargando mapa...</div>; // Muestra un mensaje de carga mientras se carga la API
-    }
 
     return (
         <APIProvider
@@ -99,22 +77,26 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
             onError={handleApiError}
         >
             <Map
-                
+                style={{ width: '100%', height: '400px' }}
                 defaultZoom={8}
-                defaultCenter={defaultLocation} // Usar defaultCenter para la posición inicial
+                defaultCenter={defaultLocation}
                 mapId={mapId}
                 options={{
-                    draggable: true, // Asegúrate de que esta opción esté habilitada
+                    draggable: true,
                     scrollwheel: true,
                     disableDoubleClickZoom: false,
+                    zoomControl: true,
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true
                 }}
-                onClick={handleMapClick} // Añadir el evento de clic en el mapa
-                onDragStart={handleMapDragStart} // Detectar cuando el usuario empieza a arrastrar
-                onLoad={handleMapLoad} // Capturar la referencia al mapa
+                onClick={handleMapClick}
+                onDragStart={handleMapDragStart}
+                onLoad={handleMapLoad}
             >
                 {validLat !== null && validLng !== null && (
                     <AdvancedMarker
-                        position={{ lat: validLat, lng: validLng }} // Actualizar la posición del marcador
+                        position={{ lat: validLat, lng: validLng }}
                         clickable={true}
                         onClick={handleMarkerClick}
                     >
@@ -126,9 +108,6 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
                     </AdvancedMarker>
                 )}
             </Map>
-            {/* <h2>Latitud: {validLat !== null ? validLat : "No válida"}</h2>
-            <h2>Longitud: {validLng !== null ? validLng : "No válida"}</h2>
-            <h2>mapCenter: {JSON.stringify(mapCenter)}</h2> */}
         </APIProvider>
     );
 });

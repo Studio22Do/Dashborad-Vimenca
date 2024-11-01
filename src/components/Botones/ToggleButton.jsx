@@ -15,7 +15,6 @@ function ToggleButton({ icon, state, setState }) {
 
     const handleClick = () => {
         const newState = !isOn; // Cambia el estado a su opuesto
-        console.log(`Estado en el botón ${icon} es: ${newState}`); // Muestra el estado actualizado
         setIsOn(newState); // Actualiza el estado local
         if (setState) {
             setState(newState); // Actualiza el estado en el componente padre

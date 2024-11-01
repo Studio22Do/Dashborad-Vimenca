@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-let isScriptLoaded = false; // Variable global para rastrear la carga del script
-let isScriptLoading = false; // Variable para rastrear si el script está en proceso de carga
+let isScriptLoaded = false;
+let isScriptLoading = false;
 
 function useGoogleMaps(apiKey) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -19,7 +19,7 @@ function useGoogleMaps(apiKey) {
                     clearInterval(checkScriptLoaded);
                 }
             }, 100);
-            return;
+            return () => clearInterval(checkScriptLoaded);
         }
 
         const existingScript = document.getElementById("googleMaps");
@@ -27,10 +27,11 @@ function useGoogleMaps(apiKey) {
         if (!existingScript) {
             isScriptLoading = true;
             const script = document.createElement("script");
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async&callback=Function.prototype`;
             script.id = "googleMaps";
             script.async = true;
-            document.body.appendChild(script);
+            script.defer = true;
+            document.head.appendChild(script);
 
             script.onload = () => {
                 if (window.google) {
@@ -44,12 +45,21 @@ function useGoogleMaps(apiKey) {
             script.onerror = () => {
                 console.error("Error loading Google Maps API");
                 isScriptLoading = false;
+                isScriptLoaded = false;
             };
         } else {
             console.log("Google Maps API script already exists.");
             isScriptLoaded = true;
             setIsLoaded(true);
         }
+
+        return () => {
+            if (existingScript) {
+                existingScript.remove();
+                isScriptLoaded = false;
+                isScriptLoading = false;
+            }
+        };
     }, [apiKey]);
 
     return isLoaded;

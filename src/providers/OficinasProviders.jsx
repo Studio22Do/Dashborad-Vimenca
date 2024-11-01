@@ -32,14 +32,12 @@ function OficinasProviders({ children }) {
         estafetas: [],
     });
 
-    console.log("itemsOficinas despues de declarar: ", itemsOficinas);
 
     const { token } = useUserContext();
 
     const updateOficinaInDB = useCallback(
         async (id, updatedOficina) => {
-            console.log("token en oficinasproviders=======================: ", token);
-            console.log("se ejecuto la funcion de editar en oficinasproviers");
+            
             return axios
                 .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {
                     credentials: 'include',
@@ -111,7 +109,7 @@ function OficinasProviders({ children }) {
 
     const deleteOficina = useCallback(
         async (id, tipo) => {
-            console.log("borrando el id: ", id);
+            
             try {
                 await axios.delete(`${serverUrl}/sucursales/${id}`, {
                     credentials: 'include',
@@ -122,9 +120,7 @@ function OficinasProviders({ children }) {
                         "Access-Control-Allow-Origin": "*",
                     },
                 });
-                console.log(
-                    "Se ejecutó la función de eliminar en oficinasproviders"
-                );
+                
 
                 // Obtener los datos actualizados después de eliminar la oficina
                 const data = await getOficinas(token);
@@ -157,7 +153,7 @@ function OficinasProviders({ children }) {
         const fetchOficinas = async () => {
             if (token) {
                 const data = await getOficinas(token);
-                console.log("data desde oficinas", data);
+                
                 setItemsOficinas({
                     sucursales: data.filter(
                         (d) => d.tipo_de_oficina === "Sucursal"
@@ -175,7 +171,6 @@ function OficinasProviders({ children }) {
     }, [token]); // Agregar token como dependencia
 
     useEffect(() => {
-        console.log("itemsOficinas después de set: ********** ", itemsOficinas);
     }, [itemsOficinas]); // Este efecto se ejecutará cada vez que itemsOficinas cambie
 
     const itemsOficinasContextValue = useMemo(

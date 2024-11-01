@@ -9,12 +9,9 @@ import { useItemsOficinasContext } from "../../providers/OficinasProviders";
 const Oficinas = React.memo(() => {
     const { activeSucursal, setActiveSucursal } = useSucursalesContext();
     const { itemsOficinas } = useItemsOficinasContext();
-    console.log("Oficinas renderizado"); // Verifica cuántas veces se renderiza
-    console.log("itemsOficinas: ========== ", itemsOficinas);
     const [ItemsSucursales, setItemsSucursales] = useState(
         itemsOficinas.sucursales
     );
-    console.log("ItemsSucursales: ========== ", ItemsSucursales);
     const [searchTerm, setSearchTerm] = useState("");
     const itemsPerPage = 8;
     const [itemOffset, setItemOffset] = useState(0);

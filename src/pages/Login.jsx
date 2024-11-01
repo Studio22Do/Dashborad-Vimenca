@@ -22,20 +22,18 @@ function Login() {
         e.preventDefault();
         setIsSubmitting(true); // Desactiva el botón al enviar
         const success = await login(email, password); // Llama a la función de login
-        console.log("estos son los datos enviados: ", email, password);
 
         if (success) {
-            console.log("Inicio de sesión exitoso");
+            /* console.log("Inicio de sesión exitoso"); */
             // Aquí no redirigimos inmediatamente, ya que el useEffect se encargará de eso
         } else {
-            alert("Credenciales incorrectas"); // Mensaje de error
+            alert("Error al iniciar sesión"); // Mensaje de error
         }
         setIsSubmitting(false); // Reactiva el botón después de la respuesta
     };
 
     useEffect(() => {
         if (token && !hasRedirected) {
-            console.log("Redirigiendo a Dashboard...");
             navigate("/Dashboard");
             setHasRedirected(true); // Marca que ya se ha redirigido
         }
