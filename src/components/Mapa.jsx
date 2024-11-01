@@ -77,7 +77,7 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
             onError={handleApiError}
         >
             <Map
-                style={{ width: '100%', height: '400px' }}
+                style={{ width: '100%', height: '100%' }}
                 defaultZoom={8}
                 defaultCenter={defaultLocation}
                 mapId={mapId}

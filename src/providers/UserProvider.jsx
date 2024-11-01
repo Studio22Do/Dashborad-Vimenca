@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const UserContext = createContext();
 const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -12,6 +13,7 @@ export function UserProvider({ children }) {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const login = async (email, password) => {
         try {
@@ -26,30 +28,37 @@ export function UserProvider({ children }) {
                     credentials: 'include',
                     headers: {
                         "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin": "*",  // Añadir este header
+                        "Access-Control-Allow-Origin": "*",
                     },
                 }
             );
-            const newToken = response.data.access_token; // Accede directamente al token
+            const newToken = response.data.access_token;
             setPassword(password);
             if (newToken && newToken !== token) {
-                // Solo establece el token si es diferente
-                setToken(newToken); // Guarda el token
+                setToken(newToken);
             }
-
-            return true; // Indica que el inicio de sesión fue exitoso
+            return true;
         } catch (error) {
             console.error(
                 "Error al iniciar sesión:",
                 error.response ? error.response.data : error.message
             );
-            throw error; // Lanzar el error para mejor manejo
+            throw error;
+        }
+    };
+
+    const logout = async () => {
+        try {
+            setToken(null);
+            navigate("/");
+        } catch (error) {
+            console.error("Error durante el logout:", error);
         }
     };
 
     return (
         <UserContext.Provider
-            value={{ user, token, setToken, login, password }}
+            value={{ user, token, setToken, login, password, logout }}
         >
             {children}
         </UserContext.Provider>

@@ -8,12 +8,13 @@ import { EstafetasProviders } from "../providers/EstafetasProviders";
 import { RepresentantesProvider } from "../providers/RepresentantesProviders";
 import { OficinasProviders } from "../providers/OficinasProviders";
 import { SucursalesProvider } from "../providers/SucursalesProviders";
+import { useUserContext } from "../providers/UserProvider";
 function Dashboard() {
     const [activeButton, setActiveButton] = useState(2);
     const handleButtonClick = (index) => {
         setActiveButton(index);
     };
-
+    const { logout } = useUserContext();
     return (
         <OficinasProviders>
             <EstafetasProviders>
@@ -21,38 +22,49 @@ function Dashboard() {
                     <SucursalesProvider>
                         <div className="flex">
                             <div
-                                className="flex flex-col w-2/12 h-lvh px-12 py-24 items-center sticky top-0"
+                                className="flex flex-col w-2/12 h-lvh px-12 pt-24 pb-5 items-center justify-between sticky top-0"
                                 style={{
                                     backgroundImage: `url(${sidebar})`,
                                     backgroundSize: "cover",
                                 }}
                             >
-                                <img src={Logo} alt="Logo" />
-                                <div className="flex flex-col items-start w-full mt-14 gap-2">
-                                    <button
-                                        className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
-                                            activeButton === 0 ? "active" : ""
-                                        } button-side`}
-                                        onClick={() => handleButtonClick(0)}
-                                    >
-                                        Sucursales
-                                    </button>
-                                    <button
-                                        className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
-                                            activeButton === 1 ? "active" : ""
-                                        } button-side`}
-                                        onClick={() => handleButtonClick(1)}
-                                    >
-                                        Representantes
-                                    </button>
-                                    <button
-                                        className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
-                                            activeButton === 2 ? "active" : ""
-                                        } button-side`}
-                                        onClick={() => handleButtonClick(2)}
-                                    >
-                                        Estafetas
-                                    </button>
+                                <div>
+                                    <img src={Logo} alt="Logo" />
+                                    <div className="flex flex-col items-start w-full mt-14 gap-2">
+                                        <button
+                                            className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
+                                                activeButton === 0
+                                                    ? "active"
+                                                    : ""
+                                            } button-side`}
+                                            onClick={() => handleButtonClick(0)}
+                                        >
+                                            Sucursales
+                                        </button>
+                                        <button
+                                            className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
+                                                activeButton === 1
+                                                    ? "active"
+                                                    : ""
+                                            } button-side`}
+                                            onClick={() => handleButtonClick(1)}
+                                        >
+                                            Representantes
+                                        </button>
+                                        <button
+                                            className={`w-full text-start px-10 py-3 rounded-md font-semibold text-white ${
+                                                activeButton === 2
+                                                    ? "active"
+                                                    : ""
+                                            } button-side`}
+                                            onClick={() => handleButtonClick(2)}
+                                        >
+                                            Estafetas
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="cerrar" onClick={logout}>
+                                    <p className=" text-white font-semibold text-nowrap ">Cerrar sesión</p>
                                 </div>
                             </div>
 

@@ -8,9 +8,10 @@ import { EstafetasProviders } from "./providers/EstafetasProviders";
 
 function App() {
     return (
-        <UserProvider>
-            <EstafetasProviders> {/* Envuelve el BrowserRouter con EstafetasProviders */}
-                <BrowserRouter>
+        <EstafetasProviders>
+            
+            <BrowserRouter>
+                <UserProvider>
                     <Routes>
                         <Route path="/" element={<Login />}></Route>
                         <Route
@@ -22,9 +23,9 @@ function App() {
                             }
                         ></Route>
                     </Routes>
-                </BrowserRouter>
-            </EstafetasProviders>
-        </UserProvider>
+                </UserProvider>
+            </BrowserRouter>
+        </EstafetasProviders>
     );
 }
 

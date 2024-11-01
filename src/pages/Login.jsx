@@ -94,7 +94,7 @@ function Login() {
                             </div>
                             <button
                                 type="submit"
-                                className="text-white bg-[--primary] border py-2 px-16 rounded-full w-10/12 m-auto"
+                                className="text-white text-nowrap bg-[--primary] border py-2 px-16 rounded-full w-10/12 m-auto"
                                 disabled={isSubmitting} // Desactiva el botón si está enviando
                             >
                                 Iniciar Sesión

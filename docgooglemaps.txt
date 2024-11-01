@@ -1,462 +1,290 @@
-2. Prepárate
-Descarga el proyecto inicial
-Para descargar la plantilla del proyecto inicial y el código de la solución, sigue estos pasos:
+import React, {useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {APIProvider, ControlPosition, Map} from '@vis.gl/react-google-maps';
 
-Descarga o bifurca el repositorio de GitHub. El proyecto inicial se encuentra en el directorio /starter y contiene la estructura de archivos básica que necesitarás para completar el codelab. Harás todo el trabajo en el directorio /starter/src.
+import ControlPanel from './control-panel';
+import {CustomMapControl} from './map-control';
+import MapHandler from './map-handler';
 
-git clone https://github.com/googlemaps-samples/codelab-maps-platform-101-react-js.git
-También puedes hacer clic en este botón para descargar el código fuente.
+const API_KEY =
+  globalThis.GOOGLE_MAPS_API_KEY ?? (process.env.GOOGLE_MAPS_API_KEY as string);
 
-Obtener el código
+export type AutocompleteMode = {id: string; label: string};
 
-Navega al directorio /starter y luego instala npm. De esta forma, se instalan todas las dependencias que figuran en el archivo package.json.
-
-cd starter && npm install
-Mientras estás en el directorio /starter:
-
-npm start
-El proyecto inicial se configuró para que uses el servidor de desarrollo de Vite, que compila y ejecuta el código que escribes de manera local. El servidor de desarrollo de Vite también vuelve a cargar tu app automáticamente en el navegador cada vez que realizas cambios en el código. Si sigues el vínculo que aparece el final del proceso de compilación, deberías ver una página web con el mensaje "Hello, world!".
-
-Si quieres ejecutar el código completo de la solución, navega al directorio /solution y sigue los mismos pasos de configuración.
-3. Carga la API de Maps JavaScript
-El uso de Google Maps Platform para la Web se basa en la API de Maps JavaScript. Esta API proporciona una interfaz de JavaScript para usar todas las funciones de
-
-Google Maps Platform, incluidos el mapa, los marcadores, las herramientas de dibujo y otros servicios de Google Maps Platform, como Places.
-
-Para cargar la API de Maps JavaScript con el framework de React, debes usar el componente APIProvider que forma parte de la biblioteca vis.gl/react-google-map. Se puede agregar en cualquier nivel de la app, en general cerca de la parte superior, y renderiza todos los componentes secundarios sin modificaciones. Además de controlar la carga de la API de Maps JavaScript, también brinda información contextual y funciones para los demás componentes y hooks de esta biblioteca. El componente APIProvider se incluye en la biblioteca vis.gl/react-google-map, por lo que se instaló cuando ejecutaste npm install anteriormente.
-
-Para usar el componente APIProvider, sigue estos pasos:
-
-Abre el archivo /src/app.tsx. Allí realizarás todo el trabajo de este codelab.
-En la parte superior del archivo, importa la clase APIProvider de la biblioteca @vis.gl/react-google-maps:
-
-import {APIProvider} from '@vis.gl/react-google-maps';
-En la definición de la función App, establece el parámetro apiKey del componente APIProvider con la clave de API que creaste en el paso anterior y la propiedad onLoad con un mensaje de registro de la consola:
-
-<APIProvider apiKey={'Your API key here'} onLoad={() => console.log('Maps API has loaded.')}>
-El componente APIProvider utiliza varias propiedades que especifican una serie de opciones para cargar la API de Maps JavaScript, incluida tu clave de API de Google Maps Platform, la versión de la API que deseas cargar y cualquier otra biblioteca proporcionada por la API de Maps JavaScript que quieras cargar.
-
-La clave de la API de Google Maps es la única propiedad obligatoria para que APIProvider funcione. Incluimos la propiedad onLoad para fines de demostración. Para obtener más información, consulta Componente <APIProvider>.
-
-Tu archivo app.tsx debería verse así:
-
-
-import React from 'react';
-import {createRoot} from "react-dom/client";
-import {APIProvider} from '@vis.gl/react-google-maps';
-
-const App = () => (
- <APIProvider apiKey={'Your API key here'} onLoad={() => console.log('Maps API has loaded.')}>
-   <h1>Hello, world!</h1>
- </APIProvider>
-);
-
-const root = createRoot(document.getElementById('app'));
-root.render(<App />);
-
-export default App;
-Si todo funciona correctamente, deberías ver la sentencia console.log en la consola del navegador. Ahora que la API de Maps JavaScript está cargada, podrás renderizar el mapa dinámico en el próximo paso.
-
-4. Muestra un mapa
-Es hora de mostrar tu primer mapa.
-
-La parte más utilizada de la API de Maps JavaScript es google.maps.Map, que es la clase que te permite crear y manipular las instancias de mapa. La biblioteca vis.gl/react-google-map incluye esta clase en el componente Map. Primero importa las clases Map y MapCameraChangedEvent.
-
-
-import {APIProvider, Map, MapCameraChangedEvent} from '@vis.gl/react-google-maps';
-El componente Map admite una variedad de parámetros de configuración diferentes para el mapa. En este codelab, utilizarás los siguientes:
-
-defaultCenter, que establece la latitud y longitud para el centro del mapa.
-defaultZoom, que establece el nivel de zoom inicial del mapa.
-Para mostrar un mapa, coloca el siguiente código entre las etiquetas APIProvider para centrar el mapa en Sídney, Australia, y proporcionar un nivel de zoom de 13, que es el adecuado para mostrar el centro de la ciudad.
-
- <Map
-      defaultZoom={13}
-      defaultCenter={ { lat: -33.860664, lng: 151.208138 } }
-      onCameraChanged={ (ev: MapCameraChangedEvent) =>
-        console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-      }>
-</Map>
-Ahora deberías ver un mapa de Sídney en tu navegador:
-
-761c8c51c6631174.png
-
-En resumen, en esta sección mostraste un mapa con el componente <Map> y configuraste el estado inicial mediante propiedades. También usaste eventos para captar cuando cambiaba la cámara.
-
-Tu archivo app.tsx debería ser similar a lo siguiente:
-
-
-import React from 'react';
-import {createRoot} from "react-dom/client";
-import {APIProvider, Map, MapCameraChangedEvent} from '@vis.gl/react-google-maps';
-
-const App = () => (
- <APIProvider apiKey={'Your API key here'} onLoad={() => console.log('Maps API has loaded.')}>
-   <Map
-      defaultZoom={13}
-      defaultCenter={ { lat: -33.860664, lng: 151.208138 } }
-      onCameraChanged={ (ev: MapCameraChangedEvent) =>
-        console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-      }>
-   </Map>
- </APIProvider>
-);
-
-const root = createRoot(document.getElementById('app'));
-root.render(<App />);
-
-export default App;
-
-
-5. Agrega un diseño de mapas basado en Cloud
-Usar un diseño de mapas basado en Cloud es un requisito para utilizar Marcadores avanzados, que sirven para marcar lugares de interés en tu mapa de Sídney.
-
-Puedes personalizar el diseño de tu mapa con el diseño de mapas basado en Cloud.
-
-Crea un ID de mapa
-Si todavía no creaste un ID de mapa con un estilo de mapa asociado, consulta la guía sobre ID de mapa para completar los siguientes pasos:
-
-Crear un ID de mapa
-Asociar un ID de mapa a un estilo de mapa
-Nota: El uso de un ID de mapa en el SDK de Maps para Android o el SDK de Maps para iOS activa una carga de mapa que se cobra según el SKU de Dynamic Maps. Consulta Facturación de Google Maps para obtener más información.
-
-Para usar el ID de mapa que creaste, establece la propiedad mapId del componente <Map>:
-
-
-<Map
-    defaultZoom={13}
-    defaultCenter={ { lat: -33.860664, lng: 151.208138 } }
-    mapId='YOUR_MAP_ID'
-    onCameraChanged={ (ev: MapCameraChangedEvent) =>
-        console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
-    }>
-</Map>
-Deberías ver el diseño que seleccionaste aplicado en el mapa.
-
-6. Agrega marcadores al mapa
-Los desarrolladores realizan muchas acciones con la API de Maps JavaScript, pero colocar marcadores en el mapa es definitivamente la más popular. Los marcadores te permiten mostrar puntos específicos en el mapa y son elementos de la IU comunes para controlar la interacción del usuario. Si ya usaste Google Maps, es probable que conozcas el marcador predeterminado, que se ve así:
-
-d9a6513b82a2f1e1.png
-
-Si deseas usar el componente AdvancedMarker para colocar marcadores en el mapa, sigue estos pasos:
-
-Crea una lista de objetos que representen lugares de interés en el área de Sídney y colócala debajo de tus importaciones, fuera de la definición de App:
-
-type Poi ={ key: string, location: google.maps.LatLngLiteral }
-const locations: Poi[] = [
-  {key: 'operaHouse', location: { lat: -33.8567844, lng: 151.213108  }},
-  {key: 'tarongaZoo', location: { lat: -33.8472767, lng: 151.2188164 }},
-  {key: 'manlyBeach', location: { lat: -33.8209738, lng: 151.2563253 }},
-  {key: 'hyderPark', location: { lat: -33.8690081, lng: 151.2052393 }},
-  {key: 'theRocks', location: { lat: -33.8587568, lng: 151.2058246 }},
-  {key: 'circularQuay', location: { lat: -33.858761, lng: 151.2055688 }},
-  {key: 'harbourBridge', location: { lat: -33.852228, lng: 151.2038374 }},
-  {key: 'kingsCross', location: { lat: -33.8737375, lng: 151.222569 }},
-  {key: 'botanicGardens', location: { lat: -33.864167, lng: 151.216387 }},
-  {key: 'museumOfSydney', location: { lat: -33.8636005, lng: 151.2092542 }},
-  {key: 'maritimeMuseum', location: { lat: -33.869395, lng: 151.198648 }},
-  {key: 'kingStreetWharf', location: { lat: -33.8665445, lng: 151.1989808 }},
-  {key: 'aquarium', location: { lat: -33.869627, lng: 151.202146 }},
-  {key: 'darlingHarbour', location: { lat: -33.87488, lng: 151.1987113 }},
-  {key: 'barangaroo', location: { lat: - 33.8605523, lng: 151.1972205 }},
+const autocompleteModes: Array<AutocompleteMode> = [
+  {id: 'classic', label: 'Google Autocomplete Widget'},
+  {id: 'custom', label: 'Custom Build'},
+  {id: 'custom-hybrid', label: 'Custom w/ Select Widget'}
 ];
 
-const App = () => (
-  ...
-);
-Personaliza tus pins con el elemento <Pin>:
+const App = () => {
+  const [selectedAutocompleteMode, setSelectedAutocompleteMode] =
+    useState<AutocompleteMode>(autocompleteModes[0]);
 
-<Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
-Crea un componente personalizado para renderizar tu lista con Marcadores avanzados y colócalo debajo de la definición de App:
+  const [selectedPlace, setSelectedPlace] =
+    useState<google.maps.places.PlaceResult | null>(null);
 
-const App = () => (
-  ...
-);
-
-const PoiMarkers = (props: {pois: Poi[]}) => {
   return (
-    <>
-      {props.pois.map( (poi: Poi) => (
-        <AdvancedMarker
-          key={poi.key}
-          position={poi.location}>
-        <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
-        </AdvancedMarker>
-      ))}
-    </>
+    <APIProvider apiKey={API_KEY}>
+      <Map
+        defaultZoom={3}
+        defaultCenter={{lat: 22.54992, lng: 0}}
+        gestureHandling={'greedy'}
+        disableDefaultUI={true}
+      />
+
+      <CustomMapControl
+        controlPosition={ControlPosition.TOP}
+        selectedAutocompleteMode={selectedAutocompleteMode}
+        onPlaceSelect={setSelectedPlace}
+      />
+
+      <ControlPanel
+        autocompleteModes={autocompleteModes}
+        selectedAutocompleteMode={selectedAutocompleteMode}
+        onAutocompleteModeChange={setSelectedAutocompleteMode}
+      />
+
+      <MapHandler place={selectedPlace} />
+    </APIProvider>
   );
 };
-Agrega el componente PoiMarkers como un componente secundario de Map:
 
-<Map
-  ... map properties ...
->
-  <PoiMarkers pois={locations} />
-</Map>
-Por último, agrega Pin y AdvancedMarker a tus importaciones.
+export default App;
 
-import {
-  APIProvider,
-  Map,
-  AdvancedMarker,
-  MapCameraChangedEvent,
-  Pin
-} from '@vis.gl/react-google-maps';
-Ahora deberías ver Marcadores avanzados personalizados en el mapa:
+export function renderToDom(container: HTMLElement) {
+  const root = createRoot(container);
 
-7. Habilita el agrupamiento de marcadores en clústeres
-Si usas muchos marcadores o marcadores que están muy cerca entre ellos, puedes encontrarte con el problema de que se superpongan o se vean demasiado juntos, lo que generará una mala experiencia del usuario. Por ejemplo, después de crear los marcadores en el último paso, es posible que hayas notado lo siguiente:
+  root.render(<App />);
+}
+// NOTE: This requires the alpha version of the Maps JavaScript API and is not yet
+// recommended to be used in production applications. We will add this to the example map
+// when it reaches GA (General Availability). Treat this as a preview of what's to come.
 
-98d12a994e12a2c1.png
+import React, {useRef, useEffect, useState} from 'react';
+import {useMapsLibrary} from '@vis.gl/react-google-maps';
 
-Para casos como este resulta útil el agrupamiento de marcadores en clústeres. Es una función que se suele utilizar para agrupar los marcadores cercanos en un mismo ícono que cambia según el nivel de zoom de la siguiente manera:
+interface Props {
+  onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
+}
 
-3da24a6b737fe499.png
+// This is an example of the new "PlaceAutocomplete" widget.
+// https://developers.google.com/maps/documentation/javascript/place-autocomplete-new
+export const PlaceAutocompleteNew = ({onPlaceSelect}: Props) => {
+  const [placeAutocomplete, setPlaceAutocomplete] = useState<Node | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const places = useMapsLibrary('places');
 
-El algoritmo utilizado para el agrupamiento de marcadores en clústeres divide el área visible del mapa en una cuadrícula y, luego, agrupa los íconos que se encuentran en la misma celda. Afortunadamente, no tienes que preocuparte por eso porque el equipo de Google Maps Platform creó una biblioteca de utilidades de código abierto muy útil llamada MarkerClustererPlus que hace todo por ti automáticamente. Puedes ver el código fuente de la biblioteca MarkerClustererPlus en GitHub.
+  useEffect(() => {
+    if (!places) return;
+    // @ts-expect-error Using an alpha feature here. The types are not up to date yet
+    setPlaceAutocomplete(new places.PlaceAutocompleteElement());
+  }, [places]);
 
-Para habilitar el agrupamiento de marcadores en clústeres, sigue estos pasos:
+  useEffect(() => {
+    if (!placeAutocomplete) return;
 
-En la parte superior del archivo app.tsx, actualiza y agrega a la biblioteca las importaciones y los tipos compatibles.
+    placeAutocomplete.addEventListener(
+      'gmp-placeselect',
+      // @ts-expect-error This new event has no types yet
+      async ({place}: {place: google.maps.places.Place}) => {
+        await place.fetchFields({
+          fields: ['displayName', 'formattedAddress', 'location', 'viewport']
+        });
 
-import React, {useEffect, useState, useRef, useCallback} from 'react';
-import {createRoot} from "react-dom/client";
-import {
-    APIProvider,
-    Map,
-    AdvancedMarker,
-    MapCameraChangedEvent,
-    useMap,
-    Pin
-  } from '@vis.gl/react-google-maps';
-  import {MarkerClusterer} from '@googlemaps/markerclusterer';
-  import type {Marker} from '@googlemaps/markerclusterer';
-En el proyecto de plantilla de este codelab, la biblioteca de utilidades MarkerClustererPlus ya está incluida en las dependencias declaradas en el archivo package.json. Por eso, ya la instalaste cuando ejecutaste npm install al comienzo de este codelab.
-
-Crea variables para la biblioteca MarkerClusterer y elementos compatibles en el componente PoiMarkers.
-Necesitas una instancia del mapa para inicializar MarkerClusterer. Obtén esa instancia en el hook useMap():
-
-
-const map = useMap();
-Crea una lista de marcadores almacenados en una variable de estado:
-
-const [markers, setMarkers] = useState<{[key: string]: Marker}>({});
-Almacena el agrupador de marcadores en clústeres como referencia:
-
-const clusterer = useRef<MarkerClusterer | null>(null);
-Además, en el componente PoiMarkers, crea una instancia de MarkerClusterer y pasa la instancia de Map donde deseas que se muestren los clústeres de marcadores:
-
- useEffect(() => {
-    if (!map) return;
-    if (!clusterer.current) {
-      clusterer.current = new MarkerClusterer({map});
-    }
-  }, [map]);
-Crea un efecto para que se actualice el agrupador de marcadores en clústeres cuando se modifique la lista de marcadores:
-
-useEffect(() => {
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(markers));
-  }, [markers]);
-Crea una función para acuñar referencias para marcadores nuevos:
-
-const setMarkerRef = (marker: Marker | null, key: string) => {
-    if (marker && markers[key]) return;
-    if (!marker && !markers[key]) return;
-
-    setMarkers(prev => {
-      if (marker) {
-        return {...prev, [key]: marker};
-      } else {
-        const newMarkers = {...prev};
-        delete newMarkers[key];
-        return newMarkers;
+        onPlaceSelect(place.toJSON());
       }
+    );
+
+    containerRef.current?.appendChild(placeAutocomplete);
+  }, [onPlaceSelect, placeAutocomplete]);
+
+  return <div className="autocomplete-container" ref={containerRef} />;
+};
+import React, {useRef, useEffect, useState} from 'react';
+import {useMapsLibrary} from '@vis.gl/react-google-maps';
+
+interface Props {
+  onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
+}
+
+// This is an example of the classic "Place Autocomplete" widget.
+// https://developers.google.com/maps/documentation/javascript/place-autocomplete
+export const PlaceAutocompleteClassic = ({onPlaceSelect}: Props) => {
+  const [placeAutocomplete, setPlaceAutocomplete] =
+    useState<google.maps.places.Autocomplete | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const places = useMapsLibrary('places');
+
+  useEffect(() => {
+    if (!places || !inputRef.current) return;
+
+    const options = {
+      fields: ['geometry', 'name', 'formatted_address']
+    };
+
+    setPlaceAutocomplete(new places.Autocomplete(inputRef.current, options));
+  }, [places]);
+
+  useEffect(() => {
+    if (!placeAutocomplete) return;
+
+    placeAutocomplete.addListener('place_changed', () => {
+      onPlaceSelect(placeAutocomplete.getPlace());
     });
-  };
-Usa este método en el elemento AdvancedMarker para crear la referencia para cada marcador.
+  }, [onPlaceSelect, placeAutocomplete]);
 
-<AdvancedMarker
-  key={poi.key}
-  position={poi.location}
-  ref={marker => setMarkerRef(marker, poi.key)}
-  >
-    <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
-</AdvancedMarker>
-Ahora deberías ver clústeres de marcadores en el mapa:
+  return (
+    <div className="autocomplete-container">
+      <input ref={inputRef} />
+    </div>
+  );
+};
 
-3da24a6b737fe499.png
+import * as React from 'react';
+import {AutocompleteMode} from './app';
 
-Si acerca o alejas el mapa, MarkerClustererPlus cambia automáticamente el número y el tamaño de los clústeres por ti. También puedes hacer clic en el ícono de cualquier clúster de marcadores para acercar el mapa y ver todos los marcadores incluidos en ese clúster.
+interface Props {
+  autocompleteModes: Array<AutocompleteMode>;
+  selectedAutocompleteMode: AutocompleteMode;
+  onAutocompleteModeChange: (autocompleteMode: AutocompleteMode) => void;
+}
 
-d5e75480e9abd3c7.png
+function ControlPanel({
+  autocompleteModes,
+  selectedAutocompleteMode,
+  onAutocompleteModeChange
+}: Props) {
+  return (
+    <div className="control-panel">
+      <h3>Autocomplete Example</h3>
 
-En resumen, en esta sección importaste la biblioteca de utilidades MarkerClustererPlus de código abierto y la usaste para crear una instancia de MarkerClusterer que, con la ayuda de las referencias y el estado de React, agrupa automáticamente en clústeres los marcadores que creaste en el paso anterior.
+      <p>
+        This example demonstrates three different methods of adding autocomplete
+        functionality to your appplication using the Google Places API.
+      </p>
 
-El componente PoiMarkers debería verse así:
+      <div className="autocomplete-mode">
+        <h4>Choose the example style: </h4>
+        <select
+          value={selectedAutocompleteMode.id}
+          onChange={event => {
+            const newMode = autocompleteModes.find(
+              mode => mode.id === event.target.value
+            );
+            if (newMode) {
+              onAutocompleteModeChange(newMode);
+            }
+          }}>
+          {autocompleteModes.map(({id, label}) => (
+            <option key={id} value={id}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </div>
 
+      {selectedAutocompleteMode.id === 'classic' && (
+        <div>
+          This is the easiest to setup. You only need an input element and
+          Google handles the rest.
+        </div>
+      )}
+      {selectedAutocompleteMode.id === 'custom' && (
+        <div>
+          This is the most flexible solution, but also requires quite a bit
+          effort to get right. The example only implements a basic working
+          version for demonstration purposes.
+        </div>
+      )}
+      {selectedAutocompleteMode.id === 'custom-hybrid' && (
+        <div>
+          This has the benefits of custom look, feel and solid UX out of the
+          box, but you still have to manage the prediction and details fetching
+          as well as the session yourself.
+        </div>
+      )}
+      <div className="links">
+        <a
+          href="https://codesandbox.io/s/github/visgl/react-google-maps/tree/main/examples/autocomplete"
+          target="_new">
+          Try on CodeSandbox ↗
+        </a>
 
-const PoiMarkers = (props: { pois: Poi[] }) => {
+        <a
+          href="https://github.com/visgl/react-google-maps/tree/main/examples/autocomplete"
+          target="_new">
+          View Code ↗
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export default React.memo(ControlPanel);
+
+import React from 'react';
+import {ControlPosition, MapControl} from '@vis.gl/react-google-maps';
+
+import {PlaceAutocompleteClassic} from './autocomplete-classic';
+import {AutocompleteCustom} from './autocomplete-custom';
+
+import {AutocompleteCustomHybrid} from './autocomplete-custom-hybrid';
+import type {AutocompleteMode} from './app';
+
+type CustomAutocompleteControlProps = {
+  controlPosition: ControlPosition;
+  selectedAutocompleteMode: AutocompleteMode;
+  onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
+};
+
+export const CustomMapControl = ({
+  controlPosition,
+  selectedAutocompleteMode,
+  onPlaceSelect
+}: CustomAutocompleteControlProps) => {
+  const {id} = selectedAutocompleteMode;
+
+  return (
+    <MapControl position={controlPosition}>
+      <div className="autocomplete-control">
+        {id === 'classic' && (
+          <PlaceAutocompleteClassic onPlaceSelect={onPlaceSelect} />
+        )}
+
+        {id === 'custom' && (
+          <AutocompleteCustom onPlaceSelect={onPlaceSelect} />
+        )}
+
+        {id === 'custom-hybrid' && (
+          <AutocompleteCustomHybrid onPlaceSelect={onPlaceSelect} />
+        )}
+      </div>
+    </MapControl>
+  );
+};
+
+import {useMap} from '@vis.gl/react-google-maps';
+import React, {useEffect} from 'react';
+
+interface Props {
+  place: google.maps.places.PlaceResult | null;
+}
+
+const MapHandler = ({place}: Props) => {
   const map = useMap();
-  const [markers, setMarkers] = useState<{[key: string]: Marker}>({});
-  const clusterer = useRef<MarkerClusterer | null>(null);
 
-  // Initialize MarkerClusterer, if the map has changed
   useEffect(() => {
-    if (!map) return;
-    if (!clusterer.current) {
-      clusterer.current = new MarkerClusterer({map});
+    if (!map || !place) return;
+
+    if (place.geometry?.viewport) {
+      map.fitBounds(place.geometry?.viewport);
     }
-  }, [map]);
+  }, [map, place]);
 
-  // Update markers, if the markers array has changed
-  useEffect(() => {
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(markers));
-  }, [markers]);
-
-  const setMarkerRef = (marker: Marker | null, key: string) => {
-    if (marker && markers[key]) return;
-    if (!marker && !markers[key]) return;
-
-    setMarkers(prev => {
-      if (marker) {
-        return {...prev, [key]: marker};
-      } else {
-        const newMarkers = {...prev};
-        delete newMarkers[key];
-        return newMarkers;
-      }
-    });
-  };
-
-  return (
-    <>
-      {props.pois.map( (poi: Poi) => (
-        <AdvancedMarker
-          key={poi.key}
-          position={poi.location}
-          ref={marker => setMarkerRef(marker, poi.key)}
-          >
-            <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
-        </AdvancedMarker>
-      ))}
-    </>
-  );
+  return null;
 };
-A continuación, aprenderás a controlar la interacción del usuario.
 
-8. Agrega interacción del usuario
-Ahora tienes un mapa increíble que muestra algunos de los destinos turísticos más populares de Sídney. En esta sección, agregarás algunas acciones para controlar las interacciones del usuario con el sistema de eventos de la API de Maps JavaScript y mejorar aún más la experiencia del usuario de tu mapa.
+export default React.memo(MapHandler);
 
-La API de Maps JavaScript proporciona un sistema de eventos integral que usa controladores de eventos de JavaScript para permitirte controlar varias interacciones del usuario en el código. Por ejemplo, puedes crear objetos de escucha de eventos para activar la ejecución del código para determinadas interacciones, como cuando el usuario hace clic en el mapa y los marcadores, desplaza lateralmente la vista del mapa, acerca y aleja el mapa, y mucho más.
-
-Sigue estos pasos para agregar un objeto de escucha click a tus marcadores y, luego, hacer que el mapa se desplace lateralmente de manera programática para que el marcador en el que hizo clic el usuario quede en el centro del mapa.
-
-Crea una devolución de llamada del controlador click.
-En el componente PoiMarkers, define un controlador click con useCallback() de React.
-
-El evento click se activa cada vez que un usuario hace clic en un marcador o lo presiona, y devuelve un evento como objeto JSON con información sobre el elemento de la IU en el que se hizo clic. Para mejorar la experiencia del usuario del mapa, puedes controlar el evento click y usar su objeto LatLng para obtener la latitud y longitud del marcador en el que se hizo clic.
-
-Una vez que tengas la latitud y longitud, pasa esos datos a la función panTo() integrada en la instancia de Map para que el mapa se desplace lateralmente y vuelva a centrarse en el marcador en el que se hizo clic. Para ello, agrega lo siguiente en la función de devolución de llamada del controlador del evento:
-
-
-const PoiMarkers = (props: { pois: Poi[] }) => {
-...
-const handleClick = useCallback((ev: google.maps.MapMouseEvent) => {
-    if(!map) return;
-    if(!ev.latLng) return;
-    console.log('marker clicked:', ev.latLng.toString());
-    map.panTo(ev.latLng);
-  });
-...
-};
-Asigna los controladores click a los marcadores.
-Los elementos AdvancedMarker de la biblioteca vis.gl/react-google-map exponen dos propiedades que son útiles para controlar los clics:
-
-clickable: Si el valor es true, será posible hacer clic en AdvancedMarker y eso activará el evento gmp-click, que será interactivo para fines de accesibilidad. Por ejemplo, se podrá navegar con el teclado con las teclas de flecha.
-onClick: Es la función de devolución de llamada a la que se llamará cuando ocurra un evento click.
-Actualiza la renderización de PoiMarkers para asignar un controlador click a cada marcador:
-
-return (
-    <>
-      {props.pois.map( (poi: Poi) => (
-        <AdvancedMarker
-          ... other properties ...
-          clickable={true}
-          onClick={handleClick}
-          >
-           ...
-        </AdvancedMarker>
-      ))}
-    </>
-  );
-Ve al navegador y haz clic en tus marcadores. Deberías ver que el mapa se desplaza lateralmente de forma automática para volver a centrarse cada vez que se hace clic en un marcador.
-En resumen, en esta sección usaste el sistema de eventos de React para asignar un controlador click a todos los marcadores del mapa, recuperaste la latitud y la longitud del marcador del evento click que se activó y usaste esa información para que el mapa vuelva a centrarse cada vez que se hace clic en un marcador.
-
-Solo falta un paso más. A continuación, mejorarás aún más la experiencia del usuario del mapa con las funciones de dibujo de la API de Maps JavaScript.
-
-9. Dibuja en el mapa
-Hasta ahora, creaste un mapa de Sídney que muestra marcadores de destinos turísticos populares y controla la interacción del usuario. En el último paso de este codelab, usarás las funciones de dibujo de la API de Maps JavaScript para agregar una función útil adicional a la experiencia de tu mapa.
-
-Imagina que a este mapa lo utilizarán usuarios que desean explorar la ciudad de Sídney. Una función útil sería visualizar un radio alrededor de un marcador cuando se hace clic en él. Esto permitiría que el usuario comprenda qué otros destinos están cerca del marcador en el que hizo clic, a los cuales puede llegar a pie.
-
-La API de Maps JavaScript incluye un conjunto de funciones para dibujar formas sobre el mapa, como cuadrados, polígonos, líneas y círculos. Mediante la biblioteca vis.gl/react-google-map, estas capabilities están disponibles para ti en React.
-
-A continuación, renderizarás un círculo para mostrar un radio de 800 metros (aproximadamente media milla) alrededor de un marcador cuando se hace clic en él.
-
-El repositorio inicial contiene un componente personalizado para un elemento circle. Lo puedes encontrar en el archivo src/components/circle.tsx.
-
-Para permitir que los usuarios dibujen en el mapa, sigue estos pasos:
-
-Actualiza las importaciones para que se incluya el componente de círculo proporcionado.
-
-import {Circle} from './components/circle'
-Crea una variable de estado para el centro del círculo.
-Captura el estado del centro del círculo en el componente PoiMarkers. Establece el estado inicial como null y ten en cuenta que no se renderizará un círculo a menos que la ubicación del centro (y el radio) sean válidos.
-
-
-const PoiMarkers = (props: { pois: Poi[] }) => {
-...
-  const [circleCenter, setCircleCenter] = useState(null)
-...
-};
-Actualiza el centro de círculo cuando se controle un evento click.
-Llama a setCircleCenter con la ubicación encontrada en el objeto del evento:
-
-
-const handleClick = useCallback((ev: google.maps.MapMouseEvent) => {
-    ...
-    setCircleCenter(ev.latLng);
-  });
-Las funciones de dibujo de la API de Maps JavaScript te ofrecen una amplia variedad de opciones para mostrar un objeto dibujado en el mapa. Para renderizar un radio circular, define las propiedades del elemento de círculo, como el color y el grosor del trazo, el radio del círculo y en qué lugar debe centrarse.
-
-Agrega un círculo a la renderización y enlaza el centro a la variable del estado. La renderización debería verse así:
-
-return (
-    <>
-      <Circle
-          radius={800}
-          center={circleCenter}
-          strokeColor={'#0c4cb3'}
-          strokeOpacity={1}
-          strokeWeight={3}
-          fillColor={'#3b82f6'}
-          fillOpacity={0.3}
-        />
-      {props.pois.map( (poi: Poi) => (
-        <AdvancedMarker
-          key={poi.key}
-          position={poi.location}
-          ref={marker => setMarkerRef(marker, poi.key)}
-          clickable={true}
-          onClick={handleClick}
-          >
-            <Pin background={'#FBBC04'} glyphColor={'#000'} borderColor={'#000'} />
-        </AdvancedMarker>
-      ))}
-    </>
-  );
-};
-¡Listo! Ve a tu navegador y haz clic en uno de los marcadores. Deberías ver que se renderiza un radio circular a su alrededor:
 

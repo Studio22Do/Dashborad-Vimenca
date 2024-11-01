@@ -28,6 +28,20 @@
     right: 15px;
 }
 
+.cerrar{
+    cursor: pointer;
+    position: relative;
+}
+.cerrar::before{
+    content: url(./assets/arrow.svg);
+    position: absolute;
+    fill: white;
+    rotate: 180deg;
+    left: -14px;
+    top: 2px;
+    
+}
+
 .buttontab.active {
     color: #183ea0;
     background-color: #ffffff;
