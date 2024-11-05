@@ -208,7 +208,7 @@ function EditCard({ onSave }) {
             setRemesas(convertYNToBoolean(ItemActual.remesas));
             setTipoOficina(ItemActual.tipo_de_oficina);
         }
-        console.log("ItemActual:", ItemActual);
+        
     }, [ItemActual]);
 
     const handleSaveClick = () => {

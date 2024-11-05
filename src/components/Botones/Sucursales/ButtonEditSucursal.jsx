@@ -6,7 +6,7 @@ function ButtonEditSucursal({ id }) {
     const { setActiveSucursal } = useSucursalesContext();
 
     const handleClick = () => {
-        console.log(`Editando el representante con el id número: ${id}`);
+        
         setEditSucursal(id); // Establece el representante a editar en el contexto
         setActiveSucursal(3); // Cambia a la vista de edición
     };

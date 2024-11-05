@@ -1,90 +1,236 @@
-# Documentación del Proyecto
+# Sistema de Gestión de Oficinas - Documentación
 
-## Descripción
+## Descripción General
+Este proyecto es una aplicación web desarrollada en React para gestionar diferentes tipos de oficinas (Sucursales, Estafetas y Representantes) de una organización. Permite crear, editar y eliminar oficinas, así como gestionar sus horarios y servicios disponibles.
 
-Este proyecto es una aplicación web para la gestión de estafetas, sucursales y representantes. Está construido utilizando React para el frontend y se comunica con una API backend para realizar operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre los datos de las estafetas.
+## Estructura del Proyecto
+
+### Componentes Principales
+
+#### 1. Gestión de Oficinas
+- **Sucursales**: Maneja las oficinas principales
+- **Estafetas**: Gestiona oficinas secundarias
+- **Representantes**: Administra oficinas de representantes
+
+### Arquitectura
+
+src/
+├── components/
+│   ├── Botones/
+│   ├── Estafetas/
+│   ├── Representantes/
+│   ├── Sucursales/
+│   ├── ErrorBoundary.jsx
+│   └── PrivateRoute.jsx
+├── providers/
+│   ├── EstafetasProviders.jsx
+│   ├── RepresentantesProviders.jsx
+│   ├── SucursalesProviders.jsx
+│   └── UserProvider.jsx
+├── pages/
+│   ├── Dashboard.jsx
+│   └── Login.jsx
+└── App.jsx
+
+## Características Principales
+
+### 1. Autenticación
+- Sistema de login con token
+- Rutas protegidas mediante `PrivateRoute`
+- Gestión de sesiones de usuario
+
+### 2. Gestión de Oficinas
+Cada tipo de oficina (Sucursal, Estafeta, Representante) permite:
+- Crear nuevas oficinas
+- Editar oficinas existentes
+- Eliminar oficinas
+- Ver listado de oficinas
+
+### 3. Información Gestionada
+Para cada oficina se maneja:
+- Nombre
+- Dirección
+- Provincia
+- Coordenadas (latitud/longitud)
+- Horarios
+  - Lunes a viernes
+  - Sábados
+  - Domingos
+  - Días feriados
+- Servicios disponibles
+  - Remesas
+  - Vimenpaq
+  - Banco Vimenca
+  - PagaTodo
+  - Agente de cambio
 
 ## Tecnologías Utilizadas
 
-- **Frontend**: React, Tailwind CSS
-- **Backend**: Flask (API)
-- **Autenticación**: JWT (JSON Web Tokens)
-- **Base de Datos**: PostgreSQL
+- **Frontend**: React.js
+- **Routing**: React Router
+- **Estilos**: Tailwind CSS
+- **Estado Global**: Context API
+- **Peticiones HTTP**: Axios
+- **Componentes UI**: 
+  - Reactjs-popup
+  - React-paginate
 
-## Instalación
+## Seguridad
 
-1. **Clonar el repositorio**:
-   ```bash
-   git clone https://github.com/tu-usuario/tu-repositorio.git
-   cd tu-repositorio
-   ```
+### Características de Seguridad
+1. Autenticación mediante tokens
+2. Confirmación por contraseña para operaciones críticas
+3. Rutas protegidas
+4. Manejo de errores mediante ErrorBoundary
 
-2. **Instalar dependencias del frontend**:
-   ```bash
+## Configuración del Proyecto
+
+### Variables de Entorno
+VITE_SERVER_URL=https://mapasgv.com:5050
+VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+
+### Instalación y Ejecución
+
+1. Clonar el repositorio
+2. Instalar dependencias:
    npm install
-   ```
 
-3. **Configurar el entorno del backend**:
-   - Asegúrate de tener Python y pip instalados.
-   - Instala las dependencias del backend:
-     ```bash
-     pip install -r requirements.txt
-     ```
+3. Ejecutar en desarrollo:
+   npm run dev
 
-4. **Configurar variables de entorno**:
-   - Crea un archivo `.env` en la raíz del proyecto y define las siguientes variables:
-     ```bash
-     VITE_SERVER_URL="/api"
-     ```
+## Manejo de Estado
 
-5. **Iniciar el servidor de desarrollo**:
-   - Para el frontend:
-     ```bash
-     npm start
-     ```
-   - Para el backend:
-     ```bash
-     flask run
-     ```
+El proyecto utiliza Context API de React para manejar el estado global, implementando los siguientes contextos:
 
-## Uso
+- UserContext: Gestión de autenticación
+- EstafetasContext: Estado de estafetas
+- RepresentantesContext: Estado de representantes
+- SucursalesContext: Estado de sucursales
 
-- **Inicio de Sesión**: Los usuarios pueden iniciar sesión utilizando su correo electrónico y contraseña.
-- **Gestión de Estafetas**: Los usuarios pueden crear, editar y eliminar estafetas.
-- **Navegación**: La aplicación permite navegar entre diferentes secciones como Sucursales, Representantes y Estafetas.
+## Manejo de Errores
 
-## Endpoints de la API
+Se implementa un sistema de manejo de errores mediante:
+- ErrorBoundary para captura de errores en componentes
+- Try-catch en operaciones asíncronas
+- Mensajes de error para el usuario
 
-1. **Registro de Usuario**
-   - **Método**: POST
-   - **Endpoint**: `/register`
-   - **Cuerpo de Solicitud**:
-     ```json
-     {
-       "email": "usuario@example.com",
-       "password": "tu_contraseña"
-     }
-     ```
+## Consideraciones de Mantenimiento
 
-2. **Inicio de Sesión**
-   - **Método**: POST
-   - **Endpoint**: `/login`
-   - **Cuerpo de Solicitud**:
-     ```json
-     {
-       "useremail": "usuario@example.com",
-       "password": "tu_contraseña"
-     }
-     ```
+### Para Agregar Nuevas Funcionalidades
+1. Mantener la estructura de carpetas existente
+2. Seguir el patrón de Context para nuevo estado global
+3. Implementar validaciones de datos
+4. Mantener la consistencia en el manejo de errores
 
-3. **Gestión de Sucursales**
-   - **Crear Sucursal**: POST `/sucursales/`
-   - **Obtener Todas las Sucursales**: GET `/sucursales/`
-   - **Actualizar Sucursal**: PUT `/sucursales/<int:sucursal_id>`
-   - **Eliminar Sucursal**: DELETE `/sucursales/<int:sucursal_id>`
+### Actualizaciones Recomendadas
+1. Implementar pruebas unitarias
+2. Mejorar la validación de formularios
+3. Agregar documentación de API
+4. Implementar sistema de logs
 
-## Contribuciones
+## Guía de Componentes
 
-Las contribuciones son bienvenidas. Por favor, sigue los siguientes pasos para contribuir:
+### Providers
+1. UserProvider
+   - Maneja la autenticación y estado del usuario
+   - Gestiona tokens de acceso
+   - Proporciona funciones de login/logout
 
+2. EstafetasProviders
+   - Gestiona el estado de las estafetas
+   - Proporciona funciones CRUD para estafetas
+   - Maneja la navegación entre vistas de estafetas
 
+3. RepresentantesProviders
+   - Similar a EstafetasProviders pero para representantes
+   - Maneja estado específico de representantes
+
+4. SucursalesProviders
+   - Gestiona sucursales principales
+   - Proporciona funciones de edición y creación
+
+### Componentes Principales
+
+1. Dashboard
+   - Componente principal post-login
+   - Maneja la navegación entre diferentes tipos de oficinas
+   - Integra todos los providers necesarios
+
+2. Login
+   - Maneja la autenticación de usuarios
+   - Implementa validaciones de formulario
+   - Redirecciona al dashboard tras login exitoso
+
+3. Mapa
+   - Integración con Google Maps
+   - Permite selección de ubicaciones
+   - Muestra ubicaciones de oficinas
+
+### Componentes de Utilidad
+
+1. ErrorBoundary
+   - Captura errores en el árbol de componentes
+   - Previene fallos completos de la aplicación
+   - Muestra mensajes de error amigables
+
+2. PrivateRoute
+   - Protege rutas que requieren autenticación
+   - Redirecciona a login si no hay sesión activa
+
+## API y Endpoints
+
+### Autenticación
+POST /login/
+- Autenticación de usuarios
+- Retorna token de acceso
+
+### Oficinas
+GET /sucursales/
+- Obtiene lista de todas las oficinas
+
+POST /sucursales/
+- Crea nueva oficina
+
+PUT /sucursales/:id
+- Actualiza oficina existente
+
+DELETE /sucursales/:id
+- Elimina oficina
+
+## Flujos de Trabajo Principales
+
+### Creación de Oficina
+1. Usuario selecciona "Crear Nuevo"
+2. Completa formulario con datos requeridos
+3. Selecciona ubicación en mapa
+4. Confirma con contraseña
+5. Sistema valida y guarda
+
+### Edición de Oficina
+1. Usuario selecciona "Editar"
+2. Modifica datos necesarios
+3. Confirma cambios con contraseña
+4. Sistema actualiza información
+
+### Eliminación de Oficina
+1. Usuario selecciona "Eliminar"
+2. Sistema solicita confirmación
+3. Usuario ingresa contraseña
+4. Sistema elimina registro
+
+## Consideraciones de Seguridad
+
+### Autenticación
+- Tokens JWT para sesiones
+- Almacenamiento seguro de credenciales
+- Renovación automática de tokens
+
+### Validaciones
+- Sanitización de inputs
+- Validación de tipos de datos
+- Prevención de inyección SQL
+
+### Permisos
+- Control de acceso basado en roles
+- Validación de permisos por operación
+- Registro de actividades críticas

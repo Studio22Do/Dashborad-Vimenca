@@ -7,7 +7,7 @@ function ButtonEdit({ id }) {
     const { setActiveEstafeta } = useEstafetasContext();
 
     const handleClick = () => {
-        console.log(`Editando la oficina con el id número: ${id}`);
+        
         setEditEstafeta(id); // Establece la estafeta a editar en el contexto
         setActiveEstafeta(3);
     };

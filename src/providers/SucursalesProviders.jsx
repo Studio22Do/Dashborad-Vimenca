@@ -12,7 +12,7 @@ const SucursalesContext = React.createContext();
 const ItemsSucursalesContext = React.createContext();
 const OnEditSucursalContext = React.createContext();
 
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+
 
 function useSucursalesContext() {
     return useContext(SucursalesContext);
@@ -36,7 +36,7 @@ function SucursalesProvider({ children }) {
     const [activeSucursal, setActiveSucursal] = useState(0);
 
     const [editSucursal, setEditSucursal] = useState(null); // Estado para la sucursal en edición
-    const { token } = useUserContext();
+
 
     const sucursalesContextValue = useMemo(
         () => ({

@@ -6,7 +6,7 @@ function ButtonEditRepresentante({ id }) {
     const { setActiveRepresentante } = useRepresentantesContext();
 
     const handleClick = () => {
-        console.log(`Editando el representante con el id número: ${id}`);
+        
         setEditRepresentante(id); // Establece el representante a editar en el contexto
         setActiveRepresentante(3); // Cambia a la vista de edición
     };
