@@ -49,6 +49,10 @@ const Oficinas = React.memo(() => {
         [itemsPerPage, filteredItems.length]
     ); // Actualiza las dependencias
 
+    useEffect(() => {
+        setItemOffset(0);
+    }, [searchTerm]);
+
     return (
         <div className="bg-white rounded-tr-2xl rounded-b-2xl">
             <div className="px-4 py-5 border-b flex justify-between">

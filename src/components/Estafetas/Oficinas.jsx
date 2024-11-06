@@ -50,6 +50,11 @@ const Oficinas = React.memo(() => {
         [itemsPerPage, filteredItems.length]
     ); // Actualiza las dependencias
 
+    // Añadir efecto para resetear la paginación cuando cambie la búsqueda
+    useEffect(() => {
+        setItemOffset(0);
+    }, [searchTerm]);
+
     return (
         <div className="bg-white rounded-tr-2xl rounded-b-2xl">
             <div className="px-4 py-5 border-b flex justify-between">
@@ -104,6 +109,7 @@ const Oficinas = React.memo(() => {
                 previousLinkClassName="prevbut"
                 nextLinkClassName="nextbut"
                 activeLinkClassName="activelink"
+                
             />
         </div>
     );
