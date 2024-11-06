@@ -408,7 +408,7 @@ function EditCard({ onSave }) {
                             <h3 className="font-semibold">Sábados</h3>
                             <div className="flex gap-8 mt-1">
                                 <label className="text-sm text-gray-500">
-                                    Desde: {sabadoDesde}
+                                    Desde:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
@@ -419,7 +419,7 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
-                                    Hasta: {sabadoHasta}
+                                    Hasta:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
@@ -433,7 +433,7 @@ function EditCard({ onSave }) {
                             {/* ############# */}
                             <div className="flex gap-8 mt-1">
                                 <label className="text-sm text-gray-500">
-                                    Desde: {sabadoDesde2}
+                                    Desde:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
@@ -444,7 +444,7 @@ function EditCard({ onSave }) {
                                     />
                                 </label>
                                 <label className="text-sm text-gray-500">
-                                    Hasta: {sabadoHasta2}
+                                    Hasta:
                                     <input
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
@@ -620,8 +620,7 @@ function EditCard({ onSave }) {
 
 
                     <div className="flex text-xs gap-3 text-center justify-center py-2 text-gray-400 w-full">
-                        <p>Lat: {latitud}</p>
-                        <p>Long: {longitud}</p>
+                        
                     </div>
                     <div className="flex flex-col gap-3 py-7 justify-center w-full">
                         <div className="flex gap-8 items-center justify-center">

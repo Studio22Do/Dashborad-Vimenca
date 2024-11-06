@@ -43,7 +43,7 @@ function Login() {
         <form onSubmit={handleSubmit}>
             <div className="flex flex-row">
                 <div
-                    className="w-3/12 min-h-lvh bg-red-700"
+                    className="w-3/12 min-h-lvh"
                     style={{
                         backgroundImage: `url(${sidebar})`,
                         backgroundSize: "cover",
