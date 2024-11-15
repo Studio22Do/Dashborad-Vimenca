@@ -75,6 +75,7 @@ function EditCard({ onSave }) {
     const [domingoHasta2, setDomingoHasta2] = useState("");
     const [diasFeriadosDesde, setDiasFeriadosDesde] = useState("");
     const [diasFeriadosHasta, setDiasFeriadosHasta] = useState("");
+
     const [telefono, setTelefono] = useState("");
     const [servicioPrincipal, setServicioPrincipal] = useState("");
     const [agenteCambio, setAgenteCambio] = useState(false); // Cambiado a booleano
@@ -226,19 +227,6 @@ function EditCard({ onSave }) {
             setErrorMessage("Por favor, completa todos los campos requeridos."); // Mensaje de error
             return; // Detiene la ejecución si hay campos vacíos
         }
-
-        // Función para convertir de formato 24h a 12h
-        const convertTo12HourFormat = (time24) => {
-            const date = parse(time24, "HH:mm", new Date());
-            return format(date, "h:mm a");
-        };
-
-        // Función para formatear el rango de horas
-        const formatTimeRange = (start, end) => {
-            return `${convertTo12HourFormat(start)} - ${convertTo12HourFormat(
-                end
-            )}`;
-        };
 
         // Preparar los horarios en el formato correcto
         const lunesViernesHorario = formatTimeRange(
