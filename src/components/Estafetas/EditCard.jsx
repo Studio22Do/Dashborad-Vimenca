@@ -607,6 +607,69 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </div>
+
+
+                    {/* #################### */}
+                    <div className="flex gap-2 items-end mb-1 p-1">
+                        <div className="w-6"></div>
+                        <div className="w-full">
+                            <div className="w-full">
+                                <select
+                                    className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={provincia}
+                                    onChange={(e) =>
+                                        setProvincia(e.target.value)
+                                    }
+                                >
+                                    <option value="">
+                                        --Seleccione una provincia--
+                                    </option>
+                                    <option value="Santo Domingo">Santo Domingo</option>
+                                    <option value="Puerto Plata">Puerto Plata</option>
+                                    <option value="Santiago">Santiago</option>
+                                    <option value="La Romana">La Romana</option>
+                                    <option value="San Pedro de Macorís">San Pedro de Macorís</option>
+                                    <option value="La Vega">La Vega</option>
+                                    <option value="San Cristóbal">San Cristóbal</option>
+                                    <option value="Higüey">Higüey</option>
+                                    <option value="Moca">Moca</option>
+                                    <option value="Azua">Azua</option>
+                                    <option value="Barahona">Barahona</option>
+                                    <option value="San Juan">San Juan</option>
+                                    <option value="Monte Cristi">Monte Cristi</option>
+                                    <option value="Samana">Samana</option>
+                                    <option value="Monte Plata">Monte Plata</option>
+                                    <option value="Peravia">Peravia</option>
+                                    <option value="Espaillat">Espaillat</option>
+                                    <option value="Dajabón">Dajabón</option>
+                                    <option value="Elías Piña">Elías Piña</option>
+                                    <option value="Independencia">Independencia</option>
+                                    <option value="María Trinidad Sánchez">María Trinidad Sánchez</option>
+                                    <option value="Monseñor Nouel">Monseñor Nouel</option>
+                                    <option value="Pedernales">Pedernales</option>
+                                    <option value="Hermanas Mirabal">Hermanas Mirabal</option>
+                                    <option value="Bahoruco">Bahoruco</option>
+                                    <option value="Valverde">Valverde</option>
+                                    <option value="Sánchez Ramírez">Sánchez Ramírez</option>
+                                    <option value="Boca Chica">Boca Chica</option>
+                                    <option value="Distrito Nacional">Distrito Nacional</option>
+                                    <option value="Duarte">Duarte</option>
+                                    <option value="El Seibo">El Seibo</option>
+                                    <option value="Hato Mayor">Hato Mayor</option>
+                                    <option value="San José de Ocoa">San José de Ocoa</option>
+                                    <option value="San Juan de la Maguana">San Juan de la Maguana</option>
+                                    <option value="Santiago Rodríguez">Santiago Rodríguez</option>
+                                    <option value="Santo Domingo Este">Santo Domingo Este</option>
+                                    <option value="Santo Domingo Norte">Santo Domingo Norte</option>
+                                    <option value="Santo Domingo Oeste">Santo Domingo Oeste</option>
+                                    
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                     <div className="flex text-xs gap-3 text-center justify-center py-2 text-gray-400 w-full">
                         <p>Lat: {latitud}</p>
                         <p>Long: {longitud}</p>
