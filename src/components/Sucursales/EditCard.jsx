@@ -790,7 +790,7 @@ function EditCard({ onSave }) {
                     {/* Muestra el mensaje de error */}
                 </div>
             </div>
-            <div className="w-full h-[600px] p-1 border m-3 rounded-lg">
+            <div className="w-full max-h-fit p-1 border m-3 rounded-lg">
                 {" "}
                 {/* Asegúrate de que el contenedor tenga un tamaño definido */}
                 <Mapa

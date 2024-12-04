@@ -667,9 +667,6 @@ function EditCard({ onSave }) {
                             </div>
                         </div>
                     </div>
-
-
-
                     <div className="flex text-xs gap-3 text-center justify-center py-2 text-gray-400 w-full">
                         <p>Lat: {latitud}</p>
                         <p>Long: {longitud}</p>
@@ -713,8 +710,8 @@ function EditCard({ onSave }) {
 
                         <button
                             className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
-                            /* onClick={handleSaveClick} */
-                            onClick={handleConfirmSave}
+                            onClick={handleSaveClick}
+                            /* onClick={handleConfirmSave} */
                         >
                             Guardar
                         </button>
@@ -773,7 +770,7 @@ function EditCard({ onSave }) {
                     {/* Muestra el mensaje de error */}
                 </div>
             </div>
-            <div className="w-full h-[600px] p-1 border m-3 rounded-lg">
+            <div className="w-full max-h-fit p-1 border m-3 rounded-lg">
                 {" "}
                 {/* Asegúrate de que el contenedor tenga un tamaño definido */}
                 <Mapa

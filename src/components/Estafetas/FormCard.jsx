@@ -539,7 +539,10 @@ function FormCard() {
                             </div>
                         </div>
                     </div>
-
+                    <div className="flex text-xs gap-3 text-center justify-center py-2 text-gray-400 w-full">
+                        <p>Lat: {latitud}</p>
+                        <p>Long: {longitud}</p>
+                    </div>
                     <div className="flex flex-col gap-3 py-7 justify-center w-full">
                         <div className="flex gap-8 items-center justify-center">
                             <img src={Iconvimenca} alt="" className="w-11" />
@@ -628,7 +631,7 @@ function FormCard() {
                     )}
                 </div>
             </div>
-            <div className="w-full h-[600px] p-1 border m-3 rounded-lg">
+            <div className="w-full max-h-fit p-1 border m-3 rounded-lg">
                 <Mapa
                     setLatitud={setLatitud}
                     setLongitud={setLongitud}

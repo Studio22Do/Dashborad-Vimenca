@@ -70,45 +70,87 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
         setLongitud(newLng);
     }, [setLatitud, setLongitud]);
 
+    const handleInputChange = useCallback((e) => {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value)) {
+            if (e.target.name === 'latitud') {
+                setLatitud(value);
+            } else if (e.target.name === 'longitud') {
+                setLongitud(value);
+            }
+        }
+    }, [setLatitud, setLongitud]);
+
     return (
-        <APIProvider
-            apiKey={apiKey}
-            onLoad={handleApiLoad}
-            onError={handleApiError}
-        >
-            <Map
-                style={{ width: '100%', height: '100%' }}
-                defaultZoom={8}
-                defaultCenter={defaultLocation}
-                mapId={mapId}
-                options={{
-                    draggable: true,
-                    scrollwheel: true,
-                    disableDoubleClickZoom: false,
-                    zoomControl: true,
-                    mapTypeControl: true,
-                    streetViewControl: true,
-                    fullscreenControl: true
-                }}
-                onClick={handleMapClick}
-                onDragStart={handleMapDragStart}
-                onLoad={handleMapLoad}
-            >
-                {validLat !== null && validLng !== null && (
-                    <AdvancedMarker
-                        position={{ lat: validLat, lng: validLng }}
-                        clickable={true}
-                        onClick={handleMarkerClick}
+        <div className="flex flex-col gap-4 w-full h-[400px]">
+            
+            <div className="w-full h-[400px]">
+                <APIProvider
+                    apiKey={apiKey}
+                    onLoad={handleApiLoad}
+                    onError={handleApiError}
+                >
+                    <Map
+                        style={{ width: '100%', height: '100%' }}
+                        defaultZoom={8}
+                        defaultCenter={defaultLocation}
+                        mapId={mapId}
+                        options={{
+                            draggable: true,
+                            scrollwheel: true,
+                            disableDoubleClickZoom: false,
+                            zoomControl: true,
+                            mapTypeControl: true,
+                            streetViewControl: true,
+                            fullscreenControl: true
+                        }}
+                        onClick={handleMapClick}
+                        onDragStart={handleMapDragStart}
+                        onLoad={handleMapLoad}
                     >
-                        <Pin
-                            background={"#FEC52E"}
-                            glyphColor={"#000"}
-                            borderColor={"#000"}
-                        />
-                    </AdvancedMarker>
-                )}
-            </Map>
-        </APIProvider>
+                        {validLat !== null && validLng !== null && (
+                            <AdvancedMarker
+                                position={{ lat: validLat, lng: validLng }}
+                                clickable={true}
+                                onClick={handleMarkerClick}
+                            >
+                                <Pin
+                                    background={"#FEC52E"}
+                                    glyphColor={"#000"}
+                                    borderColor={"#000"}
+                                />
+                            </AdvancedMarker>
+                        )}
+                    </Map>
+                </APIProvider>
+            </div>
+            <div className="flex justify-center gap-4">
+                <label>
+                    Latitud:
+                    <input
+                        type="number"
+                        name="latitud"
+                        value={latitud !== null ? latitud : ''}
+                        onChange={handleInputChange}
+                        placeholder="Latitud"
+                        step="any"
+                        className="p-2 border border-gray-300 rounded-md w-[150px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                </label>
+                <label>
+                    Longitud:
+                    <input
+                        type="number"
+                        name="longitud"
+                        value={longitud !== null ? longitud : ''}
+                        onChange={handleInputChange}
+                        placeholder="Longitud"
+                        step="any"
+                        className="p-2 border border-gray-300 rounded-md w-[150px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                </label>
+            </div>
+        </div>
     );
 });
 
