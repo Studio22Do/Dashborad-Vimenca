@@ -339,6 +339,7 @@ function EditCard({ onSave }) {
                                         name="nombreEstafeta"
                                         id="nombreEstafeta"
                                         autoComplete="off"
+                                        required
                                         onChange={(e) =>
                                             setNombre(e.target.value)
                                         }
@@ -362,6 +363,7 @@ function EditCard({ onSave }) {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={lunesViernesDesde}
+                                        required
                                         onChange={(e) =>
                                             setLunesViernesDesde(e.target.value)
                                         }
@@ -376,6 +378,7 @@ function EditCard({ onSave }) {
                                         onChange={(e) =>
                                             setLunesViernesHasta(e.target.value)
                                         }
+                                        required
                                     />
                                 </label>
                             </div>
@@ -417,6 +420,7 @@ function EditCard({ onSave }) {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={sabadoDesde}
+                                        required
                                         onChange={(e) =>
                                             setSabadoDesde(e.target.value)
                                         }
@@ -428,6 +432,7 @@ function EditCard({ onSave }) {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={sabadoHasta}
+                                        required
                                         onChange={(e) =>
                                             setSabadoHasta(e.target.value)
                                         }
@@ -472,6 +477,7 @@ function EditCard({ onSave }) {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={domingoDesde}
+                                        required
                                         onChange={(e) =>
                                             setDomingoDesde(e.target.value)
                                         }
@@ -483,6 +489,7 @@ function EditCard({ onSave }) {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={domingoHasta}
+                                        required
                                         onChange={(e) =>
                                             setDomingoHasta(e.target.value)
                                         }
@@ -564,6 +571,7 @@ function EditCard({ onSave }) {
                                         className="de text-black relative flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="text"
                                         value={direccion}
+                                        required
                                         onChange={(e) =>
                                             setDireccion(e.target.value)
                                         }
@@ -587,6 +595,7 @@ function EditCard({ onSave }) {
                                         type="tel"
                                         placeholder="809-000-0000"
                                         value={telefono}
+                                        required
                                         onChange={(e) =>
                                             setTelefono(e.target.value)
                                         }
@@ -607,6 +616,7 @@ function EditCard({ onSave }) {
                                     onChange={(e) =>
                                         setServicioPrincipal(e.target.value)
                                     }
+                                    required
                                 >
                                     <option value="">
                                         Seleccione un servicio principal
@@ -638,6 +648,7 @@ function EditCard({ onSave }) {
                                     onChange={(e) =>
                                         setProvincia(e.target.value)
                                     }
+                                    required
                                 >
                                     <option value="">
                                         --Seleccione una provincia--
@@ -758,6 +769,7 @@ function EditCard({ onSave }) {
                                     id="editCardPassword" // Cambia el id a uno único
                                     name="editCardPassword" // Agrega un nombre único
                                     value={inputPassword}
+                                    required
                                     onChange={(e) =>
                                         setInputPassword(e.target.value)
                                     } // Actualiza el estado

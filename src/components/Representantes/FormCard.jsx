@@ -214,6 +214,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="text"
                                         value={nombre}
+                                        required
                                         onChange={(e) =>
                                             setNombre(e.target.value)
                                         }
@@ -233,6 +234,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={lunesViernesDesde}
+                                        required
                                         onChange={(e) =>
                                             setLunesViernesDesde(e.target.value)
                                         }
@@ -244,6 +246,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={lunesViernesHasta}
+                                        required
                                         onChange={(e) =>
                                             setLunesViernesHasta(e.target.value)
                                         }
@@ -288,6 +291,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={sabadoDesde}
+                                        required
                                         onChange={(e) =>
                                             setSabadoDesde(e.target.value)
                                         }
@@ -299,6 +303,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={sabadoHasta}
+                                        required
                                         onChange={(e) =>
                                             setSabadoHasta(e.target.value)
                                         }
@@ -343,6 +348,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={domingoDesde}
+                                        required
                                         onChange={(e) =>
                                             setDomingoDesde(e.target.value)
                                         }
@@ -354,6 +360,7 @@ function FormCard() {
                                         className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="time"
                                         value={domingoHasta}
+                                        required
                                         onChange={(e) =>
                                             setDomingoHasta(e.target.value)
                                         }
@@ -429,6 +436,7 @@ function FormCard() {
                                     <textarea
                                         className="de text-black relative flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         value={direccion}
+                                        required
                                         onChange={(e) =>
                                             setDireccion(e.target.value)
                                         }
@@ -447,6 +455,7 @@ function FormCard() {
                                         type="tel"
                                         placeholder="809-000-0000"
                                         value={telefono}
+                                        required
                                         onChange={(e) =>
                                             setTelefono(e.target.value)
                                         }
@@ -466,6 +475,7 @@ function FormCard() {
                                     onChange={(e) =>
                                         setServicioPrincipal(e.target.value)
                                     }
+                                    required
                                 >
                                     <option value="">
                                         --Seleccione un servicio principal--
@@ -493,6 +503,7 @@ function FormCard() {
                                     onChange={(e) =>
                                         setProvincia(e.target.value)
                                     }
+                                    required
                                 >
                                     <option value="">
                                         --Seleccione una provincia--
