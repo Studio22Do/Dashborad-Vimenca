@@ -224,9 +224,9 @@ function EditCard({ onSave }) {
         }
 
         // Validación de campos requeridos
-        if (!nombre || !direccion || !latitud || !longitud) {
-            setErrorMessage("Por favor, completa todos los campos requeridos."); // Mensaje de error
-            return; // Detiene la ejecución si hay campos vacíos
+        if (!nombre || !direccion || !provincia || !latitud || !longitud || !lunesViernesDesde || !lunesViernesHasta || !sabadoDesde || !sabadoHasta || !domingoDesde || !domingoHasta || !telefono || !servicioPrincipal) {
+            setErrorMessage("Por favor, completa todos los campos requeridos.");
+            return;
         }
 
 

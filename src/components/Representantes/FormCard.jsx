@@ -99,7 +99,7 @@ function FormCard() {
 
     const handleConfirmSave = async () => {
         // Validación de campos requeridos
-        if (!nombre || !direccion) {
+        if (!nombre || !direccion || !provincia || !latitud || !longitud || !lunesViernesDesde || !lunesViernesHasta || !sabadoDesde || !sabadoHasta || !domingoDesde || !domingoHasta || !telefono || !servicioPrincipal) {
             setErrorMessage("Por favor, completa todos los campos requeridos.");
             return;
         }
