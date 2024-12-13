@@ -31,6 +31,7 @@ function EditCard({ onSave }) {
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
+    const [isSending, setIsSending] = useState(false);
     useEffect(() => {
         setItemsSucursales(itemsOficinas.sucursales);
         /* console.log("ItemsEstafetas:", ItemsEstafetas); */
@@ -214,12 +215,12 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
-
+        if (isSending) return; // Evitar múltiples envíos
 
         // Verifica la contraseña ingresada
         if (inputPassword !== password) {
-            setErrorMessage("La contraseña es incorrecta."); // Establece el mensaje de error
-            return; // Detiene la ejecución si la contraseña es incorrecta
+            setErrorMessage("La contraseña es incorrecta.");
+            return;
         }
 
         // Validación de campos requeridos
@@ -227,6 +228,8 @@ function EditCard({ onSave }) {
             setErrorMessage("Por favor, completa todos los campos requeridos.");
             return;
         }
+
+        setIsSending(true); // Activar estado de envío
 
         // Preparar los horarios en el formato correcto
         const lunesViernesHorario = formatTimeRange(
@@ -282,24 +285,18 @@ function EditCard({ onSave }) {
         setAgenteCambio(true);
 
         try {
-            // Llama a la función para actualizar la estafeta en la base de datos
-            const updatedData = await updateOficinaInDB(
-                id,
-                updatedOficina,
-                
-            );
+            // Llamar a la función para actualizar la sucursal en la base de datos
+            const updatedData = await updateOficinaInDB(id, updatedOficina);
 
-            // Llama a la función que obtiene los datos de la API
-            /* getEstafetas(token, setItemsEstafetas); // Pasa setItemsEstafetas como argumento */
-
-            // Actualiza el estado de la estafeta en edición
             setEditSucursal(null); // Cierra el modo de edición
             setActiveSucursal(0); // Regresa a la vista de Oficinas después de guardar
             setShowConfirmPopup(false); // Cierra el popup de confirmación
             onSave(updatedData); // Llama a onSave con los datos actualizados
         } catch (error) {
-            setErrorMessage("Error al guardar los cambios."); // Manejo de errores
+            setErrorMessage("Error al guardar los cambios.");
             console.error("Error al guardar los cambios:", error);
+        } finally {
+            setIsSending(false); // Desactivar estado de envío
         }
     };
 
@@ -780,16 +777,18 @@ function EditCard({ onSave }) {
                             </label>
                             <div className="flex justify-center gap-4 mt-4">
                                 <button
-                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
+                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] disabled:opacity-50"
                                     onClick={handleCancelSave}
+                                    disabled={isSending}
                                 >
-                                    No, cancel
+                                    No, cancelar
                                 </button>
                                 <button
-                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
+                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary] disabled:opacity-50"
                                     onClick={handleConfirmSave}
+                                    disabled={isSending}
                                 >
-                                    Yes, confirm
+                                    {isSending ? "Guardando..." : "Sí, confirmar"}
                                 </button>
                             </div>
                         </div>

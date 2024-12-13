@@ -31,6 +31,7 @@ function EditCard({ onSave }) {
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState(""); // Estado para la contraseña ingresada
     const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
+    const [isSending, setIsSending] = useState(false);
     useEffect(() => {
         setItemsEstafetas(itemsOficinas.estafetas);
     }, [itemsOficinas]);
@@ -219,21 +220,15 @@ function EditCard({ onSave }) {
     };
 
     const handleConfirmSave = async () => {
-        /* console.log("Contraseña ingresada:", inputPassword);
-        console.log("Contraseña almacenada:", password);
-
-        // Verifica la contraseña ingresada
-        if (inputPassword !== password) {
-            setErrorMessage("La contraseña es incorrecta."); // Establece el mensaje de error
-            console.log("Error: La contraseña es incorrecta.");
-            return; // Detiene la ejecución si la contraseña es incorrecta
-        } */
+        if (isSending) return; // Evitar múltiples envíos
 
         // Validación de campos requeridos
         if (!nombre || !direccion || !provincia || !latitud || !longitud || !lunesViernesDesde || !lunesViernesHasta || !sabadoDesde || !sabadoHasta || !domingoDesde || !domingoHasta || !telefono || !servicioPrincipal) {
             setErrorMessage("Por favor, completa todos los campos requeridos.");
             return;
         }
+
+        setIsSending(true); // Activar estado de envío
 
         // Preparar los horarios en el formato correcto
         const lunesViernesHorario = formatTimeRange(lunesViernesDesde, lunesViernesHasta);
@@ -284,6 +279,8 @@ function EditCard({ onSave }) {
         } catch (error) {
             setErrorMessage("Error al guardar los cambios.");
             console.error("Error al guardar los cambios:", error);
+        } finally {
+            setIsSending(false); // Desactivar estado de envío
         }
     };
 
@@ -760,16 +757,18 @@ function EditCard({ onSave }) {
                             </label>
                             <div className="flex justify-center gap-4 mt-4">
                                 <button
-                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
+                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] disabled:opacity-50"
                                     onClick={handleCancelSave}
+                                    disabled={isSending}
                                 >
-                                    No, cancel
+                                    No, cancelar
                                 </button>
                                 <button
-                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
+                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary] disabled:opacity-50"
                                     onClick={handleConfirmSave}
+                                    disabled={isSending}
                                 >
-                                    Yes, confirm
+                                    {isSending ? "Guardando..." : "Sí, confirmar"}
                                 </button>
                             </div>
                         </div>

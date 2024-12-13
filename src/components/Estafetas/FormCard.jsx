@@ -48,26 +48,8 @@ function FormCard() {
     const [showConfirmPopup, setShowConfirmPopup] = useState(false);
     const [inputPassword, setInputPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [isSending, setIsSending] = useState(false);
 
-    /* const convertTo24HourFormat = (time) => {
-        if (!time || typeof time !== "string") {
-            return "";
-        }
-        time = time.replace(/\s+/g, "");
-        let hours, minutes, modifier;
-        const timeParts = time.toLowerCase().match(/(\d+):(\d+)(am|pm)/);
-        if (!timeParts) {
-            return "";
-        }
-        [, hours, minutes, modifier] = timeParts;
-        hours = parseInt(hours, 10);
-        if (modifier === "pm" && hours !== 12) {
-            hours += 12;
-        } else if (modifier === "am" && hours === 12) {
-            hours = 0;
-        }
-        return `${hours.toString().padStart(2, "0")}:${minutes}`;
-    }; */
 
     const convertTo12HourFormat = (time) => {
         if (!time) return "";
@@ -90,11 +72,15 @@ function FormCard() {
     };
 
     const handleConfirmSave = async () => {
+        if (isSending) return; // Evitar múltiples envíos
+        
         // Validación de campos requeridos
         if (!nombre || !direccion || !provincia || !latitud || !longitud || !lunesViernesDesde || !lunesViernesHasta || !sabadoDesde || !sabadoHasta || !domingoDesde || !domingoHasta || !telefono || !servicioPrincipal) {
             setErrorMessage("Por favor, completa todos los campos requeridos.");
             return;
         }
+
+        setIsSending(true); // Activar estado de envío
 
         // Formatear los horarios
         const lunesViernesHorario = formatTimeRange(
@@ -183,6 +169,8 @@ function FormCard() {
         } catch (error) {
             setErrorMessage("Error al guardar los cambios.");
             console.error("Error al guardar los cambios:", error);
+        } finally {
+            setIsSending(false); // Desactivar estado de envío
         }
     };
 
@@ -621,16 +609,18 @@ function FormCard() {
                             </label>
                             <div className="flex justify-center gap-4 mt-4">
                                 <button
-                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary]"
+                                    className="py-2 px-8 rounded-lg text-[--primary] font-semibold border border-[--primary] disabled:opacity-50"
                                     onClick={handleCancelSave}
+                                    disabled={isSending}
                                 >
                                     No, cancelar
                                 </button>
                                 <button
-                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary]"
+                                    className="py-2 px-8 rounded-lg text-white font-semibold border border-[--primary] bg-[--primary] disabled:opacity-50"
                                     onClick={handleConfirmSave}
+                                    disabled={isSending}
                                 >
-                                    Sí, confirmar
+                                    {isSending ? "Guardando..." : "Sí, confirmar"}
                                 </button>
                             </div>
                         </div>
