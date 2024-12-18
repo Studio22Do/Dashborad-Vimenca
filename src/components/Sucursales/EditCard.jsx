@@ -224,7 +224,7 @@ function EditCard({ onSave }) {
         }
 
         // Validación de campos requeridos
-        if (!nombre || !direccion || !provincia || !latitud || !longitud || !lunesViernesDesde || !lunesViernesHasta || !sabadoDesde || !sabadoHasta || !domingoDesde || !domingoHasta || !telefono || !servicioPrincipal) {
+        if (!nombre || !direccion || !provincia || !latitud || !longitud || !lunesViernesDesde || !lunesViernesHasta || !servicioPrincipal) {
             setErrorMessage("Por favor, completa todos los campos requeridos.");
             return;
         }
