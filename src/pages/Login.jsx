@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"; // Asegúrate de importar useEffect
 import { useUserContext } from "../providers/UserProvider"; // Asegúrate de importar el contexto
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import LogoAzul from "../assets/Logo-Azul.png";
+import LogoAzul from "../assets/Logo-azul2.png";
 import sidebar from "../assets/side-lg.png";
 import vimenca from "../assets/vimenca.png";
 import Bancovimenca from "../assets/Banco-vimenca.png";
