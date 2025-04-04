@@ -8,78 +8,70 @@ import {
     useMapsLibrary
 } from "@vis.gl/react-google-maps";
 
-// Componente para el autocompletado
-const SearchBox = ({ onMapPan }) => {
-    const inputRef = useRef(null);
-    const autocompleteRef = useRef(null);
-    const map = useMap();
+// Variable global para almacenar la referencia del mapa
+window.googleMapRef = null;
+
+// Componente para cargar la API de Google Maps y exponerla globalmente
+const MapLibraryLoader = () => {
     const places = useMapsLibrary("places");
+    const geocoding = useMapsLibrary("geocoding");
+    const map = useMap();
     
     useEffect(() => {
-        if (!places || !map || !inputRef.current) return;
+        if (!geocoding || !places || !map) return;
         
-        try {
-            console.log("Inicializando autocomplete...");
-            
-            // Crear el autocomplete en el input
-            autocompleteRef.current = new places.Autocomplete(inputRef.current, {
-                types: ['geocode'],
-                fields: ['geometry', 'formatted_address', 'name']
-            });
-            
-            // Vincular al mapa para mejorar las sugerencias
-            autocompleteRef.current.bindTo('bounds', map);
-            
-            // Escuchar el evento place_changed
-            autocompleteRef.current.addListener('place_changed', () => {
-                console.log("Evento place_changed activado");
-                
-                const place = autocompleteRef.current.getPlace();
-                console.log("Lugar seleccionado:", place);
-                
-                if (!place.geometry || !place.geometry.location) {
-                    console.warn("⚠️ No se encontraron detalles de geometría para esta ubicación");
-                    return;
-                }
-                
-                const newLat = place.geometry.location.lat();
-                const newLng = place.geometry.location.lng();
-                
-                console.log(`✓ Coordenadas obtenidas: ${newLat}, ${newLng}`);
-                console.log(`✓ Dirección: ${place.formatted_address || place.name || 'Sin nombre'}`);
-                
-                // Llamar explícitamente a la función para mover el mapa
-                console.log("Llamando a onMapPan...");
-                onMapPan(newLat, newLng);
-                
-                // Ajustar el nivel de zoom directamente en el mapa
-                console.log("Ajustando zoom...");
-                if (place.geometry.viewport) {
-                    console.log("Ajustando a viewport");
-                    map.fitBounds(place.geometry.viewport);
-                } else {
-                    console.log("Centrando en la ubicación");
-                    map.setCenter(place.geometry.location);
-                    map.setZoom(17);
-                }
-                
-                console.log("Proceso completado");
-            });
-            
-            console.log("Autocomplete inicializado correctamente");
-        } catch (error) {
-            console.error("Error al inicializar autocomplete:", error);
+        console.log("Librerías cargadas:", { places: !!places, geocoding: !!geocoding, map: !!map });
+        
+        // Guardar la referencia del mapa en la variable global
+        window.googleMapRef = map;
+        
+        // Exponer la API de geocodificación en window para que pueda ser utilizada desde otros componentes
+        if (!window.googleMapsApiLoaded) {
+            window.googleMapsApiLoaded = true;
+            window.googleMapsGeocoder = new geocoding.Geocoder();
+            // También exponer la API de Places
+            window.googleMapsPlaces = places;
+            console.log("API de Google Maps cargada y geocoder inicializado");
         }
-    }, [places, map, onMapPan]);
+    }, [geocoding, places, map]);
     
-    return (
-        <input
-            ref={inputRef}
-            type="text"
-            placeholder="Buscar ubicación..."
-            className="p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-    );
+    return null;
+};
+
+// Función global para centrar el mapa
+window.centerMapAtLocation = (lat, lng) => {
+    console.log(`Intentando centrar mapa en: ${lat}, ${lng}`);
+    
+    if (window.googleMapRef) {
+        console.log("Mapa encontrado, centrando...");
+        window.googleMapRef.panTo({ lat, lng });
+        window.googleMapRef.setZoom(16);
+        
+        // Notificar que se ha centrado el mapa
+        if (window.onMapCentered) {
+            window.onMapCentered(lat, lng);
+        }
+        
+        return true;
+    } else {
+        console.warn("Mapa no disponible todavía");
+        // Intentar de nuevo en un momento
+        setTimeout(() => {
+            if (window.googleMapRef) {
+                console.log("Mapa encontrado en segundo intento, centrando...");
+                window.googleMapRef.panTo({ lat, lng });
+                window.googleMapRef.setZoom(16);
+                
+                // Notificar que se ha centrado el mapa
+                if (window.onMapCentered) {
+                    window.onMapCentered(lat, lng);
+                }
+            } else {
+                console.error("Mapa no disponible después de esperar");
+            }
+        }, 500);
+        return false;
+    }
 };
 
 const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
@@ -95,14 +87,65 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
     const [mapCenter, setMapCenter] = useState(defaultLocation);
     const [shouldCenter, setShouldCenter] = useState(true);
     const [showMarker, setShowMarker] = useState(true);
+    const [temporaryMarker, setTemporaryMarker] = useState(null);
     const mapRef = useRef(null);
+    
+    // Coordenadas anteriores para detectar cambios
+    const prevCoords = useRef({ lat: null, lng: null });
 
     useEffect(() => {
         if (validLat !== null && validLng !== null) {
-            setMapCenter({ lat: validLat, lng: validLng });
-            setShouldCenter(true);
+            // Verificar si las coordenadas han cambiado realmente
+            const hasChanged = prevCoords.current.lat !== validLat || prevCoords.current.lng !== validLng;
+            
+            if (hasChanged) {
+                console.log(`Nuevas coordenadas detectadas: ${validLat}, ${validLng}`);
+                prevCoords.current = { lat: validLat, lng: validLng };
+                
+                setMapCenter({ lat: validLat, lng: validLng });
+                setShouldCenter(true);
+                setShowMarker(true);
+                setTemporaryMarker(null); // Eliminar cualquier marcador temporal
+                
+                // Al actualizar las coordenadas, asegurarnos de centrar el mapa
+                window.centerMapAtLocation(validLat, validLng);
+            }
         }
     }, [validLat, validLng]);
+
+    // Función para centrar el mapa en una posición temporal sin cambiar los inputs
+    // Esta función será llamada desde los componentes FormCard y EditCard al buscar direcciones
+    const centerMapTemporarily = useCallback((tmpLat, tmpLng) => {
+        console.log(`Centrando mapa temporalmente en: ${tmpLat}, ${tmpLng}`);
+        
+        const centered = window.centerMapAtLocation(tmpLat, tmpLng);
+        
+        // Configurar el marcador temporal solo si pudimos centrar el mapa
+        if (centered) {
+            setTemporaryMarker({ lat: tmpLat, lng: tmpLng });
+            console.log("Marker temporal establecido en:", tmpLat, tmpLng);
+        }
+        
+        // En caso de que el mapa aún no se haya centrado, configurar un callback
+        window.onMapCentered = (lat, lng) => {
+            setTemporaryMarker({ lat, lng });
+            console.log("Marker temporal establecido después de centrar en:", lat, lng);
+            // Limpiar callback
+            window.onMapCentered = null;
+        };
+    }, []);
+
+    // Exponer la función de centrado temporal para que pueda ser usada desde componentes externos
+    useEffect(() => {
+        console.log("Exponiendo función centerMapTemporarily...");
+        window.centerMapTemporarily = centerMapTemporarily;
+        
+        return () => {
+            // Limpiar cuando el componente se desmonte
+            console.log("Eliminando función centerMapTemporarily...");
+            delete window.centerMapTemporarily;
+        };
+    }, [centerMapTemporarily]);
 
     useEffect(() => {
         if (shouldCenter && mapRef.current) {
@@ -113,7 +156,18 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
 
     const handleMapLoad = (map) => {
         mapRef.current = map;
+        window.googleMapRef = map; // También guardar aquí para estar seguros
         console.log("Mapa cargado correctamente");
+        
+        // Si hay un marcador temporal pendiente, mostrarlo ahora
+        if (window.pendingTemporaryMarker) {
+            const { lat, lng } = window.pendingTemporaryMarker;
+            delete window.pendingTemporaryMarker;
+            
+            setTemporaryMarker({ lat, lng });
+            map.panTo({ lat, lng });
+            map.setZoom(16);
+        }
     };
 
     const handleMapDragStart = () => {
@@ -144,6 +198,7 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
         setLatitud(newLat);
         setLongitud(newLng);
         setShowMarker(true);
+        setTemporaryMarker(null); // Eliminar marcador temporal al hacer clic
     }, [setLatitud, setLongitud]);
 
     const handleInputChange = useCallback((e) => {
@@ -155,26 +210,18 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
                 setLongitud(value);
             }
             setShowMarker(true);
+            setTemporaryMarker(null); // Eliminar marcador temporal al cambiar inputs
         }
     }, [setLatitud, setLongitud]);
-
-    // Función explícita para mover el mapa sin poner marcador
-    const handleMapPan = useCallback((newLat, newLng) => {
-        console.log(`MOVIENDO MAPA A: ${newLat}, ${newLng} (sin marcador)`);
-        setMapCenter({ lat: newLat, lng: newLng });
-        setShouldCenter(true);
-    }, []);
 
     return (
         <div className="flex flex-col gap-4 w-full h-[400px]">
             <APIProvider
                 apiKey={apiKey}
                 onError={handleApiError}
-                libraries={["places"]}
+                libraries={["places", "geocoding"]}
             >
-                <div className="w-full mb-2">
-                    <SearchBox onMapPan={handleMapPan} />
-                </div>
+                <MapLibraryLoader />
                 
                 <div className="w-full h-[400px]">
                     <Map
@@ -195,6 +242,7 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
                         onDragStart={handleMapDragStart}
                         onLoad={handleMapLoad}
                     >
+                        {/* Mostrar el marcador permanente si existe y está visible */}
                         {showMarker && validLat !== null && validLng !== null && (
                             <AdvancedMarker
                                 position={{ lat: validLat, lng: validLng }}
@@ -205,6 +253,26 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
                                     background={"#FEC52E"}
                                     glyphColor={"#000"}
                                     borderColor={"#000"}
+                                />
+                            </AdvancedMarker>
+                        )}
+                        
+                        {/* Mostrar un marcador temporal para las búsquedas */}
+                        {temporaryMarker && (
+                            <AdvancedMarker
+                                position={{ lat: temporaryMarker.lat, lng: temporaryMarker.lng }}
+                                clickable={true}
+                                onClick={(ev) => {
+                                    // Al hacer clic en el marcador temporal, establecer sus coordenadas como permanentes
+                                    setLatitud(temporaryMarker.lat);
+                                    setLongitud(temporaryMarker.lng);
+                                    setTemporaryMarker(null);
+                                }}
+                            >
+                                <Pin
+                                    background={"#3B82F6"} // Azul para diferenciar del marcador permanente
+                                    glyphColor={"#FFF"}
+                                    borderColor={"#2563EB"}
                                 />
                             </AdvancedMarker>
                         )}
