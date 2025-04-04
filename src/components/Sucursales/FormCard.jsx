@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Clock from "../../assets/Clock.png";
 import Loc from "../../assets/location.png";
 import Phone from "../../assets/phone.png";
@@ -47,6 +47,73 @@ function FormCard() {
     const [inputPassword, setInputPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchSuccess, setSearchSuccess] = useState(false);
+    
+    // Referencias
+    const direccionInputRef = useRef(null);
+    const autocompleteRef = useRef(null);
+
+    // Inicializar el autocompletado de Google Maps
+    useEffect(() => {
+        // Esperar a que la API de Google Maps esté cargada
+        const checkGoogleMapsLoaded = setInterval(() => {
+            if (window.googleMapsApiLoaded && direccionInputRef.current && !autocompleteRef.current) {
+                clearInterval(checkGoogleMapsLoaded);
+                console.log("Google Maps API detectada, inicializando autocompletado...");
+                
+                try {
+                    // Intentar usar la API de Places expuesta por el componente Mapa
+                    if (window.google && window.google.maps && window.google.maps.places) {
+                        console.log("Usando window.google.maps.places para autocompletado");
+                        autocompleteRef.current = new window.google.maps.places.Autocomplete(
+                            direccionInputRef.current,
+                            { types: ['geocode'] }
+                        );
+                    } else {
+                        console.error("No se pudo acceder a window.google.maps.places");
+                    }
+                    
+                    // Cuando se selecciona una dirección del autocompletado
+                    if (autocompleteRef.current) {
+                        autocompleteRef.current.addListener('place_changed', () => {
+                            const place = autocompleteRef.current.getPlace();
+                            
+                            if (place.geometry && place.geometry.location) {
+                                // Establecer la dirección completa en el input
+                                setDireccion(place.formatted_address || place.name);
+                                
+                                // Centrar el mapa en la ubicación seleccionada
+                                const lat = place.geometry.location.lat();
+                                const lng = place.geometry.location.lng();
+                                
+                                // Utilizar la nueva función global para centrar el mapa
+                                if (window.centerMapAtLocation) {
+                                    window.centerMapAtLocation(lat, lng);
+                                } else if (window.centerMapTemporarily) {
+                                    // Fallback a la función anterior si está disponible
+                                    window.centerMapTemporarily(lat, lng);
+                                } else {
+                                    console.error("Ninguna función de centrado está disponible");
+                                }
+                                
+                                // Mostrar mensaje de éxito
+                                setSearchSuccess(true);
+                                setTimeout(() => setSearchSuccess(false), 3000);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error al inicializar autocompletado:", error);
+                }
+            }
+        }, 500);
+        
+        // Limpiar
+        return () => {
+            clearInterval(checkGoogleMapsLoaded);
+        };
+    }, []);
 
     const convertTo24HourFormat = (time) => {
         if (!time || typeof time !== "string") {
@@ -395,13 +462,105 @@ function FormCard() {
                         <div className="w-full">
                             <div className="flex gap-8 mt-1">
                                 <label className="text-sm w-full">
-                                    <textarea
-                                        className="de text-black relative flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    <input
+                                        ref={direccionInputRef}
+                                        className="de text-black relative flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        type="text"
                                         value={direccion}
-                                        onChange={(e) => setDireccion(e.target.value)}
                                         required
+                                        onChange={(e) => {
+                                            setDireccion(e.target.value);
+                                            // Mostrar mensaje de error si ya existe
+                                            if (errorMessage) {
+                                                setErrorMessage("");
+                                            }
+                                        }}
+                                        placeholder="Ingrese dirección detallada"
                                     />
                                 </label>
+                            </div>
+                            <div className="flex justify-end mt-2">
+                                {searchSuccess && (
+                                    <div className="text-green-600 text-sm mr-2 flex items-center">
+                                        ✓ Ubicación encontrada (haz clic en el marcador azul para seleccionarla)
+                                    </div>
+                                )}
+                                <button
+                                    className="bg-[--primary] text-white px-4 py-2 rounded-md text-sm flex items-center gap-1"
+                                    type="button"
+                                    disabled={!direccion || isSearching}
+                                    onClick={() => {
+                                        if (!direccion) return;
+                                        
+                                        setIsSearching(true);
+                                        // Intentar usar el geocoder global expuesto por el componente Mapa
+                                        if (window.googleMapsGeocoder) {
+                                            window.googleMapsGeocoder.geocode({ address: direccion }, (results, status) => {
+                                                setIsSearching(false);
+                                                if (status === "OK" && results && results.length > 0) {
+                                                    const location = results[0].geometry.location;
+                                                    // Utilizar la nueva función global para centrar el mapa
+                                                    const lat = location.lat();
+                                                    const lng = location.lng();
+                                                    console.log("Centrando mapa en:", lat, lng);
+                                                    
+                                                    // Usar la nueva función global
+                                                    if (window.centerMapAtLocation) {
+                                                        window.centerMapAtLocation(lat, lng);
+                                                    } else if (window.centerMapTemporarily) {
+                                                        // Fallback a la función anterior si está disponible
+                                                        window.centerMapTemporarily(lat, lng);
+                                                    } else {
+                                                        console.error("Ninguna función de centrado está disponible");
+                                                    }
+                                                    
+                                                    // Mostrar mensaje de éxito
+                                                    setSearchSuccess(true);
+                                                    setTimeout(() => setSearchSuccess(false), 3000);
+                                                } else {
+                                                    setErrorMessage("No se pudo encontrar la ubicación. Intente con otra dirección.");
+                                                    setTimeout(() => setErrorMessage(""), 3000);
+                                                }
+                                            });
+                                        } else if (window.google && window.google.maps && window.google.maps.Geocoder) {
+                                            // Fallback a la API de Google Maps si el geocoder global no está disponible
+                                            const geocoder = new window.google.maps.Geocoder();
+                                            geocoder.geocode({ address: direccion }, (results, status) => {
+                                                setIsSearching(false);
+                                                if (status === "OK" && results && results.length > 0) {
+                                                    const location = results[0].geometry.location;
+                                                    // Utilizar la nueva función global para centrar el mapa
+                                                    const lat = location.lat();
+                                                    const lng = location.lng();
+                                                    console.log("Centrando mapa en:", lat, lng);
+                                                    
+                                                    // Usar la nueva función global
+                                                    if (window.centerMapAtLocation) {
+                                                        window.centerMapAtLocation(lat, lng);
+                                                    } else if (window.centerMapTemporarily) {
+                                                        // Fallback a la función anterior si está disponible
+                                                        window.centerMapTemporarily(lat, lng);
+                                                    } else {
+                                                        console.error("Ninguna función de centrado está disponible");
+                                                    }
+                                                    
+                                                    // Mostrar mensaje de éxito
+                                                    setSearchSuccess(true);
+                                                    setTimeout(() => setSearchSuccess(false), 3000);
+                                                } else {
+                                                    setErrorMessage("No se pudo encontrar la ubicación. Intente con otra dirección.");
+                                                    setTimeout(() => setErrorMessage(""), 3000);
+                                                }
+                                            });
+                                        } else {
+                                            setIsSearching(false);
+                                            setErrorMessage("El servicio de geocodificación no está disponible.");
+                                            setTimeout(() => setErrorMessage(""), 3000);
+                                        }
+                                    }}
+                                >
+                                    {isSearching ? "Buscando..." : "Buscar ubicación en el mapa"}
+                                </button>
                             </div>
                         </div>
                     </div>
