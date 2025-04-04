@@ -42,14 +42,25 @@ const MapLibraryLoader = () => {
 window.centerMapAtLocation = (lat, lng) => {
     console.log(`Intentando centrar mapa en: ${lat}, ${lng}`);
     
+    // Función para formatear coordenadas a máximo 8 decimales
+    const formatCoordinate = (value) => {
+        if (value === null || value === undefined) return null;
+        // Convertir a número y limitar a 8 decimales
+        return Number(Number(value).toFixed(8));
+    };
+    
+    // Formatear las coordenadas
+    const formattedLat = formatCoordinate(lat);
+    const formattedLng = formatCoordinate(lng);
+    
     if (window.googleMapRef) {
         console.log("Mapa encontrado, centrando...");
-        window.googleMapRef.panTo({ lat, lng });
+        window.googleMapRef.panTo({ lat: formattedLat, lng: formattedLng });
         window.googleMapRef.setZoom(16);
         
         // Notificar que se ha centrado el mapa
         if (window.onMapCentered) {
-            window.onMapCentered(lat, lng);
+            window.onMapCentered(formattedLat, formattedLng);
         }
         
         return true;
@@ -59,12 +70,12 @@ window.centerMapAtLocation = (lat, lng) => {
         setTimeout(() => {
             if (window.googleMapRef) {
                 console.log("Mapa encontrado en segundo intento, centrando...");
-                window.googleMapRef.panTo({ lat, lng });
+                window.googleMapRef.panTo({ lat: formattedLat, lng: formattedLng });
                 window.googleMapRef.setZoom(16);
                 
                 // Notificar que se ha centrado el mapa
                 if (window.onMapCentered) {
-                    window.onMapCentered(lat, lng);
+                    window.onMapCentered(formattedLat, formattedLng);
                 }
             } else {
                 console.error("Mapa no disponible después de esperar");
@@ -113,23 +124,38 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
         }
     }, [validLat, validLng]);
 
+    // Función para formatear coordenadas a máximo 8 decimales
+    const formatCoordinate = (value) => {
+        if (value === null || value === undefined) return null;
+        // Convertir a número y limitar a 8 decimales
+        return Number(Number(value).toFixed(8));
+    };
+
     // Función para centrar el mapa en una posición temporal sin cambiar los inputs
     // Esta función será llamada desde los componentes FormCard y EditCard al buscar direcciones
     const centerMapTemporarily = useCallback((tmpLat, tmpLng) => {
         console.log(`Centrando mapa temporalmente en: ${tmpLat}, ${tmpLng}`);
         
-        const centered = window.centerMapAtLocation(tmpLat, tmpLng);
+        // Formatear las coordenadas
+        const formattedLat = formatCoordinate(tmpLat);
+        const formattedLng = formatCoordinate(tmpLng);
+        
+        const centered = window.centerMapAtLocation(formattedLat, formattedLng);
         
         // Configurar el marcador temporal solo si pudimos centrar el mapa
         if (centered) {
-            setTemporaryMarker({ lat: tmpLat, lng: tmpLng });
-            console.log("Marker temporal establecido en:", tmpLat, tmpLng);
+            setTemporaryMarker({ lat: formattedLat, lng: formattedLng });
+            console.log("Marker temporal establecido en:", formattedLat, formattedLng);
         }
         
         // En caso de que el mapa aún no se haya centrado, configurar un callback
         window.onMapCentered = (lat, lng) => {
-            setTemporaryMarker({ lat, lng });
-            console.log("Marker temporal establecido después de centrar en:", lat, lng);
+            // Formatear las coordenadas
+            const formattedLat = formatCoordinate(lat);
+            const formattedLng = formatCoordinate(lng);
+            
+            setTemporaryMarker({ lat: formattedLat, lng: formattedLng });
+            console.log("Marker temporal establecido después de centrar en:", formattedLat, formattedLng);
             // Limpiar callback
             window.onMapCentered = null;
         };
@@ -192,8 +218,8 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
             console.log("No se pudo obtener latLng del evento");
             return;
         }
-        const newLat = latLng.lat;
-        const newLng = latLng.lng;
+        const newLat = formatCoordinate(latLng.lat);
+        const newLng = formatCoordinate(latLng.lng);
         console.log(`Mapa clickeado en: ${newLat}, ${newLng}`);
         setLatitud(newLat);
         setLongitud(newLng);
@@ -205,9 +231,9 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
         const value = parseFloat(e.target.value);
         if (!isNaN(value)) {
             if (e.target.name === 'latitud') {
-                setLatitud(value);
+                setLatitud(formatCoordinate(value));
             } else if (e.target.name === 'longitud') {
-                setLongitud(value);
+                setLongitud(formatCoordinate(value));
             }
             setShowMarker(true);
             setTemporaryMarker(null); // Eliminar marcador temporal al cambiar inputs
@@ -264,8 +290,8 @@ const Mapa = React.memo(({ setLatitud, setLongitud, latitud, longitud }) => {
                                 clickable={true}
                                 onClick={(ev) => {
                                     // Al hacer clic en el marcador temporal, establecer sus coordenadas como permanentes
-                                    setLatitud(temporaryMarker.lat);
-                                    setLongitud(temporaryMarker.lng);
+                                    setLatitud(formatCoordinate(temporaryMarker.lat));
+                                    setLongitud(formatCoordinate(temporaryMarker.lng));
                                     setTemporaryMarker(null);
                                 }}
                             >

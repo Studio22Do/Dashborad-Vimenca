@@ -148,14 +148,21 @@ function EditCard({ onSave }) {
     // Función auxiliar para convertir booleano a "Y"/"N"
     const convertBooleanToYN = (value) => value ? "Y" : "N";
 
+    // Función para formatear coordenadas a máximo 8 decimales
+    const formatCoordinate = (value) => {
+        if (value === null || value === undefined) return null;
+        // Convertir a número y limitar a 8 decimales
+        return Number(Number(value).toFixed(8));
+    };
+
     useEffect(() => {
         if (ItemActual) {
             setId(ItemActual.id);
             setNombre(ItemActual.nombre_oficina);
             setDireccion(ItemActual.direccion);
             setProvincia(ItemActual.provincia);
-            setLatitud(ItemActual.latitud || 0);
-            setLongitud(ItemActual.longitud || 0);
+            setLatitud(formatCoordinate(ItemActual.latitud || 0)); // Formatear latitud
+            setLongitud(formatCoordinate(ItemActual.longitud || 0)); // Formatear longitud
 
             // Manejo de horarios
             const lunesViernes = ItemActual.lunes_viernes_a
@@ -249,8 +256,8 @@ function EditCard({ onSave }) {
                                 setDireccion(place.formatted_address || place.name);
                                 
                                 // Centrar el mapa en la ubicación seleccionada
-                                const lat = place.geometry.location.lat();
-                                const lng = place.geometry.location.lng();
+                                const lat = formatCoordinate(place.geometry.location.lat());
+                                const lng = formatCoordinate(place.geometry.location.lng());
                                 
                                 // Utilizar la nueva función global para centrar el mapa
                                 if (window.centerMapAtLocation) {
@@ -671,9 +678,9 @@ function EditCard({ onSave }) {
                                                 setIsSearching(false);
                                                 if (status === "OK" && results && results.length > 0) {
                                                     const location = results[0].geometry.location;
-                                                    // Utilizar la nueva función global para centrar el mapa
-                                                    const lat = location.lat();
-                                                    const lng = location.lng();
+                                                    // Formatear las coordenadas
+                                                    const lat = formatCoordinate(location.lat());
+                                                    const lng = formatCoordinate(location.lng());
                                                     console.log("Centrando mapa en:", lat, lng);
                                                     
                                                     // Usar la nueva función global
@@ -701,9 +708,9 @@ function EditCard({ onSave }) {
                                                 setIsSearching(false);
                                                 if (status === "OK" && results && results.length > 0) {
                                                     const location = results[0].geometry.location;
-                                                    // Utilizar la nueva función global para centrar el mapa
-                                                    const lat = location.lat();
-                                                    const lng = location.lng();
+                                                    // Formatear las coordenadas
+                                                    const lat = formatCoordinate(location.lat());
+                                                    const lng = formatCoordinate(location.lng());
                                                     console.log("Centrando mapa en:", lat, lng);
                                                     
                                                     // Usar la nueva función global
@@ -960,8 +967,8 @@ function EditCard({ onSave }) {
                 {" "}
                 {/* Asegúrate de que el contenedor tenga un tamaño definido */}
                 <Mapa
-                    setLatitud={setLatitud}
-                    setLongitud={setLongitud}
+                    setLatitud={(value) => setLatitud(formatCoordinate(value))}
+                    setLongitud={(value) => setLongitud(formatCoordinate(value))}
                     latitud={latitud}
                     longitud={longitud}
                     className="w-full h-full"

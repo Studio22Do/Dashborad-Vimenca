@@ -54,6 +54,13 @@ function FormCard() {
     const direccionInputRef = useRef(null);
     const autocompleteRef = useRef(null);
 
+    // Función para formatear coordenadas a máximo 8 decimales
+    const formatCoordinate = (value) => {
+        if (value === null || value === undefined) return null;
+        // Convertir a número y limitar a 8 decimales
+        return Number(Number(value).toFixed(8));
+    };
+
     // Inicializar el autocompletado de Google Maps
     useEffect(() => {
         // Esperar a que la API de Google Maps esté cargada
@@ -84,8 +91,8 @@ function FormCard() {
                                 setDireccion(place.formatted_address || place.name);
                                 
                                 // Centrar el mapa en la ubicación seleccionada
-                                const lat = place.geometry.location.lat();
-                                const lng = place.geometry.location.lng();
+                                const lat = formatCoordinate(place.geometry.location.lat());
+                                const lng = formatCoordinate(place.geometry.location.lng());
                                 
                                 // Utilizar la nueva función global para centrar el mapa
                                 if (window.centerMapAtLocation) {
@@ -544,9 +551,9 @@ function FormCard() {
                                                 setIsSearching(false);
                                                 if (status === "OK" && results && results.length > 0) {
                                                     const location = results[0].geometry.location;
-                                                    // Utilizar la nueva función global para centrar el mapa
-                                                    const lat = location.lat();
-                                                    const lng = location.lng();
+                                                    // Formatear las coordenadas
+                                                    const lat = formatCoordinate(location.lat());
+                                                    const lng = formatCoordinate(location.lng());
                                                     console.log("Centrando mapa en:", lat, lng);
                                                     
                                                     // Usar la nueva función global
@@ -574,9 +581,9 @@ function FormCard() {
                                                 setIsSearching(false);
                                                 if (status === "OK" && results && results.length > 0) {
                                                     const location = results[0].geometry.location;
-                                                    // Utilizar la nueva función global para centrar el mapa
-                                                    const lat = location.lat();
-                                                    const lng = location.lng();
+                                                    // Formatear las coordenadas
+                                                    const lat = formatCoordinate(location.lat());
+                                                    const lng = formatCoordinate(location.lng());
                                                     console.log("Centrando mapa en:", lat, lng);
                                                     
                                                     // Usar la nueva función global
@@ -812,8 +819,8 @@ function FormCard() {
             </div>
             <div className="w-full max-h-fit p-1 border m-3 rounded-lg">
                 <Mapa
-                    setLatitud={setLatitud}
-                    setLongitud={setLongitud}
+                    setLatitud={(value) => setLatitud(formatCoordinate(value))}
+                    setLongitud={(value) => setLongitud(formatCoordinate(value))}
                     latitud={latitud}
                     longitud={longitud}
                     className="w-full h-full"
