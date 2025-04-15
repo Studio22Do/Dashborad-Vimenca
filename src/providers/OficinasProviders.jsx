@@ -37,40 +37,31 @@ function OficinasProviders({ children }) {
 
     const updateOficinaInDB = useCallback(
         async (id, updatedOficina) => {
-            
-            return axios
-                .put(`${serverUrl}/sucursales/${id}`, updatedOficina, {
-                    credentials: 'include',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+            try {
+                const response = await axios.put(
+                    `${serverUrl}/sucursales/${id}/`, // Añadimos la barra al final
+                    updatedOficina,
+                    {
                         withCredentials: true,
                         headers: {
                             "Content-Type": "application/json",
-                            "Access-Control-Allow-Origin": "*", // Añadir este header
-                        },
-                    },
-                })
-                .then(() => getOficinas(token)) // Cambiado para usar el resultado
-                .then((data) => {
-                    setItemsOficinas({
-                        sucursales: data.filter(
-                            (d) => d.tipo_de_oficina === "Sucursal"
-                        ),
-                        representantes: data.filter(
-                            (d) => d.tipo_de_oficina === "Representante"
-                        ),
-                        estafetas: data.filter(
-                            (d) => d.tipo_de_oficina === "Estafeta"
-                        ),
-                    });
-                })
-                .catch((error) => {
-                    console.error(
-                        "Error updating office:",
-                        error.response ? error.response.data : error.message
-                    );
-                    throw error;
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+                
+                const newData = await getOficinas(token);
+                setItemsOficinas({
+                    sucursales: newData.filter(d => d.tipo_de_oficina === "Sucursal"),
+                    representantes: newData.filter(d => d.tipo_de_oficina === "Representante"),
+                    estafetas: newData.filter(d => d.tipo_de_oficina === "Estafeta")
                 });
+                
+                return response.data;
+            } catch (error) {
+                console.error("Error updating office:", error.response?.data || error.message);
+                throw error;
+            }
         },
         [token]
     );
@@ -109,39 +100,26 @@ function OficinasProviders({ children }) {
 
     const deleteOficina = useCallback(
         async (id, tipo) => {
-            
             try {
-                await axios.delete(`${serverUrl}/sucursales/${id}`, {
-                    credentials: 'include',
+                await axios.delete(`${serverUrl}/sucursales/${id}/`, { // Añadir barra al final
+                    withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${token}`,
-                        withCredentials: true,
                         "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin": "*",
-                    },
+                        "Authorization": `Bearer ${token}`
+                    }
                 });
-                
-
+    
                 // Obtener los datos actualizados después de eliminar la oficina
                 const data = await getOficinas(token);
-
+    
                 // Actualizar el estado con los datos filtrados
                 setItemsOficinas({
-                    sucursales: data.filter(
-                        (d) => d.tipo_de_oficina === "Sucursal"
-                    ),
-                    representantes: data.filter(
-                        (d) => d.tipo_de_oficina === "Representante"
-                    ),
-                    estafetas: data.filter(
-                        (d) => d.tipo_de_oficina === "Estafeta"
-                    ),
+                    sucursales: data.filter(d => d.tipo_de_oficina === "Sucursal"),
+                    representantes: data.filter(d => d.tipo_de_oficina === "Representante"),
+                    estafetas: data.filter(d => d.tipo_de_oficina === "Estafeta")
                 });
             } catch (error) {
-                console.error(
-                    "Error al eliminar oficina:",
-                    error.response ? error.response.data : error.message
-                );
+                console.error("Error al eliminar oficina:", error.response?.data || error.message);
                 alert("Error al eliminar oficina");
                 throw error;
             }
